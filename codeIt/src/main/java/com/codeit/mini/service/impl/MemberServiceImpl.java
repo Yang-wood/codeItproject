@@ -1,5 +1,7 @@
 package com.codeit.mini.service.impl;
 
-public class MemberServiceImpl {
+import com.codeit.mini.service.IMemberSerivce;
+
+public class MemberServiceImpl implements IMemberSerivce{
 
 }
