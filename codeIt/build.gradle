@@ -43,6 +43,9 @@ dependencies {
 	implementation 'com.oracle.database.jdbc:ojdbc11:21.3.0.0'
 	// https://mvnrepository.com/artifact/net.coobird/thumbnailator
 	implementation 'net.coobird:thumbnailator:0.4.20'
+	// https://mvnrepository.com/artifact/nl.siegmann.epublib/epublib-core
+	implementation 'nl.siegmann.epublib:epublib-core:3.1'
+	
 	
 }
 
