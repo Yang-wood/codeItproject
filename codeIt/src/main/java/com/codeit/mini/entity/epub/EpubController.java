@@ -51,7 +51,7 @@ public class EpubController {
             sessionStatus.setComplete();
             log.info("@SessionAttributes 'bookDTO' 초기화 완료.");
         }
-        return "/uploadEpub";
+        return "/book/epub/uploadEpub";
     }
 
     @PostMapping("/uploadEpub")
@@ -61,7 +61,7 @@ public class EpubController {
         if (file.isEmpty()) {
             model.addAttribute("errorMessage", "업로드된 파일이 비어있습니다.");
             log.warn("업로드된 파일이 비어 있음.");
-            return "/uploadEpub";
+            return "/book/epub/uploadEpub";
         }
 
         try {
@@ -88,7 +88,7 @@ public class EpubController {
             model.addAttribute("errorMessage", "EPUB 파일 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
 
-        return "/uploadEpub";
+        return "/book/epub/uploadEpub";
     }
 
     @PostMapping("/saveBook")

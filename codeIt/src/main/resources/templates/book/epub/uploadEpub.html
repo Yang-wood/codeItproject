@@ -18,8 +18,41 @@
         .success-message { color: green; margin-top: 10px; }
         .cover-image { max-width: 150px; height: auto; border: 1px solid #ccc; margin-top: 10px; }
         
+        /* Styles for drag and drop area */
+        .drop-zone {
+            border: 2px dashed #007bff;
+            border-radius: 8px;
+            padding: 50px;
+            text-align: center;
+            color: #666;
+            font-size: 1.2em;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+        }
+        .drop-zone.highlight {
+            background-color: #e6f3ff;
+            border-color: #0056b3;
+        }
+        .status-summary {
+            margin-top: 15px;
+            font-weight: bold;
+            color: #333;
+        }
+        .status-item {
+            margin-left: 20px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .status-item.success {
+            color: green;
+        }
+        .status-item.error {
+            color: red;
+        }
         
     </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -69,30 +102,121 @@
             </form>
         </div>
         
-        
         ---
 
-        <h2>대량 EPUB 파일 드래그 앤 드롭 업로드</h2>
-        <div id="dropZone" class="drop-zone">
-            EPUB 파일을 여기에 드래그 앤 드롭하세요
-            <br>
-            <small>(여러 파일 동시 업로드 가능)</small>
-        </div>
+        <h1>대량 EPUB 파일 업로드</h1>
+    
+	    <div id="dropZone" class="drop-zone">
+	        EPUB 파일을 여기에 드래그 앤 드롭하세요
+	        <br>
+	        <small>(여러 파일 동시 업로드 가능)</small>
+	    </div>
 
-        <div id="uploadStatus">
-        </div>
-        
-        <button id="saveBulkButton" disabled>선택된 EPUB 파일 저장</button>
+	    <div id="uploadStatus"></div>
+	    
+	    <button id="saveBulkButton" disabled>선택된 EPUB 파일 저장</button>
         
     </div>
     <script>
 	    $(document).ready(function() {
+        const singleFileMessageArea = $("#singleFileMessageArea");
+        const previewSectionContainer = $("#previewSectionContainer"); // 미리보기 섹션을 삽입할 컨테이너
+
+        // --- 단일 파일 업로드 (미리보기) 처리 시작 ---
+        $("#epubFile").on("change", function() {
+            const fileInput = this;
+            singleFileMessageArea.empty(); // 이전 메시지 초기화
+            previewSectionContainer.empty(); // 이전 미리보기 초기화
+
+            if (fileInput.files.length === 0) {
+                singleFileMessageArea.append('<div class="error-message">파일이 선택되지 않았습니다.</div>');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const formData = new FormData();
+            formData.append("epubFile", file); // 서버의 @RequestParam("epubFile")과 매칭
+
+            singleFileMessageArea.append('<div class="success-message">파일 미리보기 정보 로드 중...</div>');
+
+            // 미리보기 정보를 가져오기 위한 AJAX 요청
+            // 서버에 /uploadEpubForPreview 엔드포인트가 JSON 응답을 반환한다고 가정합니다.
+            $.ajax({
+                url: "/uploadEpubForPreview", // 서버의 미리보기 전용 엔드포인트
+                type: "POST",
+                data: formData,
+                processData: false, // FormData를 사용할 때 필수
+                contentType: false, // FormData를 사용할 때 필수
+                dataType: "json", // 서버에서 JSON 응답을 기대
+                success: function(response) {
+                    singleFileMessageArea.empty(); // 로딩 메시지 제거
+                    if (response && response.bookDTO) {
+                        const book = response.bookDTO;
+                        const epubFilePath = response.epubFilePath; // 서버에서 임시 저장된 파일 경로
+                        const originalFileName = response.originalFileName; // 원본 파일 이름
+
+                        const previewHtml = `
+                            <div class="preview-section">
+                                <h2>미리보기 정보</h2>
+                                <div class="preview-item"><strong>제목:</strong> <span>${book.title || '(정보 없음)'}</span></div>
+                                <div class="preview-item"><strong>작가:</strong> <span>${book.author || '(정보 없음)'}</span></div>
+                                <div class="preview-item"><strong>출판사:</strong> <span>${book.publisher || '(정보 없음)'}</span></div>
+                                <div class="preview-item"><strong>출판일:</strong> <span>${book.pubDate || '(정보 없음)'}</span></div>
+                                <div class="preview-item"><strong>카테고리:</strong> <span>${book.category || '(정보 없음)'}</span></div>
+                                <div class="preview-item"><strong>설명:</strong> <span>${book.description || '(정보 없음)'}</span></div>
+                                
+                                <div class="preview-item">
+                                    <strong>표지 이미지:</strong><br>
+                                    ${book.coverImageDataBase64 ? 
+                                        `<img src="data:image/jpeg;base64,${book.coverImageDataBase64}" class="cover-image" alt="표지 이미지">` :
+                                        `<span style="color: #666;">(이미지 없음 또는 미리보기 불가)</span>`
+                                    }
+                                </div>
+
+                                <form action="/saveBook" method="post" style="margin-top: 20px;">
+                                    <input type="hidden" name="title" value="${book.title || ''}">
+                                    <input type="hidden" name="author" value="${book.author || ''}">
+                                    <input type="hidden" name="publisher" value="${book.publisher || ''}">
+                                    <input type="hidden" name="pubDate" value="${book.pubDate || ''}">
+                                    <input type="hidden" name="category" value="${book.category || ''}">
+                                    <input type="hidden" name="description" value="${book.description || ''}">
+                                    <input type="hidden" name="coverImageDataBase64" value="${book.coverImageDataBase64 || ''}">
+                                    
+                                    <input type="hidden" name="epubFilePath" value="${epubFilePath || ''}">
+                                    <input type="hidden" name="originalFileName" value="${originalFileName || ''}">
+
+                                    <div style="margin-top: 20px;">
+                                        <input type="submit" value="확인 후 저장">
+                                    </div>
+                                </form>
+                            </div>
+                        `;
+                        previewSectionContainer.html(previewHtml); // 미리보기 섹션 삽입
+
+                        if (response.successMessage) {
+                            singleFileMessageArea.append(`<div class="success-message">${response.successMessage}</div>`);
+                        }
+                    } else {
+                        singleFileMessageArea.append('<div class="error-message">파일 미리보기 정보를 가져오지 못했습니다.</div>');
+                    }
+                },
+                error: function(xhr, status, error) {
+                    singleFileMessageArea.empty(); // 로딩 메시지 제거
+                    console.error("미리보기 업로드 실패:", error);
+                    singleFileMessageArea.append(`<div class="error-message">파일 미리보기에 실패했습니다: ${xhr.responseJSON?.message || '알 수 없는 오류'}</div>`);
+                }
+            });
+        });
+        // --- 단일 파일 업로드 (미리보기) 처리 끝 ---
+
+
         const dropZone = $("#dropZone");
         const uploadStatus = $("#uploadStatus");
         const saveBulkButton = $("#saveBulkButton");
 
         let droppedEpubFiles = [];
 
+        // 드래그 앤 드롭 이벤트 처리
         $(document).on("dragenter dragover dragleave drop", function(e) {
             e.preventDefault();
             e.stopPropagation();
@@ -111,35 +235,39 @@
             handleFiles(files);
         });
 
+        // 파일 처리 함수
         function handleFiles(files) {
             uploadStatus.empty();
             droppedEpubFiles = []; 
             saveBulkButton.prop("disabled", true); 
 
+            // EPUB 파일만 필터링
             const epubFiles = Array.from(files).filter(file => file.name.toLowerCase().endsWith(".epub"));
             const nonEpubFiles = Array.from(files).filter(file => !file.name.toLowerCase().endsWith(".epub"));
 
             if (epubFiles.length > 0) {
-                droppedEpubFiles = epubFiles; 
+                droppedEpubFiles = epubFiles;
 
+                // 요약 정보 표시
                 const summaryItem = $("<div>").addClass("status-summary")
-                                             .text(`${epubFiles.length}개의 EPUB 파일이 준비되었습니다. '저장' 버튼을 클릭하여 업로드를 시작하세요.`);
-                uploadStatus.append($summaryItem); 
+                                             .text(`총 ${epubFiles.length}개의 EPUB 파일이 선택되었습니다.`);
+                uploadStatus.append(summaryItem); 
                 
+                // 파일 목록 표시 (제목만)
                 epubFiles.forEach(file => {
                     const $listItem = $("<div>").addClass("status-item")
                                                 .text(`• ${file.name}`);
                     uploadStatus.append($listItem);
                 });
 
-                $saveBulkButton.prop("disabled", false); // EPUB 파일이 있으면 버튼 활성화
-
+                saveBulkButton.prop("disabled", false);
             } else {
                 const noFilesMessage = $("<div>").addClass("status-item")
                                                   .text("업로드할 EPUB 파일이 없습니다.");
                 uploadStatus.append(noFilesMessage);
             }
 
+            // EPUB 아닌 파일은 오류로 표시
             nonEpubFiles.forEach(file => {
                 const statusItem = $("<div>").addClass("status-item error")
                                                 .text(`${file.name}: EPUB 파일이 아닙니다.`);
@@ -147,80 +275,66 @@
             });
         }
 
-        // '선택된 EPUB 파일 저장' 버튼 클릭 이벤트
+        // 저장 버튼 클릭 이벤트
         saveBulkButton.on("click", async function() {
             if (droppedEpubFiles.length === 0) {
-                alert("저장할 EPUB 파일이 없습니다. 파일을 드래그 앤 드롭해주세요.");
+                alert("저장할 EPUB 파일이 없습니다.");
                 return;
             }
 
-            $(this).prop("disabled", true); // 저장 시작 시 버튼 비활성화
-            uploadStatus.empty(); // 기존 상태 메시지 초기화
+            $(this).prop("disabled", true);
+            uploadStatus.empty();
 
             const processingSummary = $("<div>").addClass("status-summary")
-                                                .text(`총 ${droppedEpubFiles.length}개의 EPUB 파일 저장을 시작합니다...`);
+                                                .text(`총 ${droppedEpubFiles.length}개의 EPUB 파일 저장 중...`);
             uploadStatus.append(processingSummary);
 
-            let successfulUploads = 0;
-            let failedUploads = 0;
-
-            const results = await Promise.allSettled(droppedEpubFiles.map(file => uploadFileToServer(file)));
-
-            results.forEach(result => {
-                if (result.status === 'fulfilled') {
-                    successfulUploads++;
-                } else {
-                    failedUploads++;
-                }
+            // FormData 생성 및 파일 추가
+            const formData = new FormData();
+            droppedEpubFiles.forEach((file, index) => {
+                formData.append("epubFiles", file);
             });
 
-            const finalSummary = $("<div>").addClass("status-summary")
-                                            .css("margin-top", "15px") 
-                                            .text(`저장 완료: ${successfulUploads}개 성공, ${failedUploads}개 실패.`);
-            uploadStatus.append(finalSummary);
-
-            droppedEpubFiles = [];
-            $(this).prop("disabled", true);
-        });
-
-        // 실제 파일을 서버로 업로드하는 함수
-        async function uploadFileToServer(file) {
-            const formData = new FormData();
-            formData.append("epubFiles", file);
-
-            const statusItem = $("<div>").addClass("status-item")
-                                            .text(`${file.name}: 처리 중...`);
-            uploadStatus.append(statusItem);
-
             try {
-                const data = await $.ajax({
+                // AJAX로 일괄 업로드
+                const response = await $.ajax({
                     url: "/multiUploadEpub",
                     type: "POST",
                     data: formData,
-                    processData: false, 
-                    contentType: false, 
-                    dataType: "json" 
+                    processData: false,
+                    contentType: false,
+                    dataType: "json"
                 });
 
-                const fileResult = data.length > 0 ? data[0] : null;
+                // 결과 처리
+                let successCount = 0;
+                let failCount = 0;
+                
+                response.forEach(result => {
+                    const statusItem = $("<div>").addClass("status-item")
+                        .addClass(result.status === "success" ? "success" : "error")
+                        .text(`${result.fileName}: ${result.message}`);
+                    uploadStatus.append(statusItem);
+                    
+                    if (result.status === "success") {
+                        successCount++;
+                    } else {
+                        failCount++;
+                    }
+                });
 
-                if (fileResult && fileResult.status === "success") {
-                    statusItem.removeClass("status-item").addClass("status-item success"); 
-                    statusItem.text(`${file.name}: ${fileResult.message}`);
-                    return Promise.resolve(); // 성공 처리
-                } else {
-                    $statusItem.removeClass("status-item").addClass("status-item error"); // 클래스 변경
-                    $statusItem.text(`${file.name}: ${fileResult ? fileResult.message : "알 수 없는 오류 발생"}`);
-                    return Promise.reject(new Error(fileResult ? fileResult.message : "Unknown error")); // 실패 처리
-                }
+                const finalSummary = $("<div>").addClass("status-summary")
+                    .text(`저장 완료: ${successCount}개 성공, ${failCount}개 실패`);
+                uploadStatus.append(finalSummary);
 
             } catch (error) {
-                console.error("파일 업로드 중 오류 발생:", error);
-                statusItem.removeClass("status-item").addClass("status-item error");
-                statusItem.text(`${file.name}: 업로드 실패 - ${error.message || "알 수 없는 오류"}`);
-                return Promise.reject(error);
+                console.error("업로드 실패:", error);
+                uploadStatus.append($("<div>").addClass("status-summary error")
+                    .text("업로드 중 오류가 발생했습니다."));
+            } finally {
+                droppedEpubFiles = [];
             }
-        }
+        });
     });
 </script>
 </body>

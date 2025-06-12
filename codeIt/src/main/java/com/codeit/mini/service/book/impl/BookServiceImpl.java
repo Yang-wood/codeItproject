@@ -54,7 +54,7 @@ public class BookServiceImpl implements IBookService {
             Path permanentEpubDir = Paths.get(UPLOAD_BASE_DIR, EPUB_SUB_DIR);
             Files.createDirectories(permanentEpubDir); // 디렉토리가 없으면 생성
 
-            String uniqueEpubFileName = UUID.randomUUID().toString() + "." + originalFileName; // 고유한 파일명 생성
+            String uniqueEpubFileName = UUID.randomUUID().toString() + "_" + originalFileName; // 고유한 파일명 생성
             Path destinationEpubPath = permanentEpubDir.resolve(uniqueEpubFileName);
 
             // 임시 EPUB 파일을 영구 저장 위치로 이동
@@ -94,7 +94,7 @@ public class BookServiceImpl implements IBookService {
                     else if (mimePart.contains("gif")) imageExtension = "gif";
                 }
 
-                String coverImageFileName = UUID.randomUUID().toString() + "_" + imageExtension; // 고유한 파일명 생성
+                String coverImageFileName = UUID.randomUUID().toString() + "." + imageExtension; // 고유한 파일명 생성
                 Path coverImagePath = coverImageUploadDir.resolve(coverImageFileName);
 
                 Files.write(coverImagePath, bookDTO.getCoverImageData()); // byte[] 데이터를 파일로 저장
