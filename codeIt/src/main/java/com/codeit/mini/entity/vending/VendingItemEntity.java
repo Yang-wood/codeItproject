@@ -58,7 +58,7 @@ public class VendingItemEntity extends BaseEntity{
 	@Column(name = "value")
 	private int value;
 	
-	@Column(name = "probability", precision = 10, scale = 2)
+	@Column(name = "probability")
 	private Double probability;
 
 	@Column(name = "stock")

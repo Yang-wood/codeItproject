@@ -34,7 +34,7 @@ public class MachineItemEntity {
 	@JoinColumn(name = "item_id", foreignKey = @ForeignKey(name = "fk_vm_item_item_id"))
 	private VendingItemEntity vendingItem;
 	
-	@Column(name = "probability", precision = 10, scale = 2)
+	@Column(name = "probability")
 	private Double probability;
 	
 }
