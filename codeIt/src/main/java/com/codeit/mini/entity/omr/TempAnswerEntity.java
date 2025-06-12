@@ -39,7 +39,8 @@ import lombok.ToString;
 public class TempAnswerEntity {
 	
 	@Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,
+					generator = "TEMP_ANSWER_SEQ_GEN")
     @Column(name = "temp_id")
     private Long tempId;
 
@@ -51,7 +52,7 @@ public class TempAnswerEntity {
     @JoinColumn(name = "question_id", nullable = false)
     private TestQuestionEntity question;
 
-    @Column(name = "choice_answer", nullable = false, columnDefinition = "CHAR(1)")
+    @Column(name = "choice_answer", columnDefinition = "CHAR(1)")
     private char choiceAnswer;
 
     @Column(name = "save_time")

@@ -66,7 +66,7 @@ public class TestEntity extends BaseEntity{
 	@Column(name = "test_paid", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
 	private char testPaid = 'Y';
 	
-	@Column(name = "avg_score", precision = 5, scale = 2)
+	@Column(name = "avg_score")
 	private Double avgScore;
 	
 	@Column(name = "attempt_cnt")
