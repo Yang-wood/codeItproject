@@ -37,7 +37,7 @@ public class RecommEntity {
 	@JoinColumn(name = "book_id")
 	private BookEntity bookEntity;
 	
-	@Column(name = "rec_score", nullable = false, precision = 10, scale = 2)
+	@Column(name = "rec_score", nullable = false, columnDefinition = "NUMBER(2,1)")
 	private Double recScore;
 	
 	@Column(name = "regdate", nullable = false)

@@ -77,7 +77,7 @@ private Integer rentCount = 0; // 총 대여 횟수
 @Column(name = "wish_count", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
 private Integer wishCount = 0;  // 찜하기 횟수
 
-@Column(name = "avg_rating", nullable = false, precision = 2, scale = 1, columnDefinition = "NUMBER DEFAULT 0.0")
+@Column(name = "avg_rating", nullable = false, columnDefinition = "NUMBER(2, 1) DEFAULT 0.0")
 private Double avgRating =  0.0; // 평균 별점
 
 @Column(name = "review_count", nullable = false, columnDefinition = "NUMBER DEFAULT 0")

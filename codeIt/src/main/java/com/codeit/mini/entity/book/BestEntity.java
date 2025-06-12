@@ -1,5 +1,6 @@
 package com.codeit.mini.entity.book;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
@@ -38,7 +39,7 @@ public class BestEntity {
 	@JoinColumn(name = "book_id")
 	private BookEntity bookEntity;
 	
-	@Column(name = "score", nullable = false, precision = 10, scale = 2)
+	@Column(name = "score", nullable = false, columnDefinition = "NUMBER(2,1)")
     private Double score;
 	
 	@Column(name = "regdate", nullable = false)
