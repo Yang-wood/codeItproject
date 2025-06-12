@@ -9,7 +9,7 @@
 import com.codeit.mini.dto.book.BookDTO;
   
   @Service 
-  public interface BookService { 
+  public interface IBookService { 
 	  // BookDTO와 임시 EPUB 파일의 경로, 원본 파일명을 받습니다. 
 	  void saveBook(BookDTO bookDTO, String epubFilePath, String originalFileName) throws IOException; 
 	  }

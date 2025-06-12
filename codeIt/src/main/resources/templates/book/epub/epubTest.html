@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Epub.js Reader with TOC</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
+    <style>
+        body { 
+        	margin: 0;
+        	padding: 0 0 50px 0; 
+        	font-family: sans-serif; 
+        	display: flex;
+        	flex-direction: column; 
+    		min-height: 100vh; 
+        }
+
+        /* Sidebar Styles */
+        #sidebar {
+            width: 250px;
+            height: 100vh;
+            background-color: #f8f8f8;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+            padding: 20px;
+            box-sizing: border-box;
+            transform: translateX(-100%);
+            transition: transform 0.3s ease-in-out;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 20;
+            box-shadow: 2px 0 5px rgba(0,0,0,0.2);
+        }
+        #sidebar.open {
+            transform: translateX(0);
+        }
+
+        /* 사이드바 내부 닫기 버튼 스타일 - (이전 요청에서 추가됨) */
+        #sidebar-close-button {
+            position: absolute; /* 사이드바 내부에서 절대 위치 */
+            top: 15px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 1.5em; /* 폰트 크기 키워서 X가 잘 보이도록 */
+            cursor: pointer;
+            color: #555;
+            padding: 5px;
+            line-height: 1; /* 텍스트 정렬 보정 */
+            border-radius: 3px;
+        }
+        #sidebar-close-button:hover {
+            color: #000;
+            background-color: rgba(0,0,0,0.1);
+        }
+
+        #toc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        #toc-list li {
+            margin-bottom: 10px;
+        }
+        #toc-list a {
+            text-decoration: none;
+            color: #333;
+            font-size: 0.95em;
+            display: block;
+            padding: 5px 0;
+        }
+        #toc-list a:hover {
+            color: #007bff;
+        }
+        #toc-list ul { /* Nested TOC items */
+            list-style: none;
+            padding-left: 15px;
+            margin-top: 5px;
+        }
+        #toc-list h4 { /* Style for chapter list title */
+            margin-top: 0;
+            margin-bottom: 15px;
+            color: #555;
+        }
+
+        /* Main Viewer Styles */
+        #main-content {
+            flex-grow: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* sidebar가 열렸을 때 main-content가 이동할 공간을 확보 */
+            transition: margin-left 0.3s ease-in-out;
+            padding-left: 150px; 
+            padding-right: 150px;
+            box-sizing: border-box;
+        }
+        /* Sidebar가 열릴 때 main-content를 오른쪽으로 밀어냅니다. */
+        #sidebar.open ~ #main-content {
+            margin-left: 250px; /* sidebar width와 동일하게 설정 */
+        }
+
+        #viewer {
+            width: 100%; 
+            height: auto;
+            overflow: hidden;
+            position: relative;
+            background-color: #fff; 
+            flex-grow: 1; 
+        }
+
+        /* Navigation Buttons */
+        #prev, #next {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.5em;
+            padding: 10px 15px;
+            cursor: pointer;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border-radius: 5px;
+            user-select: none;
+            z-index: 10;
+            transition: background-color 0.2s ease;
+        }
+        #prev:hover, #next:hover {
+            background-color: rgba(0,0,0,0.7);
+        }
+        #prev { left: 10px; }
+        #next { right: 10px; }
+
+        /* TOC Button */
+        #toc-button {
+            position: fixed;
+            left: 10px;
+            top: 20px;
+            font-size: 1.2em;
+            padding: 8px 12px;
+            cursor: pointer;
+            background-color: rgba(0,0,0,0.5);
+            color: white;
+            border-radius: 5px;
+            user-select: none;
+            z-index: 10;
+            transition: background-color 0.2s ease;
+        }
+        #toc-button:hover {
+            background-color: rgba(0,0,0,0.7);
+        }
+        #toc-button.disabled { 
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: rgba(0,0,0,0.2);
+        }
+        #toc-button.disabled:hover {
+            background-color: rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+<body>
+    <div id="sidebar">
+        <h3 id="sidebar-title">목차</h3>
+        <button id="sidebar-close-button">X</button> <ul id="toc-list">
+            <li>목차 로딩 중...</li>
+        </ul>
+    </div>
+
+    <div id="main-content">
+        <div id="viewer"></div>
+        <div id="toc-button">☰ 목차</div>
+        <div id="prev">‹</div>
+        <div id="next">›</div>
+        </div>
+
+    <script>
+        const bookPath = "/upload/epubs/755d2234-e80f-4980-a754-ca4938738762_pierre-souvestre_marcel-allain_fantomas_cranstoun-metcalfe.epub";
+        // const bookPath = "https://s3.amazonaws.com/moby-dick/moby-dick.epub"; // 테스트용 Moby Dick
+
+        const viewer = document.getElementById('viewer');
+        const prevButton = document.getElementById('prev');
+        const nextButton = document.getElementById('next');
+        // currentLocationDiv, loader, pageInput, goPageButton 변수 제거
+
+        const tocButton = document.getElementById('toc-button');
+        const sidebar = document.getElementById('sidebar');
+        const sidebarTitle = document.getElementById('sidebar-title'); 
+        const tocList = document.getElementById('toc-list');
+        const sidebarCloseButton = document.getElementById('sidebar-close-button'); 
+
+        let book;
+        let rendition;
+        let totalPages = 0; // 이 변수는 이제 사용되지 않지만, 다른 곳에서 참조될 가능성을 위해 일단 유지.
+        let locationsGenerated = false; // 이 변수는 이제 사용되지 않지만, 다른 곳에서 참조될 가능성을 위해 일단 유지.
+
+        async function loadEpub() {
+            try {
+                tocButton.classList.add('disabled');
+                tocButton.removeEventListener('click', openSidebar); // 변경된 함수 이름 적용
+                sidebarCloseButton.removeEventListener('click', closeSidebar); // 새로운 닫기 버튼 리스너 제거
+
+                book = ePub(bookPath, { restore: true });
+
+                rendition = book.renderTo(viewer, {
+                    width: '100%', 
+                    height: '100%',
+                    spreads: true,
+                    flow: "scrolled-doc",
+                    allowScriptedContent: false, 
+                    sandbox: 'allow-same-origin allow-scripts' 
+                });
+
+                await book.ready;
+                rendition.display();
+                console.log("Book is ready and displayed.");
+
+                try {
+                    await book.locations.generate(600); 
+                    locationsGenerated = true;
+                    console.log("Book locations generated successfully.");
+                } catch (locErr) {
+                    console.warn("Failed to generate book locations (this might affect total page count accuracy or direct page navigation):", locErr);
+                }
+                
+                rendition.reportLocation();
+
+                rendition.on('relocated', (location) => {
+                    // currentLocationDiv, pageInput, totalPages, goPageButton 관련 로직 제거
+                    // 이제 페이지 번호 표시 기능은 없습니다.
+                    console.log("Relocated to:", location.start.cfi);
+                });
+
+                rendition.on('rendered', (section) => {
+                    // 이 부분은 주석 처리된 상태로 유지
+                });
+
+                // --- 목차 (TOC) 또는 챕터 목록 불러오기 시도 ---
+                let contentLoadedForSidebar = false;
+                tocList.innerHTML = ''; 
+                
+                if (book.navigation && book.navigation.ready) {
+                    try {
+                        await book.navigation.ready; 
+                        const toc = book.navigation.toc;
+                        if (toc && toc.length > 0) {
+                            sidebarTitle.textContent = '목차'; 
+                            renderToc(toc, tocList); 
+                            console.log("TOC loaded successfully from book.navigation:", toc);
+                            contentLoadedForSidebar = true;
+                        } else {
+                            console.warn("book.navigation.toc exists but is empty.");
+                        }
+                    } catch (navError) {
+                        console.error("Error loading TOC from book.navigation:", navError);
+                    }
+                }
+
+                if (!contentLoadedForSidebar) { 
+                    if (book.spine && book.spine.items && book.spine.items.length > 0) {
+                        sidebarTitle.textContent = '챕터 목록'; 
+                        const ul = document.createElement('ul');
+                        book.spine.items.forEach((item, index) => {
+                            const li = document.createElement('li');
+                            const a = document.createElement('a');
+                            a.href = '#';
+                            let chapterName = item.idref || item.href.split('/').pop(); 
+                            chapterName = chapterName.replace(/\.xhtml$/, '').replace(/\.html$/, ''); 
+                            if (chapterName.includes('tale-')) {
+                                chapterName = chapterName.replace('tale-', 'Tale ');
+                            }
+                            a.textContent = chapterName;
+                            a.addEventListener('click', (event) => {
+                                event.preventDefault();
+                                if (rendition) {
+                                    rendition.display(item.href);
+                                }
+                                closeSidebar(); 
+                            });
+                            li.appendChild(a);
+                            ul.appendChild(li);
+                        });
+                        tocList.appendChild(ul);
+                        console.log("Loaded chapter list from book.spine:", book.spine.items);
+                        contentLoadedForSidebar = true;
+                    } else {
+                        tocList.innerHTML = '<li>목차/챕터 정보를 찾을 수 없습니다.</li>';
+                        console.warn("No TOC or spine items found.");
+                    }
+                }
+
+                if (contentLoadedForSidebar) {
+                    tocButton.classList.remove('disabled');
+                    tocButton.addEventListener('click', openSidebar); 
+                    sidebarCloseButton.addEventListener('click', closeSidebar); 
+                } else {
+                    tocButton.style.display = 'none';
+                    sidebarCloseButton.style.display = 'none'; 
+                }
+
+            } catch (error) {
+                console.error("EPUB 로드 중 치명적인 오류 발생:", error);
+                tocButton.classList.add('disabled');
+                tocButton.style.display = 'none';
+                sidebarCloseButton.style.display = 'none'; 
+                alert("EPUB 파일을 불러오는 데 오류가 발생했습니다. 파일이 존재하고 접근 가능한지 확인하세요.");
+            }
+        }
+
+        // --- Recursive TOC rendering function (for book.navigation.toc) ---
+        function renderToc(tocItems, parentElement) {
+            const ul = document.createElement('ul');
+            tocItems.forEach(item => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = '#';
+                a.textContent = item.label;
+                a.addEventListener('click', (event) => {
+                    event.preventDefault();
+                    if (rendition) {
+                        rendition.display(item.href);
+                    }
+                    closeSidebar(); 
+                });
+                li.appendChild(a);
+
+                if (item.subitems && item.subitems.length > 0) {
+                    renderToc(item.subitems, li); 
+                }
+                ul.appendChild(li);
+            });
+            parentElement.appendChild(ul);
+        }
+
+        // --- Sidebar 열기 함수 ---
+        function openSidebar() {
+            sidebar.classList.add('open');
+            if (rendition) {
+                setTimeout(() => {
+                    rendition.resize();
+                }, 300); 
+            }
+        }
+
+        // --- Sidebar 닫기 함수 ---
+        function closeSidebar() {
+            sidebar.classList.remove('open');
+            if (rendition) {
+                setTimeout(() => {
+                    rendition.resize();
+                }, 300); 
+            }
+        }
+
+        // --- Page navigation controls ---
+
+        prevButton.addEventListener('click', () => {
+            if (rendition) {
+            	rendition.prev().then(() => {
+            		window.scrollTo(0, 0);
+            	});
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (rendition) {
+            	rendition.next().then(() => {
+            		window.scrollTo(0, 0);
+            	});
+            }
+        });
+
+        // --- Window Resize Listener with Debounce ---
+        let resizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(() => {
+                if (rendition) {
+                    rendition.resize();
+                    console.log("Rendition resized due to window resize.");
+                }
+            }, 250); 
+        });
+
+        // Initial load
+        loadEpub();
+    </script>
+</body>
+</html>

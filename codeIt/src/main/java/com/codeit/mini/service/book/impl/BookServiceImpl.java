@@ -20,25 +20,24 @@ import org.springframework.web.multipart.MultipartFile; // 이 클래스는 현�
 import com.codeit.mini.dto.book.BookDTO;
 import com.codeit.mini.entity.book.BookEntity;
 import com.codeit.mini.repository.book.IBookRepository;
-import com.codeit.mini.service.book.BookService;
+import com.codeit.mini.service.book.IBookService;
 
 import lombok.extern.log4j.Log4j2;
 
 @Service
 @Log4j2
-public class BookServiceImpl implements BookService {
+public class BookServiceImpl implements IBookService {
 
     @Autowired
     private IBookRepository bookRepository;
 
-    // 파일 저장 경로 설정 (실제 배포 환경에서는 외부 설정 파일 권장)
-    // 개발 환경에서는 프로젝트 내부 경로에 저장되지만, 배포 시에는 변경 필요
-    private final String UPLOAD_BASE_DIR = System.getProperty("user.dir") + "/src/main/resources/static/upload/";
-    private final String EPUB_SUB_DIR = "epubs/";
+    // 파일 저장 경로 설정
+    private final String UPLOAD_BASE_DIR = System.getProperty("user.dir") + "/src/main/resources/static/upload/epubs";
+    private final String EPUB_SUB_DIR = "files/";
     private final String COVER_IMAGE_SUB_DIR = "cover_images/";
 
     @Override
-    @Transactional // 메서드 내의 모든 데이터베이스 작업이 하나의 트랜잭션으로 묶입니다.
+    @Transactional
     public void saveBook(BookDTO bookDTO, String tempEpubFilePath, String originalFileName) throws IOException {
 
         log.info("BookService.saveBook 메서드 진입");
@@ -55,7 +54,7 @@ public class BookServiceImpl implements BookService {
             Path permanentEpubDir = Paths.get(UPLOAD_BASE_DIR, EPUB_SUB_DIR);
             Files.createDirectories(permanentEpubDir); // 디렉토리가 없으면 생성
 
-            String uniqueEpubFileName = UUID.randomUUID().toString() + "_" + originalFileName; // 고유한 파일명 생성
+            String uniqueEpubFileName = UUID.randomUUID().toString() + "." + originalFileName; // 고유한 파일명 생성
             Path destinationEpubPath = permanentEpubDir.resolve(uniqueEpubFileName);
 
             // 임시 EPUB 파일을 영구 저장 위치로 이동
@@ -95,12 +94,12 @@ public class BookServiceImpl implements BookService {
                     else if (mimePart.contains("gif")) imageExtension = "gif";
                 }
 
-                String coverImageFileName = UUID.randomUUID().toString() + "." + imageExtension; // 고유한 파일명 생성
+                String coverImageFileName = UUID.randomUUID().toString() + "_" + imageExtension; // 고유한 파일명 생성
                 Path coverImagePath = coverImageUploadDir.resolve(coverImageFileName);
 
                 Files.write(coverImagePath, bookDTO.getCoverImageData()); // byte[] 데이터를 파일로 저장
 
-                // DB에 저장될 웹 접근 가능한 경로: /upload/cover_images/파일명
+                // DB에 저장될 웹 접근 가능한 경로
                 coverImageWebPath = "/upload/" + COVER_IMAGE_SUB_DIR + coverImageFileName;
                 log.info("표지 이미지 서버 저장 완료: " + coverImagePath.toString() + ", 웹 경로: " + coverImageWebPath);
 
@@ -118,16 +117,16 @@ public class BookServiceImpl implements BookService {
 
         // 공백 제거 버전은 null 체크 후 처리
         bookEntity.setTitle(bookDTO.getTitle());
-        bookEntity.setTitle_nospace(bookDTO.getTitle() != null ? bookDTO.getTitle().replaceAll("\\s", "") : "");
+        bookEntity.setTitleNospace(bookDTO.getTitle() != null ? bookDTO.getTitle().replaceAll("\\s", "") : "");
         bookEntity.setAuthor(bookDTO.getAuthor());
-        bookEntity.setAuthor_nospace(bookDTO.getAuthor() != null ? bookDTO.getAuthor().replaceAll("\\s", "") : "");
+        bookEntity.setAuthorNospace(bookDTO.getAuthor() != null ? bookDTO.getAuthor().replaceAll("\\s", "") : "");
         bookEntity.setPublisher(bookDTO.getPublisher());
         bookEntity.setCategory(bookDTO.getCategory());
         bookEntity.setDescription(bookDTO.getDescription());
 
         // 최종적으로 저장된 파일의 경로를 엔터티에 설정
-        bookEntity.setEpub_path(finalEpubPath); // 서버 파일 시스템의 절대 경로
-        bookEntity.setCover_img(coverImageWebPath); // 웹 접근 가능한 상대 경로 (DB 저장용)
+        bookEntity.setEpubPath(finalEpubPath); // 서버 파일 시스템의 절대 경로
+        bookEntity.setCoverImg(coverImageWebPath); // 웹 접근 가능한 상대 경로 (DB 저장용)
 
         // 출판일 String을 LocalDateTime으로 파싱 시도
         String pubDateString = bookDTO.getPubDate();
@@ -152,27 +151,27 @@ public class BookServiceImpl implements BookService {
                     }
                 }
 
-                bookEntity.setPub_date(parsedDateTime);
-                log.info("[DEBUG] 출판일 파싱 성공: " + bookEntity.getPub_date());
+                bookEntity.setPubDate(parsedDateTime);
+                log.info("[DEBUG] 출판일 파싱 성공: " + bookEntity.getPubDate());
 
             } catch (DateTimeParseException e) {
                 log.warn("경고: 출판일 '{}' 파싱 실패. 오류: {}. pubDate를 null로 설정합니다.", pubDateString, e.getMessage());
-                bookEntity.setPub_date(null);
+                bookEntity.setPubDate(null);
             }
         } else {
-            bookEntity.setPub_date(null);
+            bookEntity.setPubDate(null);
         }
 
         // 추가적인 BookEntity 필드 초기화 (기본값 설정)
-        bookEntity.setRent_point(0);
-        bookEntity.setRent_count(0);
-        bookEntity.setWish_count(0);
-        bookEntity.setAvg_rating(0.0);
-        bookEntity.setReview_count(0);
+        bookEntity.setRentPoint(0);
+        bookEntity.setRentCount(0);
+        bookEntity.setWishCount(0);
+        bookEntity.setAvgRating(0.0);
+        bookEntity.setReviewCount(0);
         // regDate와 upDate는 @PrePersist/@PreUpdate 어노테이션을 사용하여 엔티티에서 자동 설정됩니다.
 
         // 4. Book 엔터티를 데이터베이스에 저장
         bookRepository.save(bookEntity); // save 메서드는 엔티티를 반환하지만, void로 처리 가능
-        log.info("BookEntity DB 저장 완료: " + bookEntity.getBook_id());
+        log.info("BookEntity DB 저장 완료: " + bookEntity.getBookId());
     }
 }

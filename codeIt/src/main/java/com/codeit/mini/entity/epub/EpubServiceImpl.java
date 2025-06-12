@@ -25,16 +25,15 @@ public class EpubServiceImpl implements EpubService {
     public BookDTO bookDTO(File epubfile) throws IOException {
         BookDTO bookDTO = new BookDTO();
 
-        // File 객체에서 InputStream을 얻습니다. (try-with-resources 구문을 사용하여 스트림 자동 닫기)
+        // File 객체에서 InputStream 획득
         try (InputStream epubInputStream = Files.newInputStream(epubfile.toPath())) {
             EpubReader epubReader = new EpubReader();
             Book book = epubReader.readEpub(epubInputStream);
 
-            // 1. epublib의 Metadata 객체를 가져옵니다.
+            // 1. epublib의 Metadata 객체 획득
             Metadata metadata = book.getMetadata();
 
             // 2. Metadata 객체에서 정보 추출하여 DTO에 매핑
-
             // - getTitles(): List<String> 반환. 첫 번째 제목 가져오기.
             bookDTO.setTitle(Optional.ofNullable(metadata.getTitles())
                                .filter(list -> !list.isEmpty())
