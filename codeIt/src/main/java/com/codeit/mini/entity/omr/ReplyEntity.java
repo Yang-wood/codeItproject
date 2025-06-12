@@ -1,9 +1,7 @@
 package com.codeit.mini.entity.omr;
 
-import java.sql.Timestamp;
 
-import org.hibernate.annotations.Check;
-
+import com.codeit.mini.entity.comm.BaseEntity;
 import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
@@ -25,8 +23,8 @@ import lombok.ToString;
 
 @Entity
 @SequenceGenerator(
-		name = "TEST_ANSWER_SEQ_GEN",
-		sequenceName = "test_answer_seq",
+		name = "REPLY_SEQ_GEN",
+		sequenceName = "reply_seq",
 		initialValue = 1,
 		allocationSize = 1
 )
@@ -36,24 +34,25 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-@Check(constraints = "choice_answer IN ('A', 'B', 'C', 'D')")
-@Table(name = "test_answer")
-public class TestAnswerEntity {
+@Table(name = "reply")
+public class ReplyEntity extends BaseEntity{
+	
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
-					generator = "TEST_ANSWER_SEQ_GEN")
-    @Column(name = "answer_id")
-    private Long answerId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id", nullable = false)
-    private TestSessionEntity sessionId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id", nullable = false)
-    private TestQuestionEntity questionId;
-
-    @Column(name = "choice_answer", columnDefinition = "CHAR(1)")
-    private char choiceAnswer;
+					generator = "REPLY_SEQ_GEN")
+	@Column(name = "reply_id")
+	private Long replyId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private MemberEntity memberId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "test_id", nullable = false)
+	private TestEntity testId;
+	
+	@Column(name = "content", nullable = false, length = 500)
+	private String content;
+	
 }

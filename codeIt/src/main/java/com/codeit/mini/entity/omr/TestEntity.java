@@ -75,7 +75,7 @@ public class TestEntity extends BaseEntity{
 	@Column(name = "is_open", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
 	private char isOpen = 'Y';
 	
-	@Column(name = "view_cnt", nullable = false)
+	@Column(name = "view_cnt", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
 	private int viewCnt = 0;
 }
 

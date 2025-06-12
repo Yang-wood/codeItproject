@@ -48,11 +48,11 @@ public class TestSessionEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)
-    private MemberEntity member;
+    private MemberEntity memberId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "test_id", nullable = false)
-    private TestEntity test;
+    private TestEntity testId;
 
     @Column(name = "start_time")
     private Timestamp startTime;
@@ -66,7 +66,7 @@ public class TestSessionEntity {
     @Column(name = "duration")
     private Integer duration;
 
-    @Column(name = "is_submited", columnDefinition = "CHAR(1) DEFAULT 'N'")
+    @Column(name = "is_submited", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")
     private char isSubmited = 'N';
 	
 }

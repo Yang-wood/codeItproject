@@ -1,11 +1,15 @@
 package com.codeit.mini.entity.omr;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import org.hibernate.annotations.Check;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -23,38 +27,46 @@ import lombok.ToString;
 
 @Entity
 @SequenceGenerator(
-		name = "TEMP_ANSWER_SEQ_GEN",
-		sequenceName = "temp_answer_seq",
+		name = "TEST_STATISTICS_SEQ_GEN",
+		sequenceName = "test_statistics_seq",
 		initialValue = 1,
 		allocationSize = 1
 )
+@EntityListeners(value = {AuditingEntityListener.class})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
 @ToString
-@Check(constraints = "choice_answer IN ('A', 'B', 'C', 'D')")
-@Table(name = "temp_answer")
-public class TempAnswerEntity {
+@Table(name = "test_statistics")
+public class TestStatisticsEntity {
+	
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE,
-					generator = "TEMP_ANSWER_SEQ_GEN")
-    @Column(name = "temp_id")
-    private Long tempId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE,
+    				generator = "TEST_STATISTICS_SEQ_GEN")
+    @Column(name = "stat_id")
+    private Long statId;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id", nullable = false)
-    private TestSessionEntity sessionId;
+    @JoinColumn(name = "test_id", nullable = false)
+    private TestEntity testId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
     private TestQuestionEntity questionId;
 
-    @Column(name = "choice_answer", columnDefinition = "CHAR(1)")
-    private char choiceAnswer;
+    @Column(name = "correct_rate")
+    private Double correctRate;
 
-    @Column(name = "save_time", columnDefinition = "DATE DEFAULT SYSDATE")
-    private LocalDateTime saveTime;
+    @Column(name = "attempts")
+    private Long attempts;
+
+    @Column(name = "correct_cnt")
+    private Long correctCnt;
+    
+    @LastModifiedDate
+	@Column(name = "updatedate", columnDefinition = "DATE DEFAULT SYSDATE")
+    private LocalDate updateDate;
 }
