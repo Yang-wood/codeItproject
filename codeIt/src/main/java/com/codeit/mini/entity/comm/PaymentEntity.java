@@ -18,10 +18,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.ToString;
 
 @Entity
@@ -36,7 +38,9 @@ import lombok.ToString;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 @ToString
+@Table(name = "payment")
 public class PaymentEntity {
 	
 	@Id
@@ -65,17 +69,17 @@ public class PaymentEntity {
 	private String couponType;
 	
 	// TODO 정화님 아래 엔티티들 만드셔야합니당
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "coupon_id")
-	private CouponHistoryEntity couponId;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "coupon_id")
+//	private CouponHistoryEntity couponId;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "test_coupon_id")
-	private TestCouponEntity testCouponId;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "test_coupon_id")
+//	private TestCouponEntity testCouponId;
 	
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "point_id")
-	private PointHistoryEntity pointId;
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "point_id")
+//	private PointHistoryEntity pointId;
 	
 	private Long amount;
 	
