@@ -6,7 +6,7 @@ import org.hibernate.annotations.processing.Pattern;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import com.codeit.mini.entity.MemberEntity;
+import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
