@@ -34,7 +34,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString(exclude = {"memberId", "itemid"})
+@ToString(exclude = {"memberId", "itemId"})
 @Table(name = "test_coupon",
 		uniqueConstraints = {
 		@UniqueConstraint(name = "uq_test_coupon_code", columnNames = "coupon_code")}
