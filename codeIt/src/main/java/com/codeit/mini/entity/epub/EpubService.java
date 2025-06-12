@@ -1,7 +1,7 @@
   package com.codeit.mini.entity.epub;
   
   import java.io.File;
-  import java.io.IOException;
+import java.io.IOException;
 
 import com.codeit.mini.dto.book.BookDTO;
   

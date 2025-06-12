@@ -10,6 +10,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.PreUpdate;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -30,7 +32,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString
-public class BookEntity extends BaseEntity {
+public class BookEntity extends BaseEntity{
 
 @Id
 @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BOOK_SEQ_GEN")
@@ -82,5 +84,12 @@ private Double avgRating =  0.0; // 평균 별점
 
 @Column(name = "review_count", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
 private Integer reviewCount = 0; // 리뷰 개수
+
+@Column(name = "REGDATE", nullable = false, updatable = false)
+// 최초 등록일 (생성 이후 업데이트 불가)
+private LocalDateTime regDate = LocalDateTime.now();
+
+@Column(name = "UPDATEDATE") // 마지막 수정일 private 
+LocalDateTime updateDate = LocalDateTime.now();
 
 }

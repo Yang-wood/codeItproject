@@ -1,5 +1,6 @@
 package com.codeit.mini.service.book.impl;
 
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile; // 이 클래스는 현재 코드에서는 직접 사용되지 않지만, 파일 업로드 시 필요할 수 있으니 남겨둡니다.
 
 import com.codeit.mini.dto.book.BookDTO;
 import com.codeit.mini.entity.book.BookEntity;

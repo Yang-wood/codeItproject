@@ -1,6 +1,5 @@
 package com.codeit.mini.entity.book;
 
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 import jakarta.persistence.Column;
