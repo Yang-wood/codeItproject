@@ -25,7 +25,7 @@ import lombok.ToString;
 @Getter
 @ToString
 @Table(name = "category")
-public class Category {
+public class CategoryEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
