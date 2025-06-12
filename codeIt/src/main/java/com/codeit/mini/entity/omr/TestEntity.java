@@ -77,6 +77,27 @@ public class TestEntity extends BaseEntity{
 	
 	@Column(name = "view_cnt", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
 	private int viewCnt = 0;
+	
+/*	
+	public TestEntity toDto(TestDTO testDto) {
+		
+	}
+*/	
+	
+	public void changeTitle(String testTitle) {
+		this.testTitle = testTitle;
+	}
+	
+	
+	public void changeDesc(String testDesc) {
+		this.testDesc = testDesc;
+	}
+	
+	public void changeIsOpen(char isOpen) {
+		this.isOpen = isOpen;
+	}
+	
+	
 }
 
 

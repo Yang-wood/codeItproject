@@ -57,4 +57,12 @@ public class TempAnswerEntity {
 
     @Column(name = "save_time", columnDefinition = "DATE DEFAULT SYSDATE")
     private LocalDateTime saveTime;
+    
+    
+ /*   
+    public TempAnswerEntity toDto(TempAnswerDTO tempAnswerDto) {
+    	
+    }
+*/
+    
 }

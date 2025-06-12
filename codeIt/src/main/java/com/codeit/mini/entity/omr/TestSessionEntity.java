@@ -68,5 +68,14 @@ public class TestSessionEntity {
 
     @Column(name = "is_submited", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")
     private char isSubmited = 'N';
+    
+    
+    
+    public void changeSubmit(char isSubmited) {
+    	this.isSubmited = isSubmited;
+    }
+    
+    
+    
 	
 }

@@ -54,5 +54,14 @@ public class ReplyEntity extends BaseEntity{
 	
 	@Column(name = "content", nullable = false, length = 500)
 	private String content;
+/*	
+	public ReplyEntity toDto(ReplyDTO replyDto) {
+		
+	}
+*/	
+	public void changeContent(String content) {
+		this.content = content;
+	}
+	
 	
 }

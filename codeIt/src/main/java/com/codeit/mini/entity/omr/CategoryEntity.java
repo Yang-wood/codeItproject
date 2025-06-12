@@ -1,5 +1,7 @@
 package com.codeit.mini.entity.omr;
 
+import com.codeit.mini.dto.omr.CategoryDTO;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -38,6 +40,18 @@ public class CategoryEntity {
 	
 	@Column(name = "category_type")
 	private String categoryType;
+	
+	
+	
+	
+	
+	
+	public CategoryDTO toDto(CategoryEntity categoryEntity) {
+		
+		return CategoryDTO.builder().categoryId(categoryEntity.getCategoryId())
+									.categoryType(categoryEntity.getCategoryType())
+									.build();
+	}
 }
 
 

@@ -43,17 +43,24 @@ public class TestAnswerEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 					generator = "TEST_ANSWER_SEQ_GEN")
-    @Column(name = "answer_id")
-    private Long answerId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "session_id", nullable = false)
-    private TestSessionEntity sessionId;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "question_id", nullable = false)
-    private TestQuestionEntity questionId;
-
-    @Column(name = "choice_answer", columnDefinition = "CHAR(1)")
-    private char choiceAnswer;
+	@Column(name = "answer_id")
+	private Long answerId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "session_id", nullable = false)
+	private TestSessionEntity sessionId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "question_id", nullable = false)
+	private TestQuestionEntity questionId;
+	
+	@Column(name = "choice_answer", columnDefinition = "CHAR(1)")
+	private char choiceAnswer;
+	
+/*	
+	public TestAnswerEntity toDto(TestAnswerDTO testAnswerDto) {
+    	
+    }
+*/	
+	
 }

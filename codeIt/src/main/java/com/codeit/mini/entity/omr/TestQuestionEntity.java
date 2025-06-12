@@ -59,6 +59,31 @@ public class TestQuestionEntity {
     @Column(name = "choice_json", nullable = false)
 	private String choiceJson;
 	
+	
+	
+/*	
+	public TestQuestionEntity toDto(TestQuestionDTO testQuestionDto) {
+		
+	}
+*/	
+	
+	
+	public void changeText(String questionText) {
+		this.questionText = questionText;
+	}
+	
+	public void changeAnswer(char answer) {
+		this.answer = answer;
+	}
+	
+	public void changeExplanation(String explanation) {
+		this.explanation = explanation;
+	}
+	
+	public void changeJson(String choiceJson) {
+		this.choiceJson = choiceJson;
+	}
+	
 }
 
 

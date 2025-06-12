@@ -19,12 +19,6 @@ public class CategoryDTO {
 	private String categoryType;
 	
 	
-	public CategoryDTO toDto(CategoryEntity categoryEntity) {
-		
-		return CategoryDTO.builder().categoryId(categoryEntity.getCategoryId())
-									.categoryType(categoryEntity.getCategoryType())
-									.build();
-	}
 	
 	
 	public CategoryEntity toEntity(CategoryDTO categoryDTO) {
