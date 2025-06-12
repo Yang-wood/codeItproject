@@ -50,15 +50,15 @@ public class RentEntity {
 	@Column(name = "return_date", nullable = false)
 	private LocalDateTime returnDate;
 	
-	@Column(name = "is_returned", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1")
+	@Column(name = "is_returned", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (is_returned IN (0, 1))")
 	private Integer isReturned = 0;
 	
 	@Column(name = "read_page", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
 	private Long readPage = 0L;
 	
-	@Column(name = "read_state", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1, 2)")
+	@Column(name = "read_state", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1, 2))")
 	private Integer readState = 0;
 	
-	@Column(name = "has_review", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1)")
+	@Column(name = "has_review", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (has_review IN (0, 1))")
 	private Integer hasReview = 0;
 }
