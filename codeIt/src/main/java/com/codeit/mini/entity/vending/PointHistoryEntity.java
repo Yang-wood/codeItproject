@@ -1,6 +1,7 @@
 package com.codeit.mini.entity.vending;
 
 import com.codeit.mini.entity.comm.BaseEntity;
+import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,15 +41,17 @@ public class PointHistoryEntity extends BaseEntity {
 	@Column(name = "point_id")
 	private Long pointId;
 	
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "member_id", nullable = false)
-//	MemberEntity Long memberId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private MemberEntity memberId;
 	
 	@Column(nullable = false)
 	private Integer amount;
 	
+	@Column(length = 20)
 	private String type;
 	
+	@Column(length = 50)
 	private String reason;
 	
 }

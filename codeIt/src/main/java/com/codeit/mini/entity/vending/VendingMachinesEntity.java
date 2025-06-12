@@ -1,13 +1,56 @@
 package com.codeit.mini.entity.vending;
 
+import com.codeit.mini.entity.comm.BaseEntity;
+
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
+@SequenceGenerator (
+		name = "VM_ID_SEQ",
+		sequenceName = "vm_id_seq",
+		initialValue = 1,
+		allocationSize = 1
+)
 @Builder
 @AllArgsConstructor
-public class VendingMachinesEntity {
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@Table (name = "vending_machine")
+public class VendingMachinesEntity extends BaseEntity{
 
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "VM_ID_SEQ")
+	private Long machineId;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(name = "admin_id")
+	private AdminEntity adminId;
 	
+	@Column(length = 50, nullable = false)
+	private String name;
+	
+	@Column(length = 30, nullable = false)
+	private String type;
+	
+	@Column(length = 200)
+	private String desciption;
+	
+	private Integer active;
 }

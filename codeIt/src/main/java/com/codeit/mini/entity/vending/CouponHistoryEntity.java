@@ -5,10 +5,12 @@ import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -38,19 +40,21 @@ public class CouponHistoryEntity extends CouponBaseDateEntity{
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COUPON_ID_SEQ")
 	private Long couponId;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private MemberEntity memberId;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "itme_id")
 	private VendingItemEntity itemId;
 	
 	@Column(nullable = false, unique = true ,length = 40)
 	private String couponCode;
 	
-	@Column(nullable = false, length = 20)
+	@Column(name = "coupon_type", nullable = false, length = 20)
 	private String type;
 	
-	@Column(nullable = false, length = 20)
+	@Column(length = 20)
 	private String status;
 	
 //	쿠폰 코드 생성 메소드 호출

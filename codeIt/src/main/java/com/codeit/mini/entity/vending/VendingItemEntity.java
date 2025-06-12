@@ -39,9 +39,9 @@ public class VendingItemEntity extends BaseEntity{
 	@Column(name = "item_id", nullable = false)
 	private Long itemId;
 	
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@Column(name = "admin_id")
-//	private AdminEntity adminId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@Column(name = "admin_id")
+	private AdminEntity adminId;
 	
 	@Column(name = "name", nullable = false, length = 50)
 	private String name;

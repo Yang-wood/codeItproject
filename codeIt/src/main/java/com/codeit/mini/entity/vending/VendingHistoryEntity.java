@@ -46,18 +46,18 @@ public class VendingHistoryEntity extends BaseEntity{
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "item_id")
-	VendingItemEntity itemId;
+	private VendingItemEntity itemId;
 	
-	String payment;
+	private String payment;
 	
-	String status;
+	private String status;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "point_id")
-	PointHistoryEntity pointId;
+	private PointHistoryEntity pointId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "coupon_id")
-	CouponHistoryEntity couponId;
+	private CouponHistoryEntity couponId;
 	
 }
