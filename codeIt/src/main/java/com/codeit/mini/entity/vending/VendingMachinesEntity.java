@@ -45,13 +45,13 @@ public class VendingMachinesEntity extends BaseEntity{
 	@JoinColumn(name = "admin_id", foreignKey = @ForeignKey(name="fk_vm_admin_id"))
 	private Admin adminId;
 	
-	@Column(length = 50, nullable = false)
+	@Column(name = "name", length = 50, nullable = false)
 	private String name;
 	
-	@Column(length = 30, nullable = false)
+	@Column(name = "type", length = 30, nullable = false)
 	private String type;
 	
-	@Column(length = 200)
+	@Column(name = "description", length = 200)
 	private String description;
 	
 //	1: 활성 / 0 : 비활성

@@ -56,10 +56,10 @@ public class TestCouponHistoryEntity extends CouponBaseDateEntity {
 	@Column(name = "coupon_code", nullable = false)
 	private String couponCode;
 	
-	@Column(nullable = false)
+	@Column(name = "total_count", nullable = false)
 	private Integer totalCnt;
 	
-	@Column(nullable = false)
+	@Column(name = "remain_count", nullable = false)
 	private Integer remainCnt;
 	
 	@Builder.Default

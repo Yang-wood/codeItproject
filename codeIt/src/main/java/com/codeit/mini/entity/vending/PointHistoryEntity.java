@@ -46,14 +46,14 @@ public class PointHistoryEntity extends BaseEntity {
 	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(name = "fk_member_id_point"))
 	private MemberEntity memberId;
 	
-	@Column(nullable = false)
+	@Column(name = "amount", nullable = false)
 	private Integer amount;
 	
 	@Builder.Default
-	@Column(length = 20)
+	@Column(name = "type", length = 20)
 	private String type = "use";
 	
-	@Column(length = 50)
+	@Column(name = "String", length = 50)
 	private String reason;
 	
 }
