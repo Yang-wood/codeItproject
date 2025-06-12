@@ -22,10 +22,10 @@ class MemberRepositoryTests {
 	void testInsert() {
 		
 		MemberEntity memberEntity = MemberEntity.builder()
-										.loginId("user1")
+										.loginId("user2")
 										.memberPw("1234")
-										.memberName("홍길동")
-										.memberEmail("user1@naver.com")
+										.memberName("홍길")
+										.memberEmail("user2@naver.com")
 										.emailVerified('N')
 										.termsAgreed('Y')
 										.build();
