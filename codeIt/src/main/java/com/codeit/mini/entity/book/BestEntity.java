@@ -32,22 +32,22 @@ public class BestEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "BEST_SEQ_GEN")
-	private Long best_id;
+	private Long bestId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "book_id")
-	private BookEntity book;
+	private BookEntity bookEntity;
 	
 	@Column(name = "score", nullable = false, precision = 10, scale = 2)
     private Double score;
 	
 	@Column(name = "regdate", nullable = false)
-    private LocalDateTime regdate;
+    private LocalDateTime regDate;
 
     @PrePersist
     public void prePersist() {
-        if (regdate == null) {
-        	regdate = LocalDateTime.now();
+        if (regDate == null) {
+        	regDate = LocalDateTime.now();
         }
     }
 	

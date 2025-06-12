@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @SequenceGenerator(
-			name = "Recomm_SEQ_GEN",
+			name = "RECOMM_SEQ_GEN",
 			sequenceName = "recomm_seq",
 			initialValue = 1,
 			allocationSize = 1
@@ -30,22 +30,22 @@ import lombok.NoArgsConstructor;
 public class RecommEntity {
 	
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "Recomm_SEQ_GEN")
-	private Long rec_id;
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RECOMM_SEQ_GEN")
+	private Long recId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "book_id")
 	private BookEntity bookEntity;
 	
 	@Column(name = "rec_score", nullable = false, precision = 10, scale = 2)
-	private Double rec_score;
+	private Double recScore;
 	
 	@Column(name = "regdate", nullable = false)
-	private LocalDateTime regdate;
+	private LocalDateTime regDate;
 	
 	public void prePersist() {
-		if (regdate == null) {
-			regdate = LocalDateTime.now();
+		if (regDate == null) {
+			regDate = LocalDateTime.now();
 		}
 	}
 }
