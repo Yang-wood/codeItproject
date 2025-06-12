@@ -1,7 +1,7 @@
 package com.codeit.mini.entity.vending;
 
-//import com.codeit.mini.entity.MemberEntity;
 import com.codeit.mini.entity.comm.CouponBaseDateEntity;
+import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -36,22 +36,22 @@ public class CouponHistoryEntity extends CouponBaseDateEntity{
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "COUPON_ID_SEQ")
-	Long couponId;
+	private Long couponId;
 	
-//	@JoinColumn(name = "member_id")
-//	MemberEntity memberId;
+	@JoinColumn(name = "member_id")
+	private MemberEntity memberId;
 	
 	@JoinColumn(name = "itme_id")
-	VendingItemEntity itemId;
+	private VendingItemEntity itemId;
 	
 	@Column(nullable = false, unique = true ,length = 40)
-	String couponCode;
+	private String couponCode;
 	
 	@Column(nullable = false, length = 20)
-	String type;
+	private String type;
 	
 	@Column(nullable = false, length = 20)
-	String status;
+	private String status;
 	
 //	쿠폰 코드 생성 메소드 호출
 	public void setCouponCode(String couponCode) {
