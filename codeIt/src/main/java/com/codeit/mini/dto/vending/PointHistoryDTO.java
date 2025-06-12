@@ -9,14 +9,12 @@ import lombok.Data;
 @Builder
 @AllArgsConstructor
 @Data
-public class VendingMachineDTO {
+public class PointHistoryDTO {
 
-	private Long machineId;
-	private Long adminId;
-	private String name;
+	private Long pointId;
+	private Long memberId;
+	private Integer amount;
 	private String type;
-	private String description;
-	private Integer active;
+	private String reason;
 	private LocalDateTime regDate;
-	private LocalDateTime upDate;
 }

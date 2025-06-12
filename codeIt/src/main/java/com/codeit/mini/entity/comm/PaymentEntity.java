@@ -7,6 +7,9 @@ import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import com.codeit.mini.entity.member.MemberEntity;
+import com.codeit.mini.entity.vending.CouponHistoryEntity;
+import com.codeit.mini.entity.vending.PointHistoryEntity;
+import com.codeit.mini.entity.vending.TestCouponEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -55,9 +58,8 @@ public class PaymentEntity {
 	@Column(nullable = false)
 	private String paymentType;
 	
-	// TODO 정화님 이건 참조하는 테이블이 2개라 JPA에서는 그 방식을 지원 안한대여,
 	//      비즈니스 로직에서 PaymentEntity.getPaymentType().equals("sessionId 또는 rentId")
-	//		if문 활용해서 하셔야한대여
+	//		if문 활용해서 test / book / vending 인지 확인
 	@Column(name = "target_id", nullable = false)
 	private Long targetId;
 	
@@ -68,20 +70,20 @@ public class PaymentEntity {
 	
 	private String couponType;
 	
-	// TODO 정화님 아래 엔티티들 만드셔야합니당
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "coupon_id")
-//	private CouponHistoryEntity couponId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "coupon_id")
+	private CouponHistoryEntity couponId;
 	
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "test_coupon_id")
-//	private TestCouponEntity testCouponId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "test_coupon_id")
+	private TestCouponEntity testCouponId;
 	
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "point_id")
-//	private PointHistoryEntity pointId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "point_id")
+	private PointHistoryEntity pointId;
 	
-	private Long amount;
+//	사용되는 수량 또는 결제 값
+	private int amount;
 	
 	@CreatedDate
 	@Column(name = "regdate")
