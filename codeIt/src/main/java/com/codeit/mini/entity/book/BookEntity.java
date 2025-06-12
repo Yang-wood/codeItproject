@@ -13,8 +13,10 @@ import jakarta.persistence.Lob;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Entity
 @SequenceGenerator(
@@ -25,7 +27,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "BOOK")
 @AllArgsConstructor
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
+@ToString
 public class BookEntity extends BaseEntity {
 
 @Id
