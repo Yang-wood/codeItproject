@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import com.codeit.mini.entity.book.BookEntity;
 
 @Repository
-public interface IBookRepository extends JpaRepository<BookEntity, Long>, IBookSearchRepository{
+public interface IBookRepository extends JpaRepository<BookEntity, Long>{
 	
 }
