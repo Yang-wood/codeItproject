@@ -1,10 +1,6 @@
 package com.codeit.mini.entity.omr;
 
-import java.sql.Timestamp;
-
 import org.hibernate.annotations.Check;
-
-import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
