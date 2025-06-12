@@ -1,5 +1,6 @@
 package com.codeit.mini.entity.omr;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -32,8 +33,10 @@ public class CategoryEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE,
 					generator = "CATEGORY_SEQ_GEN")
+	@Column(name = "category_id")
 	private Long categoryId;
 	
+	@Column(name = "category_type")
 	private String categoryType;
 }
 
