@@ -34,7 +34,7 @@ import lombok.ToString;
 @Getter
 @Setter
 @ToString (exclude = "adminId")
-@Table (name = "vending_machine")
+@Table (name = "vending_item")
 public class VendingItemEntity extends BaseEntity{
 	
 	@Id
