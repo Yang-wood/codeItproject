@@ -53,7 +53,7 @@ public class MemberEntity extends BaseEntity{
 	@Column(name = "member_email", nullable = false, unique = true, length = 100)
 	private String memberEmail;
 	
-	@Column(name = "email_verified", nullable = false, length = 1)
+	@Column(name = "email_verified", nullable = false, length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
 	private char emailVerified = 'N'; // 기본값
 	
 	@Column(name = "terms_agreed", nullable = false, length = 1)
