@@ -1,5 +1,6 @@
 package com.codeit.mini.entity.vending;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,9 +18,15 @@ public class MachineItemEntity {
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@MapsId("machineId")
-	@JoinColumn(name =" machine_id")
+	@JoinColumn(name = "machine_id")
 	private VendingMachinesEntity vendingMachine;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@MapsId("itemId")
+	@JoinColumn(name = "itme_id")
+	private VendingItemEntity vendingItem;
 	
+	@Column(name = "probability")
+	private double probability;
 	
 }
