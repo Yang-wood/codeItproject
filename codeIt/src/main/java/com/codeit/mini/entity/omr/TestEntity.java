@@ -1,7 +1,10 @@
 package com.codeit.mini.entity.omr;
 
+import java.math.BigDecimal;
+
 import org.hibernate.annotations.Check;
 
+import com.codeit.mini.entity.admin.Admin;
 import com.codeit.mini.entity.comm.BaseEntity;
 
 import jakarta.persistence.Column;
@@ -47,9 +50,9 @@ public class TestEntity extends BaseEntity{
 	@JoinColumn(name = "category_id", nullable = false)
 	private CategoryEntity categoryId;
 	
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "admin_id", nullable = false)
-//	private AdminEntity adminId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "admin_id", nullable = false)
+	private Admin adminId;
 	
 	@Column(name = "test_title", nullable = false, length = 100)
 	private String testTitle;
@@ -64,7 +67,7 @@ public class TestEntity extends BaseEntity{
 	private char testPaid = 'Y';
 	
 	@Column(name = "avg_score", precision = 5, scale = 2)
-	private double avgScore;
+	private Double avgScore;
 	
 	@Column(name = "attempt_cnt")
 	private int attemptCnt;
@@ -72,7 +75,7 @@ public class TestEntity extends BaseEntity{
 	@Column(name = "is_open", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
 	private char isOpen = 'Y';
 	
-	@Column(name = "view_cnt", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
+	@Column(name = "view_cnt", nullable = false)
 	private int viewCnt = 0;
 }
 
