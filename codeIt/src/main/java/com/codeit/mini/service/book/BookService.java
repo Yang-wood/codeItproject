@@ -1,10 +1,12 @@
 
-  package com.codeit.mini.entity.epub;
+  package com.codeit.mini.service.book;
   
   import java.io.IOException;
   
   import org.springframework.stereotype.Service;
   import org.springframework.web.multipart.MultipartFile;
+
+import com.codeit.mini.dto.book.BookDTO;
   
   @Service 
   public interface BookService { 

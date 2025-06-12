@@ -18,6 +18,9 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.codeit.mini.dto.book.BookDTO;
+import com.codeit.mini.service.book.BookService;
+
 import jakarta.servlet.http.HttpSession; // 이 클래스는 현재 코드에서는 직접 사용되지 않지만, import가 필요할 수 있으니 남겨둡니다.
 import lombok.extern.log4j.Log4j2;
 

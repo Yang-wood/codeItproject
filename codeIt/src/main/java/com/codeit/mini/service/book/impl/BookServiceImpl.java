@@ -1,4 +1,4 @@
-package com.codeit.mini.entity.epub;
+package com.codeit.mini.service.book.impl;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,8 +15,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
+import org.springframework.web.multipart.MultipartFile; // 이 클래스는 현재 코드에서는 직접 사용되지 않지만, 파일 업로드 시 필요할 수 있으니 남겨둡니다.
 
+import com.codeit.mini.dto.book.BookDTO;
 import com.codeit.mini.entity.book.BookEntity;
+import com.codeit.mini.repository.book.IBookRepository;
+import com.codeit.mini.service.book.BookService;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -25,7 +29,7 @@ import lombok.extern.log4j.Log4j2;
 public class BookServiceImpl implements BookService {
 
     @Autowired
-    private BookRepository bookRepository;
+    private IBookRepository bookRepository;
 
     // 파일 저장 경로 설정 (실제 배포 환경에서는 외부 설정 파일 권장)
     // 개발 환경에서는 프로젝트 내부 경로에 저장되지만, 배포 시에는 변경 필요
