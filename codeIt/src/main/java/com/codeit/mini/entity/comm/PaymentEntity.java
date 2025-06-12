@@ -1,0 +1,89 @@
+package com.codeit.mini.entity.comm;
+
+import java.time.LocalDateTime;
+
+import org.hibernate.annotations.processing.Pattern;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+
+import com.codeit.mini.entity.MemberEntity;
+
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.SequenceGenerator;
+import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
+
+@Entity
+@EntityListeners(value = AuditingEntityListener.class)
+@SequenceGenerator(
+		name = "PAYMENT_SEQ_GEN",
+		sequenceName = "payment_seq",
+		initialValue = 1,
+		allocationSize = 1
+)
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
+@Setter
+@ToString
+@Table(name = "payment")
+public class PaymentEntity {
+	
+	@Id
+	@GeneratedValue(strategy = GenerationType.SEQUENCE,
+					generator = "PAYMENT_SEQ_GEN")
+	private Long paymentId;
+	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false)
+	private MemberEntity memberId;
+	
+	@Column(nullable = false)
+	private String paymentType;
+	
+	// TODO 정화님 이건 참조하는 테이블이 2개라 JPA에서는 그 방식을 지원 안한대여,
+	//      비즈니스 로직에서 PaymentEntity.getPaymentType().equals("sessionId 또는 rentId")
+	//		if문 활용해서 하셔야한대여
+	@Column(name = "target_id", nullable = false)
+	private Long targetId;
+	
+	private String method;
+	
+	@Column(length = 20)
+	private String status;
+	
+	private String couponType;
+	
+	// TODO 정화님 아래 엔티티들 만드셔야합니당
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "coupon_id")
+//	private CouponHistoryEntity couponId;
+	
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "test_coupon_id")
+//	private TestCouponEntity testCouponId;
+	
+//	@ManyToOne(fetch = FetchType.LAZY)
+//	@JoinColumn(name = "point_id")
+//	private PointHistoryEntity pointId;
+	
+	private Long amount;
+	
+	@CreatedDate
+	@Column(name = "regdate")
+	private LocalDateTime regDate;
+}
