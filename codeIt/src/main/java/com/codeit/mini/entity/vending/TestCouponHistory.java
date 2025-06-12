@@ -1,6 +1,6 @@
 package com.codeit.mini.entity.vending;
 
-import com.codeit.mini.entity.MemberEntity;
+//import com.codeit.mini.entity.MemberEntity;
 import com.codeit.mini.entity.comm.CouponBaseDateEntity;
 
 import jakarta.persistence.Column;
@@ -38,8 +38,8 @@ public class TestCouponHistory extends CouponBaseDateEntity {
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_COUPON_ID_SEQ")
 	private Long testCouponId;
 	
-	@JoinColumn(name = "member_id")
-	private MemberEntity memberId;
+//	@JoinColumn(name = "member_id")
+//	private MemberEntity memberId;
 	
 	@JoinColumn(name = "item_id")
 	private VendingItemEntity itemId;
