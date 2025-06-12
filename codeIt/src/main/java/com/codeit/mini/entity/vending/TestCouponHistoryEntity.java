@@ -39,7 +39,7 @@ import lombok.ToString;
 		uniqueConstraints = {
 		@UniqueConstraint(name = "uq_test_coupon_code", columnNames = "coupon_code")}
 )
-public class TestCouponHistory extends CouponBaseDateEntity {
+public class TestCouponHistoryEntity extends CouponBaseDateEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_COUPON_ID_SEQ")
