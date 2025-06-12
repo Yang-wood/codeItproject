@@ -1,7 +1,5 @@
 package com.codeit.mini.entity.book;
 
-import java.time.LocalDateTime;
-
 import com.codeit.mini.entity.comm.BaseEntity;
 import com.codeit.mini.entity.member.MemberEntity;
 
@@ -13,8 +11,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 
@@ -52,11 +48,4 @@ public class ReviewEntity extends BaseEntity{
 	
 	@Column(name = "content", nullable = false, length = 500)
 	private String content;
-	
-	@Column(name = "REGDATE", nullable = false, updatable = false)
-	// 최초 등록일 (생성 이후 업데이트 불가)
-	private LocalDateTime regDate = LocalDateTime.now();
-
-	@Column(name = "UPDATEDATE") // 마지막 수정일 private 
-	LocalDateTime updateDate = LocalDateTime.now();
 }
