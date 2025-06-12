@@ -15,7 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
-import org.springframework.web.multipart.MultipartFile; // 이 클래스는 현재 코드에서는 직접 사용되지 않지만, 파일 업로드 시 필요할 수 있으니 남겨둡니다.
+
+import com.codeit.mini.entity.book.BookEntity;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -113,16 +114,16 @@ public class BookServiceImpl implements BookService {
 
         // 공백 제거 버전은 null 체크 후 처리
         bookEntity.setTitle(bookDTO.getTitle());
-        bookEntity.setTitleNospace(bookDTO.getTitle() != null ? bookDTO.getTitle().replaceAll("\\s", "") : "");
+        bookEntity.setTitle_nospace(bookDTO.getTitle() != null ? bookDTO.getTitle().replaceAll("\\s", "") : "");
         bookEntity.setAuthor(bookDTO.getAuthor());
-        bookEntity.setAuthorNospace(bookDTO.getAuthor() != null ? bookDTO.getAuthor().replaceAll("\\s", "") : "");
+        bookEntity.setAuthor_nospace(bookDTO.getAuthor() != null ? bookDTO.getAuthor().replaceAll("\\s", "") : "");
         bookEntity.setPublisher(bookDTO.getPublisher());
         bookEntity.setCategory(bookDTO.getCategory());
         bookEntity.setDescription(bookDTO.getDescription());
 
         // 최종적으로 저장된 파일의 경로를 엔터티에 설정
-        bookEntity.setEpubPath(finalEpubPath); // 서버 파일 시스템의 절대 경로
-        bookEntity.setCoverImg(coverImageWebPath); // 웹 접근 가능한 상대 경로 (DB 저장용)
+        bookEntity.setEpub_path(finalEpubPath); // 서버 파일 시스템의 절대 경로
+        bookEntity.setCover_img(coverImageWebPath); // 웹 접근 가능한 상대 경로 (DB 저장용)
 
         // 출판일 String을 LocalDateTime으로 파싱 시도
         String pubDateString = bookDTO.getPubDate();
@@ -147,27 +148,27 @@ public class BookServiceImpl implements BookService {
                     }
                 }
 
-                bookEntity.setPubDate(parsedDateTime);
-                log.info("[DEBUG] 출판일 파싱 성공: " + bookEntity.getPubDate());
+                bookEntity.setPub_date(parsedDateTime);
+                log.info("[DEBUG] 출판일 파싱 성공: " + bookEntity.getPub_date());
 
             } catch (DateTimeParseException e) {
                 log.warn("경고: 출판일 '{}' 파싱 실패. 오류: {}. pubDate를 null로 설정합니다.", pubDateString, e.getMessage());
-                bookEntity.setPubDate(null);
+                bookEntity.setPub_date(null);
             }
         } else {
-            bookEntity.setPubDate(null);
+            bookEntity.setPub_date(null);
         }
 
         // 추가적인 BookEntity 필드 초기화 (기본값 설정)
-        bookEntity.setRentPoint(0);
-        bookEntity.setRentCount(0);
-        bookEntity.setWishCount(0);
-        bookEntity.setAvgRating(0.0);
-        bookEntity.setReviewCount(0);
+        bookEntity.setRent_point(0);
+        bookEntity.setRent_count(0);
+        bookEntity.setWish_count(0);
+        bookEntity.setAvg_rating(0.0);
+        bookEntity.setReview_count(0);
         // regDate와 upDate는 @PrePersist/@PreUpdate 어노테이션을 사용하여 엔티티에서 자동 설정됩니다.
 
         // 4. Book 엔터티를 데이터베이스에 저장
         bookRepository.save(bookEntity); // save 메서드는 엔티티를 반환하지만, void로 처리 가능
-        log.info("BookEntity DB 저장 완료: " + bookEntity.getBookId());
+        log.info("BookEntity DB 저장 완료: " + bookEntity.getBook_id());
     }
 }
