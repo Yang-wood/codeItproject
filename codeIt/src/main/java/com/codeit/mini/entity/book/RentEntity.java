@@ -2,6 +2,8 @@ package com.codeit.mini.entity.book;
 
 import java.time.LocalDateTime;
 
+import com.codeit.mini.entity.member.MemberEntity;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -32,28 +34,31 @@ public class RentEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RENT_SEQ_GEN")
-	private Long review_id;
+	private Long reviewId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "book_id")
 	private BookEntity bookEntity;
 	
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id")
+	private MemberEntity memberEntity;
 	
 	@Column(name = "rent_date", nullable = false)
-	private LocalDateTime rent_date;
+	private LocalDateTime rentDate;
 	
 	@Column(name = "return_date", nullable = false)
-	private LocalDateTime return_date;
+	private LocalDateTime returnDate;
 	
-	@Column(name = "is_returned", nullable = false)
-	private Integer is_returned = 0;
+	@Column(name = "is_returned", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1")
+	private Integer isReturned = 0;
 	
-	@Column(name = "read_page", nullable = false)
-	private Long read_page = 0L;
+	@Column(name = "read_page", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
+	private Long readPage = 0L;
 	
-	@Column(name = "read_state", nullable = false)
-	private Integer read_state = 0;
+	@Column(name = "read_state", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1, 2)")
+	private Integer readState = 0;
 	
-	@Column(name = "has_review", nullable = false)
-	private Integer has_review = 0;
+	@Column(name = "has_review", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1)")
+	private Integer hasReview = 0;
 }
