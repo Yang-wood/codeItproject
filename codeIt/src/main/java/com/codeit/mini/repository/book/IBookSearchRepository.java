@@ -5,9 +5,9 @@ import java.util.List;
 import com.codeit.mini.entity.book.BookEntity;
 
 public interface IBookSearchRepository {
-	List<BookEntity> searchKeyword(String keyword);
-	
-	List<BookEntity> searchTitle(String title);
-	
-	List<BookEntity> searchAuthor(String author);
+//	List<BookEntity> searchKeyword(String keyword);
+//	
+//	List<BookEntity> searchTitle(String title);
+//	
+//	List<BookEntity> searchAuthor(String author);
 }
