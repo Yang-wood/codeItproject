@@ -1,10 +1,12 @@
 package com.codeit.mini.entity.vending;
 
 import com.codeit.mini.entity.comm.BaseEntity;
+import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,7 +30,7 @@ import lombok.ToString;
 )
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"memberId", "itemId", "pointId", "couponId"})
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
@@ -40,24 +42,26 @@ public class VendingHistoryEntity extends BaseEntity{
 	@Column(name = "history_id")
 	private Long historyId;
 	
-//	@ManyToOne(fetch = FetchType.LAZY)
-//	@JoinColumn(name = "member_id")
-//	private MemberEntity memberId;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "member_id", nullable = false, foreignKey = @ForeignKey(name = "fk_member_id_veding"))
+	private MemberEntity memberId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "item_id")
+	@JoinColumn(name = "item_id", nullable = false, foreignKey = @ForeignKey(name = "fk_item_id_veding"))
 	private VendingItemEntity itemId;
 	
-	private String payment;
+	@Builder.Default
+	private String payment = "point";
 	
-	private String status;
+	@Builder.Default
+	private String status = "success";
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "point_id")
+	@JoinColumn(name = "point_id", nullable = true, foreignKey = @ForeignKey(name = "fk_point_id_veding"))
 	private PointHistoryEntity pointId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "coupon_id")
+	@JoinColumn(name = "coupon_id", nullable = true, foreignKey = @ForeignKey(name = "fk_coupon_id_veding"))
 	private CouponHistoryEntity couponId;
 	
 }

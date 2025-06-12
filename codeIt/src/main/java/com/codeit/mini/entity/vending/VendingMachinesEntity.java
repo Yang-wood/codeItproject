@@ -1,10 +1,12 @@
 package com.codeit.mini.entity.vending;
 
+import com.codeit.mini.entity.admin.Admin;
 import com.codeit.mini.entity.comm.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,7 +33,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString (exclude = "adminId")
 @Table (name = "vending_machine")
 public class VendingMachinesEntity extends BaseEntity{
 
@@ -40,8 +42,8 @@ public class VendingMachinesEntity extends BaseEntity{
 	private Long machineId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@Column(name = "admin_id")
-	private AdminEntity adminId;
+	@JoinColumn(name = "admin_id", foreignKey = @ForeignKey(name="fk_vm_admin_id"))
+	private Admin adminId;
 	
 	@Column(length = 50, nullable = false)
 	private String name;
@@ -50,7 +52,10 @@ public class VendingMachinesEntity extends BaseEntity{
 	private String type;
 	
 	@Column(length = 200)
-	private String desciption;
+	private String description;
 	
-	private Integer active;
+//	1: 활성 / 0 : 비활성
+    @Builder.Default
+    @Column(name = "is_active", nullable = false)
+    private Integer isActive = 1;
 }
