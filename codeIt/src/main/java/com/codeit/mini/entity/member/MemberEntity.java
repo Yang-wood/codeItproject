@@ -56,21 +56,21 @@ public class MemberEntity extends BaseEntity{
 	@Column(name = "email_verified", nullable = false, length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
 	private char emailVerified = 'N'; // 기본값
 	
-	@Column(name = "terms_agreed", nullable = false, length = 1)
+	@Column(name = "terms_agreed", nullable = false, length = 1, columnDefinition = "CHAR(1) DEFAULT 'N'")
 	private char termsAgreed = 'N';
 	
 	@Column(name = "last_login")
 	private LocalDateTime lastLogin;
 	
-	@Column(name = "status", nullable = false, columnDefinition = "NUMBER(4)")
+	@Column(name = "status", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
 	private int status = 0;
 	
-	@Column(name = "points", nullable = false, columnDefinition = "NUMBER(8)")
+	@Column(name = "points", nullable = false, columnDefinition = "NUMBER(8) DEFAULT 0")
 	private int points = 0;
 	
-	@Column(name = "coupon", nullable = false, columnDefinition = "NUMBER(4)")
+	@Column(name = "coupon", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
 	private int coupon = 0;
 	
-	@Column(name = "role", nullable = false, columnDefinition = "NUMBER(4)")
+	@Column(name = "role", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
 	private int role = 0;
 }
