@@ -49,31 +49,31 @@ public class TestEntity extends BaseEntity{
 	
 //	@ManyToOne(fetch = FetchType.LAZY)
 //	@JoinColumn(name = "admin_id", nullable = false)
-//	private Long adminId;
+//	private AdminEntity adminId;
 	
-	@Column(name = "test_title", nullable = false)
+	@Column(name = "test_title", nullable = false, length = 100)
 	private String testTitle;
 	
-	@Column(name = "test_desc")
+	@Column(name = "test_desc", length = 1000)
 	private String testDesc;
 	
 	@Column(name = "test_limit", nullable = false)
 	private int testLimit;
 	
-	@Column(name = "test_paid", nullable = false)
-	private char testPaid;
+	@Column(name = "test_paid", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
+	private char testPaid = 'Y';
 	
-	@Column(name = "avg_score")
+	@Column(name = "avg_score", precision = 5, scale = 2)
 	private double avgScore;
 	
 	@Column(name = "attempt_cnt")
 	private int attemptCnt;
 	
-	@Column(name = "is_open")
-	private char isOpen;
+	@Column(name = "is_open", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
+	private char isOpen = 'Y';
 	
-	@Column(name = "view_cnt")
-	private int viewCnt;
+	@Column(name = "view_cnt", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
+	private int viewCnt = 0;
 }
 
 
