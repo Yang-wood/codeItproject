@@ -10,7 +10,10 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import com.codeit.mini.dto.book.BookDTO;
+import com.codeit.mini.dto.book.UpdateBookDTO;
 import com.codeit.mini.entity.book.BookEntity;
 import com.codeit.mini.repository.book.IBookRepository;
 import com.codeit.mini.service.book.IBookService;
@@ -38,12 +42,13 @@ public class BookServiceImpl implements IBookService {
 
     @Override
     @Transactional
-    public void saveBook(BookDTO bookDTO, String tempEpubFilePath, String originalFileName) throws IOException {
+    public void saveBook(BookDTO bookDTO, String tempEpubFilePath, String originalFileName, int rentPoint) throws IOException {
 
         log.info("BookService.saveBook 메서드 진입");
         log.info("BookDTO: " + bookDTO.toString());
         log.info("임시 EPUB 파일 경로: " + tempEpubFilePath);
         log.info("원본 파일명: " + originalFileName);
+        log.info("전달받은 rentPoint: " + rentPoint);
 
         String finalEpubPath = null;
         Path sourceEpubPath = Paths.get(tempEpubFilePath);
@@ -123,6 +128,7 @@ public class BookServiceImpl implements IBookService {
         bookEntity.setPublisher(bookDTO.getPublisher());
         bookEntity.setCategory(bookDTO.getCategory());
         bookEntity.setDescription(bookDTO.getDescription());
+        bookEntity.setRentPoint(rentPoint);
 
         // 최종적으로 저장된 파일의 경로를 엔터티에 설정
         bookEntity.setEpubPath(finalEpubPath); // 서버 파일 시스템의 절대 경로
@@ -163,15 +169,97 @@ public class BookServiceImpl implements IBookService {
         }
 
         // 추가적인 BookEntity 필드 초기화 (기본값 설정)
-        bookEntity.setRentPoint(0);
         bookEntity.setRentCount(0);
         bookEntity.setWishCount(0);
         bookEntity.setAvgRating(0.0);
         bookEntity.setReviewCount(0);
-        // regDate와 upDate는 @PrePersist/@PreUpdate 어노테이션을 사용하여 엔티티에서 자동 설정됩니다.
 
         // 4. Book 엔터티를 데이터베이스에 저장
         bookRepository.save(bookEntity); // save 메서드는 엔티티를 반환하지만, void로 처리 가능
         log.info("BookEntity DB 저장 완료: " + bookEntity.getBookId());
     }
+
+	@Override
+	@Transactional
+	public BookDTO getBookById(Long bookId) {
+		log.info("bookId : {}", bookId);
+		
+		Optional<BookEntity> optionalBook = bookRepository.findById(bookId);
+		
+		if (optionalBook.isPresent()) {
+			BookEntity bookEntity = optionalBook.get();
+			
+			log.info("검색 도서 제목 : {}", bookEntity.getTitle());
+			
+			BookDTO bookDTO = entityToDto(bookEntity);
+										   
+			return bookDTO;
+		} else {
+			log.warn("ID {} 에 해당하는 도서를 찾을 수 없습니다.", bookId);
+			return null;
+		}
+	}
+
+	@Transactional
+	@Override
+	public void modify(UpdateBookDTO updateBookDTO) throws Exception {
+		log.info("BookService.updateBook({}) 호출됨", updateBookDTO);
+		
+		if (updateBookDTO.getBookId() == null) {
+			log.error("bookId 검색 실패");
+			throw new IllegalArgumentException("bookId가 필요합니다.");
+		}
+		
+		Optional<BookEntity> optional = bookRepository.findById(updateBookDTO.getBookId());
+		
+		if (optional.isPresent()) {
+			
+			BookEntity bookEntity = optional.get();
+			
+			if (updateBookDTO.getCategory() != null) {
+				bookEntity.setCategory(updateBookDTO.getCategory());
+			}
+			if (updateBookDTO.getDescription() != null) {
+				bookEntity.setDescription(updateBookDTO.getDescription());
+			}
+			if (updateBookDTO.getRentPoint() != null) {
+				bookEntity.setRentPoint(updateBookDTO.getRentPoint());
+			}
+			
+		}
+	}
+
+	@Override
+	@Transactional
+	public List<BookDTO> getAllBooks() {
+		
+		List<BookEntity> bookList = bookRepository.findAll();
+		
+		List<BookDTO> bookDTOList = bookList.stream().map(this::entityToDto)
+											.collect(Collectors.toList());
+		
+		return bookDTOList;
+	}
+	
+	@Transactional
+	@Override
+	public void remove(Long bookId) throws Exception{
+		log.info("remove bookId : {}", bookId);
+		
+		if (bookId == null) {
+			log.error("bookId가 null입니다.");
+			throw new IllegalArgumentException("삭제할 도서 ID는 필수입니다.");
+		}
+		
+		boolean rs = bookRepository.existsById(bookId);
+		
+		if (!rs) {
+			log.warn("삭제할 도서가 존재하지 않습니다.");
+            throw new IllegalArgumentException("존재하지 않는 도서입니다.");
+		}
+		
+		bookRepository.deleteById(bookId);
+		
+		log.info("remove id : {}", bookId);
+	}
 }

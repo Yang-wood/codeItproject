@@ -37,13 +37,13 @@ public class BookEntity extends BaseEntity{
 @Column(name = "book_id") // 데이터베이스 컬럼 이름을 지정합니다. 
 private Long bookId; // 책고유 ID
 
-@Column(name = "title", nullable = false, length = 500) 
+@Column(name = "title", nullable = false, length = 300) 
 private String title; // 책 제목
 
-@Column(name = "title_nospace", nullable = false, length = 500) 
+@Column(name = "title_nospace", nullable = false, length = 300) 
 private String titleNospace; // 검색 효율을 위해 제목에서 공백을 제거한 버전
 
-@Column(name = "author", nullable = false, length = 200) 
+@Column(name = "author", nullable = false, length = 200)
 private String author; // 작가 이름
 
 @Column(name = "author_nospace", nullable = false, length = 200)
@@ -62,10 +62,10 @@ private String category; // 카테고리/장르
 @Column(name = "description") 
 private String description; // 책 상세 설명
 
-@Column(name = "cover_img", length = 500) 
+@Column(name = "cover_img") 
 private String coverImg; // 표지 이미지 파일의 저장 경로
 
-@Column(name = "epub_path", nullable = false, length = 500)
+@Column(name = "epub_path", nullable = false)
 private String epubPath; // EPUB 파일 자체의 저장 경로
 
 @Column(name = "rent_point", nullable = false, columnDefinition = "NUMBER DEFAULT 0")

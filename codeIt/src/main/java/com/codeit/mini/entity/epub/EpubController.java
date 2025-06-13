@@ -95,6 +95,7 @@ public class EpubController {
     public String saveBook(@ModelAttribute BookDTO bookDTO,
                            @RequestParam("epubFilePath") String epubFilePath,
                            @RequestParam("originalFileName") String originalFileName,
+                           @RequestParam("rentPoint") int rentPoint,
                            RedirectAttributes rttr, SessionStatus sessionStatus) {
 
         log.info("POST /saveBook 호출됨");
@@ -109,7 +110,7 @@ public class EpubController {
         }
 
         try {
-            bookService.saveBook(bookDTO, epubFilePath, originalFileName);
+            bookService.saveBook(bookDTO, epubFilePath, originalFileName, rentPoint);
             log.info("도서 정보 저장 완료.");
 
             sessionStatus.setComplete();
@@ -127,7 +128,9 @@ public class EpubController {
 
     @PostMapping("/multiUploadEpub")
     @ResponseBody
-    public List<Map<String, String>> multiUploadEpub(@RequestParam("epubFiles") MultipartFile[] files) {
+    public List<Map<String, String>> multiUploadEpub(
+    						@RequestParam("epubFiles") MultipartFile[] files,
+    						@RequestParam("rentPoint") int rentPoint) {
         List<Map<String, String>> results = new ArrayList<>();
         log.info("POST /multiUploadEpub 호출됨 - 총 {}개 파일", files.length);
 
@@ -151,6 +154,7 @@ public class EpubController {
             result.put("fileName", originFileName);
 
             if (file.isEmpty()) {
+            	result.put("status", "error");
                 result.put("message", "파일이 비어있습니다.");
                 log.warn("{} 파일이 비어 있음", originFileName);
                 results.add(result);
@@ -158,6 +162,7 @@ public class EpubController {
             }
 
             if (!originFileName.toLowerCase().endsWith(".epub")) {
+            	result.put("status", "error");
                 result.put("message", "epub 파일만 가능합니다.");
                 log.warn("업로드 실패 - {}: EPUB 파일이 아님", originFileName);
                 results.add(result);
@@ -172,12 +177,13 @@ public class EpubController {
                 log.info("임시 저장 완료: {}", tempFilePath);
 
                 BookDTO bookDTO = epubService.bookDTO(tempFilePath.toFile());
-                bookService.saveBook(bookDTO, tempFilePath.toString(), originFileName);
+                bookService.saveBook(bookDTO, tempFilePath.toString(), originFileName, rentPoint);
                 log.info("도서 저장 완료: {}", bookDTO.getTitle());
-
+                result.put("status", "success");
                 result.put("message", "성공");
 
             } catch (Exception e) {
+            	result.put("status", "error");
                 result.put("message", originFileName + " 파일 저장 중 오류");
                 log.error("{} 처리 중 오류 발생: {}", originFileName, e.getMessage(), e);
             } finally {
