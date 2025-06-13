@@ -1,7 +1,5 @@
 package com.codeit.mini.entity.omr;
 
-import java.math.BigDecimal;
-
 import org.hibernate.annotations.Check;
 
 import com.codeit.mini.entity.admin.Admin;
@@ -75,14 +73,9 @@ public class TestEntity extends BaseEntity{
 	@Column(name = "is_open", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'Y'")
 	private char isOpen = 'Y';
 	
-	@Column(name = "view_cnt", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
+	@Column(name = "view_cnt", nullable = false)
 	private int viewCnt = 0;
 	
-/*	
-	public TestEntity toDto(TestDTO testDto) {
-		
-	}
-*/	
 	
 	public void changeTitle(String testTitle) {
 		this.testTitle = testTitle;
