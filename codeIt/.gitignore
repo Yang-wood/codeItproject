@@ -16,11 +16,8 @@ build/
 bin/
 !**/src/main/**/bin/
 !**/src/test/**/bin/
-<<<<<<< HEAD
-application.properies
-=======
+
 application.properties
->>>>>>> 2ed89010fbde5449cdcbcd3c6611a3cd05125d26
 
 ### IntelliJ IDEA ###
 .idea
