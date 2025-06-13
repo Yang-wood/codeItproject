@@ -1,5 +1,17 @@
 package com.codeit.mini.dto.member;
 
+import java.time.LocalDateTime;
+
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+@Data
 public class MemberDTO {
 
 	private Long memberId;         // 조회 및 세션 처리
@@ -13,4 +25,5 @@ public class MemberDTO {
     private int role;              // 권한
     private int points;            // 포인트
     private int coupon;            // 쿠폰 수
+    private LocalDateTime regDate, updateDate, lastLogin;
 }
