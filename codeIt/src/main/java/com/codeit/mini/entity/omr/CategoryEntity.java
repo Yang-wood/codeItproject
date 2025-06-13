@@ -43,15 +43,12 @@ public class CategoryEntity {
 	
 	
 	
-	
-	
-	
-	public CategoryDTO toDto(CategoryEntity categoryEntity) {
-		
-		return CategoryDTO.builder().categoryId(categoryEntity.getCategoryId())
-									.categoryType(categoryEntity.getCategoryType())
-									.build();
+	public void changeType(String categoryType) {
+		this.categoryType = categoryType;
 	}
+	
+	
+	
 }
 
 
