@@ -73,4 +73,16 @@ public class MemberEntity extends BaseEntity{
 	
 	@Column(name = "role", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
 	private int role = 0;
+	
+	public void changeName(String name) {
+		this.memberName = name;
+	}
+	
+	public void changeEmail(String email) {
+		this.memberEmail = email;
+	}
+	
+	public void changepw(String pw) {
+		this.memberPw = pw;
+	}
 }
