@@ -85,4 +85,8 @@ public class MemberEntity extends BaseEntity{
 	public void changepw(String pw) {
 		this.memberPw = pw;
 	}
+	
+	public void updateLastLogin() {
+	    this.lastLogin = LocalDateTime.now();
+	}
 }
