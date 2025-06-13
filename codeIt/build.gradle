@@ -58,7 +58,8 @@ dependencies {
 	annotationProcessor 'jakarta.persistence:jakarta.persistence-api'
 	// https://mvnrepository.com/artifact/com.github.gavlyukovskiy/p6spy-spring-boot-starter
 	implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.9.2'
-	
+	// 백엔드 유효성 검사
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	
 }
 
