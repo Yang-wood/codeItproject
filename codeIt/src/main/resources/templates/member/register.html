@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>회원 등록</title>
+</head>
+<body>
+<h1>회원 등록</h1>
+<form action="/member/register" method="post">
+    아이디: <input type="text" name="loginId" required><br>
+    비밀번호: <input type="password" name="memberPw" required><br>
+    이름: <input type="text" name="memberName" required><br>
+    이메일: <input type="email" name="memberEmail" required><br>
+    이용약관 동의: <input type="checkbox" name="termsAgreed" value="Y" required> 동의함<br>
+    <button type="submit">가입</button>
+</form>
+<a href="/member/list">목록으로</a>
+</body>
+</html>

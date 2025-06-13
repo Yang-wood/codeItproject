@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>메인 페이지</title>
+</head>
+<body>
+<header style="position:fixed;top:0;width:100%;height:64px;background:white;
+               border-bottom:1px solid #eee;padding:0 24px;display:flex;
+               justify-content:flex-start;align-items:center;gap:40px;z-index:1000;">
+
+    <!-- 로고 -->
+    <a th:href="@{/main}" class="logo"
+       style="font-size:1.4rem;font-weight:bold;color:#1f2d3d;text-decoration:none;">CODEIT</a>
+
+    <!-- 메뉴 -->
+    <nav style="display:flex;gap:20px;align-items:center ; margin-left:auto; padding-right:50px;">
+        <div th:if="${session.member == null}">
+            <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+            <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
+        </div>
+        <div th:if="${session.member != null}">
+		  <span th:text="${session.member.memberName}">회원이름</span>님 환영합니다!
+		</div>
+        <div th:if="${session.member != null}">
+            <a th:href="@{/member/mypage}" style="text-decoration:none;color:#333;">마이페이지</a>
+            <a th:href="@{/member/logout}" style="text-decoration:none;color:#333;">로그아웃</a>
+        </div>
+        
+    </nav>
+</header>
+
+
+</body>
+</html>
