@@ -32,7 +32,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = "testId")
 @Check(constraints = "answer IN ('1', '2', '3', '4')")
 @Table(name = "test_question")
 public class TestQuestionEntity {
@@ -61,11 +61,7 @@ public class TestQuestionEntity {
 	
 	
 	
-/*	
-	public TestQuestionEntity toDto(TestQuestionDTO testQuestionDto) {
-		
-	}
-*/	
+
 	
 	
 	public void changeText(String questionText) {
@@ -85,6 +81,7 @@ public class TestQuestionEntity {
 	}
 	
 }
+
 
 
 
