@@ -1,15 +1,176 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
+    <meta charset="UTF-8">
     <title>로그인</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #fafafa;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-wrapper {
+            width: 500px;
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 26px;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .box {
+            border: 1px solid #ddd;
+            padding: 30px;
+        }
+
+        .box h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .login-form input[type="text"],
+        .login-form input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .login-options {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .login-options input[type="checkbox"] {
+            margin-right: 5px;
+        }
+
+        .login-btn {
+            width: 100%;
+            background-color: black;
+            color: white;
+            padding: 12px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .sns-text {
+            font-size: 14px;
+            margin: 25px 0 10px;
+            line-height: 1.6;
+        }
+
+        .sns-button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 3px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .sns-button img {
+            height: 20px;
+            margin-right: 8px;
+        }
+
+        .kakao-btn {
+            background-color: #FEE500;
+            color: #000;
+        }
+
+        .naver-btn {
+            background-color: #1EC800;
+            color: white;
+        }
+
+        .bottom-links {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .bottom-links a {
+            flex: 1;
+            margin: 0 5px;
+            padding: 10px 0;
+            border: 1px solid #ccc;
+            text-align: center;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 3px;
+            color: black;
+            background-color: white;
+        }
+
+        .bottom-links a:first-child {
+            background-color: black;
+            color: white;
+            border: none;
+        }
+    </style>
 </head>
 <body>
-<h1>로그인</h1>
-<form action="/member/login" method="post">
-    아이디: <input type="text" name="loginId" required><br>
-    비밀번호: <input type="password" name="memberPw" required><br>
-    <button type="submit">로그인</button>
-</form>
-<a href="/main">홈으로</a>
+<div class="login-wrapper">
+    <h1>CODEIT</h1>
+    <div class="box">
+        <h2>회원 로그인</h2>
+        <form class="login-form" action="/member/login" method="post">
+            <input type="text" name="loginId" placeholder="아이디" required>
+            <input type="password" name="memberPw" placeholder="비밀번호" required>
+            <div class="login-options">
+                <input type="checkbox" name="rememberId" id="rememberId">
+                <label for="rememberId">아이디 저장</label>
+            </div>
+            <button class="login-btn" type="submit">로그인</button>
+        </form>
+
+        <div class="sns-text">
+            아이디와 비밀번호 입력하기 귀찮으시죠?<br>
+            SNS 아이디로 간편하게 1초 만에 로그인하세요.
+        </div>
+
+        <button class="sns-button kakao-btn">
+            <!-- <img src="https://cdn-icons-png.flaticon.com/512/2111/2111494.png" alt="카카오톡 아이콘"> -->
+            카카오 아이디로 간편 로그인
+        </button>
+
+        <button class="sns-button naver-btn">
+            <!-- <img src="https://cdn-icons-png.flaticon.com/512/889/889192.png" alt="네이버 아이콘"> -->
+            네이버 아이디로 간편 로그인
+        </button>
+
+        <div class="bottom-links">
+            <a href="/member/register">회원가입</a>
+            <a href="/member/findId">아이디 찾기</a>
+            <a href="/member/findPw">비밀번호 찾기</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>
