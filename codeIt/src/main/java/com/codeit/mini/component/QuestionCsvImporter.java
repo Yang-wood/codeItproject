@@ -26,6 +26,7 @@
 //@Log4j2
 //public class QuestionCsvImporter implements CommandLineRunner{
 //	
+//		// TODO 톰캣 실행하기 전에 메이븐 라이브러리 옮기기
 //	private final ITestQuestionRepository questionRepository;
 //	
 //	@Override
