@@ -28,7 +28,16 @@
         
     </nav>
 </header>
+<div style="padding-top: 80px;">
+    <h2 style="text-align: center;">환영합니다! CODEIT 메인 페이지입니다.</h2>
+</div>
 
+<script th:inline="javascript">
+/*<![CDATA[*/
+let msg = /*[[${msg}]]*/ null;
+if (msg) alert(msg);
+/*]]>*/
+</script>
 
 </body>
 </html>

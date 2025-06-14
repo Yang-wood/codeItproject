@@ -172,5 +172,12 @@
         </div>
     </div>
 </div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+let msg = /*[[${msg}]]*/ null;
+if (msg) alert(msg);
+/*]]>*/
+</script>
 </body>
 </html>

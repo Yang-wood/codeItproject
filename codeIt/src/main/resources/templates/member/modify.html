@@ -114,6 +114,17 @@
 
     <button type="submit">수정 완료</button>
   </form>
+  
+  <form th:action="@{/member/delete}" method="post"
+	      onsubmit="return confirm('정말로 탈퇴하시겠습니까?');">
+	  <button type="submit"
+	          style="margin-top: 20px; width: 100%; padding: 12px;
+	                 font-size: 16px; background-color: red; color: white;
+	                 border: none; border-radius: 4px; cursor: pointer;">
+	    회원 탈퇴
+	  </button>
+  </form>
+  
 </div>
 
 </body>

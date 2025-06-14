@@ -1,6 +1,7 @@
 package com.codeit.mini.controller.member;
 
 import java.util.Map;
+
 import java.util.Optional;
 
 import org.springframework.stereotype.Controller;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.codeit.mini.dto.member.MemberDTO;
+import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.member.IMemberService;
 
@@ -40,8 +42,8 @@ public class MemberController {
     @PostMapping("/register")
     public String register(MemberDTO dto, RedirectAttributes rttr) {
         log.info("회원 가입 요청 : " + dto);
-        Long memberId = memberService.register(dto);
-        rttr.addFlashAttribute("msg", "회원 가입이 완료되었습니다. (ID : " + memberId + ")");
+        memberService.register(dto);
+        rttr.addFlashAttribute("msg", "회원 가입이 완료되었습니다.");
         return "redirect:/member/login";
     }
     
@@ -75,7 +77,12 @@ public class MemberController {
             log.info("로그인 성공 : " + loginId);
             return "redirect:/main";
         } else {
-            rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+            Optional<MemberEntity> entity = memberRepository.findByLoginId(loginId);
+            if (entity.isPresent() && entity.get().getStatus() == 2) {
+                rttr.addFlashAttribute("msg", "탈퇴한 회원입니다.");
+            } else {
+                rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+            }
             return "redirect:/member/login";
         }
     }
@@ -129,6 +136,19 @@ public class MemberController {
 
         rttr.addFlashAttribute("msg", "회원 정보가 수정되었습니다.");
         return "redirect:/member/mypage";
+    }
+    
+    @PostMapping("/delete")
+    public String deleteMember(HttpSession session, RedirectAttributes rttr) {
+        MemberDTO member = (MemberDTO) session.getAttribute("member");
+
+        // Soft Delete 수행
+        memberService.delete(member.getMemberId());
+
+        session.invalidate(); // 세션 종료 (로그아웃)
+        rttr.addFlashAttribute("msg", "회원 탈퇴가 완료되었습니다.");
+
+        return "redirect:/main";
     }
 }
 
