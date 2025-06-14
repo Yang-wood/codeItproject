@@ -15,4 +15,6 @@ Long register(MemberDTO dto);
 	Optional<MemberDTO> login(String loginId, String rawPw);
 	
 	Optional<MemberDTO> read(Long memberId);
+	
+	void delete(Long memberId);
 }

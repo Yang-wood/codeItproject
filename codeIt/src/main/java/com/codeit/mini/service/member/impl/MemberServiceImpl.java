@@ -61,6 +61,11 @@ public class MemberServiceImpl implements IMemberService{
 	    if (result.isPresent()) {
 	        MemberEntity member = result.get();
 
+	        // status가 2(탈퇴)인 경우 로그인 차단
+	        if (member.getStatus() == 2) {
+	            return Optional.empty(); // 탈퇴한 계정은 로그인 불가
+	        }
+	        
 	        if (rawPw.equals(member.getMemberPw())) {
 	        	member.updateLastLogin();  // 로그인 시각 갱신
 	            memberRepository.save(member);  // 변경 내용 저장
@@ -90,6 +95,18 @@ public class MemberServiceImpl implements IMemberService{
                 .lastLogin(entity.getLastLogin())
                 .build();
     }
+
+	@Override
+	@Transactional
+	public void delete(Long memberId) {
+		
+		Optional<MemberEntity> result = memberRepository.findById(memberId);
+	    result.ifPresent(entity -> {
+	        entity.setStatus(2); // 예: 2 = withdrawn
+	        memberRepository.save(entity);
+	    });
+		
+	}
 
 	
 }
