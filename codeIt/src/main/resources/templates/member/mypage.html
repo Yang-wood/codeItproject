@@ -191,7 +191,10 @@
     </ul>
     <ul>
       <li><strong>개인</strong></li>
-      <li>- 내 정보 관리</li>
+      <li>
+      	<a th:href="@{/member/modify(memberId=${member.memberId})}" style="color: #333; text-decoration: none;">
+      		- 내 정보 관리</a>
+      </li>
       <li>- 1:1 문의</li>
     </ul>
     <ul>
