@@ -1,7 +1,7 @@
 package com.codeit.mini.service.book.impl;
 
-import java.util.List;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.codeit.mini.entity.book.BookEntity;
@@ -17,8 +17,8 @@ public class BookSearchServiceImpl implements IBookSearchService{
 	private final IBookSearchRepository bookSearchRepository;
 	
 	@Override
-	public List<BookEntity> searchBook(String type, String keyword) {
-		return bookSearchRepository.searchBook(type, keyword);
+	public Page<BookEntity> searchBook(String type, String keyword, Integer point, Pageable pageable) {
+		return bookSearchRepository.searchBook(type, keyword, point, pageable);
 	}
 
 }

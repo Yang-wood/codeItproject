@@ -36,14 +36,14 @@ public class BookServiceImpl implements IBookService {
     private IBookRepository bookRepository;
 
     // 파일 저장 경로 설정
-    private final String UPLOAD_BASE_DIR = System.getProperty("user.dir") + "/src/main/resources/static/upload/epubs";
+    private final String UPLOAD_BASE_DIR = System.getProperty("user.home") + "/epubs";
     private final String EPUB_SUB_DIR = "files/";
     private final String COVER_IMAGE_SUB_DIR = "cover_images/";
 
     @Override
     @Transactional
     public void saveBook(BookDTO bookDTO, String tempEpubFilePath, String originalFileName, int rentPoint) throws IOException {
-
+    	log.info(UPLOAD_BASE_DIR);	
         log.info("BookService.saveBook 메서드 진입");
         log.info("BookDTO: " + bookDTO.toString());
         log.info("임시 EPUB 파일 경로: " + tempEpubFilePath);
@@ -89,7 +89,6 @@ public class BookServiceImpl implements IBookService {
                 Path coverImageUploadDir = Paths.get(UPLOAD_BASE_DIR, COVER_IMAGE_SUB_DIR);
                 Files.createDirectories(coverImageUploadDir); // 디렉토리가 없으면 생성
 
-                // 이미지 확장자 유추 (BookDTO에 MIME 타입 정보가 있다면 더 정확하게 사용 가능)
                 // 현재는 jpg로 고정, 필요시 bookDTO.getCoverImageDataBase64()에서 파싱하여 확장자 유추
                 String imageExtension = "jpg"; // 기본값
                 if (StringUtils.hasText(bookDTO.getCoverImageDataBase64()) &&
@@ -105,7 +104,7 @@ public class BookServiceImpl implements IBookService {
                 Files.write(coverImagePath, bookDTO.getCoverImageData()); // byte[] 데이터를 파일로 저장
 
                 // DB에 저장될 웹 접근 가능한 경로
-                coverImageWebPath = "/upload/" + COVER_IMAGE_SUB_DIR + coverImageFileName;
+                coverImageWebPath = "/uploadepub/" + COVER_IMAGE_SUB_DIR + coverImageFileName;
                 log.info("표지 이미지 서버 저장 완료: " + coverImagePath.toString() + ", 웹 경로: " + coverImageWebPath);
 
             } catch (IOException e) {
@@ -178,10 +177,11 @@ public class BookServiceImpl implements IBookService {
         bookRepository.save(bookEntity); // save 메서드는 엔티티를 반환하지만, void로 처리 가능
         log.info("BookEntity DB 저장 완료: " + bookEntity.getBookId());
     }
-
+    
+    // 도서 상세
 	@Override
 	@Transactional
-	public BookDTO getBookById(Long bookId) {
+	public BookDTO getBookById(Long bookId) throws Exception {
 		log.info("bookId : {}", bookId);
 		
 		Optional<BookEntity> optionalBook = bookRepository.findById(bookId);
@@ -189,7 +189,7 @@ public class BookServiceImpl implements IBookService {
 		if (optionalBook.isPresent()) {
 			BookEntity bookEntity = optionalBook.get();
 			
-			log.info("검색 도서 제목 : {}", bookEntity.getTitle());
+			log.info("선택한 도서 제목 : {}", bookEntity.getTitle());
 			
 			BookDTO bookDTO = entityToDto(bookEntity);
 										   
@@ -199,14 +199,15 @@ public class BookServiceImpl implements IBookService {
 			return null;
 		}
 	}
-
+	
+	// 도서 수정
 	@Transactional
 	@Override
 	public void modify(UpdateBookDTO updateBookDTO) throws Exception {
 		log.info("BookService.updateBook({}) 호출됨", updateBookDTO);
 		
 		if (updateBookDTO.getBookId() == null) {
-			log.error("bookId 검색 실패");
+			log.error("도서 검색 실패");
 			throw new IllegalArgumentException("bookId가 필요합니다.");
 		}
 		
@@ -225,25 +226,13 @@ public class BookServiceImpl implements IBookService {
 			if (updateBookDTO.getRentPoint() != null) {
 				bookEntity.setRentPoint(updateBookDTO.getRentPoint());
 			}
-			
 		}
 	}
-
-	@Override
-	@Transactional
-	public List<BookDTO> getAllBooks() {
-		
-		List<BookEntity> bookList = bookRepository.findAll();
-		
-		List<BookDTO> bookDTOList = bookList.stream().map(this::entityToDto)
-											.collect(Collectors.toList());
-		
-		return bookDTOList;
-	}
 	
+	// 도서 삭제
 	@Transactional
 	@Override
-	public void remove(Long bookId) throws Exception{
+	public void remove(Long bookId) throws Exception {
 		log.info("remove bookId : {}", bookId);
 		
 		if (bookId == null) {
@@ -262,4 +251,18 @@ public class BookServiceImpl implements IBookService {
 		
 		log.info("remove id : {}", bookId);
 	}
+	
+	// 도서 전체 목록 -> 도서 검색에서 구현하기로 함
+	@Override
+	@Transactional
+	public List<BookDTO> getAllBooks() throws Exception {
+		
+		List<BookEntity> bookList = bookRepository.findAll();
+		
+		List<BookDTO> bookDTOList = bookList.stream().map(this::entityToDto)
+											.collect(Collectors.toList());
+		
+		return bookDTOList;
+	}
+
 }

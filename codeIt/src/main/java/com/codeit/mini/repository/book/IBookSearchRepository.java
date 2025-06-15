@@ -1,10 +1,12 @@
 package com.codeit.mini.repository.book;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.codeit.mini.entity.book.BookEntity;
 
 public interface IBookSearchRepository {
-	List<BookEntity> searchBook(String type, String keyword);
+	
+	Page<BookEntity> searchBook(String type, String keyword, Integer point, Pageable pageable);
 	
 }

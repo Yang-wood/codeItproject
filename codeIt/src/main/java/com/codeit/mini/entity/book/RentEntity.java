@@ -18,7 +18,10 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
+@Builder
 @Entity
 @SequenceGenerator(
 			name = "RENT_SEQ_GEN",
@@ -30,11 +33,13 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
+@ToString
 public class RentEntity {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "RENT_SEQ_GEN")
-	private Long reviewId;
+	private Long rentId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "book_id")
@@ -54,11 +59,14 @@ public class RentEntity {
 	private Integer isReturned = 0;
 	
 	@Column(name = "read_page", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
-	private Long readPage = 0L;
+	private Integer readPage = 0;
 	
-	@Column(name = "read_state", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1, 2))")
+	@Column(name = "read_state", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (read_state IN (0, 1))")
 	private Integer readState = 0;
 	
 	@Column(name = "has_review", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (has_review IN (0, 1))")
 	private Integer hasReview = 0;
+	
+	@Column(name = "has_point", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (has_point IN (0, 1))")
+	private Integer hasPoint = 0;
 }
