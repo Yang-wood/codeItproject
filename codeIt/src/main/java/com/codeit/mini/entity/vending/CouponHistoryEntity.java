@@ -53,15 +53,15 @@ public class CouponHistoryEntity extends CouponBaseDateEntity{
 	@JoinColumn(name = "item_id", foreignKey = @ForeignKey(name = "fk_item_id_coupon"), nullable = false)
 	private VendingItemEntity itemId;
 	
-	@Column(name = "coupon_code", nullable = false,length = 40)
+	@Column(name = "coupon_code", nullable = false,length = 60)
 	private String couponCode;
 	
 //	대여, 문제풀이, 할인
-	@Column(name = "coupon_type", nullable = false, length = 20)
+	@Column(name = "coupon_type", nullable = false, length = 30)
 	private String couponType;
 	
 	@Builder.Default
-	@Column(name = "status", length = 20, nullable = false)
+	@Column(name = "status", length = 30, nullable = false)
 	private String status = "issued";
 	
 //	쿠폰 코드 생성 메소드 호출

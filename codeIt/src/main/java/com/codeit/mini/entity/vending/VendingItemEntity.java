@@ -43,10 +43,10 @@ public class VendingItemEntity extends BaseEntity{
 	private Long itemId;
 	
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "admin_id", foreignKey = @ForeignKey(name = "fk_vm_item_admin_id"))
+	@JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name = "fk_vm_item_admin_id"))
 	private Admin adminId;
 	
-	@Column(name = "name", nullable = false, length = 50)
+	@Column(name = "name", nullable = false, length = 60)
 	private String name;
 	
 	@Column(name = "description", length = 300)

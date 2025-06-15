@@ -15,14 +15,14 @@ public class VendingItemDTO {
 	private Long adminId;
 	private String name;
 	private String description;
-	private String item_type;
-	private String value;
-	private double probability;
+	private String itemType;
+	private int value;
+	private Double probability;
 	private Integer stock;
-	private Integer total_used;
-	private Integer total_claim;
+	private Integer totalUsed;
+	private Integer totalClaim;
 	private Integer active;
-	private LocalDateTime regdate;
-	private LocalDateTime updatedate;
+	private LocalDateTime regDate;
+	private LocalDateTime upDate;
 	
 }

@@ -50,10 +50,10 @@ public class PointHistoryEntity extends BaseEntity {
 	private Integer amount;
 	
 	@Builder.Default
-	@Column(name = "type", length = 20)
+	@Column(name = "type", length = 30)
 	private String type = "use";
 	
-	@Column(name = "String", length = 50)
+	@Column(name = "String", length = 60)
 	private String reason;
 	
 }

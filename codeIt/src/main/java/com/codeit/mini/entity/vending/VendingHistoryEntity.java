@@ -51,11 +51,11 @@ public class VendingHistoryEntity extends BaseEntity{
 	private VendingItemEntity itemId;
 	
 	@Builder.Default
-	@Column(name = "payment")
+	@Column(name = "payment", length = 30)
 	private String payment = "point";
 	
 	@Builder.Default
-	@Column(name = "status")
+	@Column(name = "status", length = 30)
 	private String status = "success";
 	
 	@ManyToOne(fetch = FetchType.LAZY)

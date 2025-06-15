@@ -42,20 +42,62 @@ public class VendingMachinesEntity extends BaseEntity{
 	private Long machineId;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "admin_id", foreignKey = @ForeignKey(name="fk_vm_admin_id"))
+	@JoinColumn(name = "admin_id", nullable = false, foreignKey = @ForeignKey(name="fk_vm_admin_id"))
 	private Admin adminId;
 	
-	@Column(name = "name", length = 50, nullable = false)
+	@Column(name = "name", length = 60, nullable = false)
 	private String name;
 	
 	@Column(name = "type", length = 30, nullable = false)
 	private String type;
 	
-	@Column(name = "description", length = 200)
+	@Column(name = "description", length = 300)
 	private String description;
 	
 //	1: 활성 / 0 : 비활성
     @Builder.Default
     @Column(name = "is_active", nullable = false)
     private Integer isActive = 1;
+    
+    
+    
+    public void changeName(String newName) {
+    	if (newName == null || newName.trim().isEmpty()) {
+    		throw new IllegalArgumentException("자판기 이름은 비어 있을 수 없습니다.");
+    	}
+    	
+    	if (newName.equals(name)) {
+    		throw new IllegalArgumentException("기존 이름과 동일합니다.");
+    	}
+    	
+    	this.name = newName;
+    }
+    
+    public void changeDesc(String newDesc) {
+    	if (newDesc.length() > 100) {
+    		throw new IllegalArgumentException("자판기에 대한 설명은 100자 이내로 입력해주세요.");
+    	}
+    	
+    	this.description = newDesc;
+    }
+    
+    public void changeType(String newType) {
+    	if (newType == null || newType.trim().isEmpty()) {
+    		throw new IllegalArgumentException("타입을 지정해주세요.");
+    	}
+    	
+    	if (newType.equals(type)) {
+    		throw new IllegalArgumentException("기존 타입과 동일합니다.");
+    	}
+    }
+    
+    public void changeActive(Integer newActive) {
+    	
+    	this.isActive = newActive;
+    }
+    
+    public void setAdminId(Admin adminId) {
+        this.adminId = adminId;
+    }
+
 }

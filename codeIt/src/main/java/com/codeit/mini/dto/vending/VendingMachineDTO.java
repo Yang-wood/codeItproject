@@ -18,5 +18,5 @@ public class VendingMachineDTO {
 	private String description;
 	private Integer active;
 	private LocalDateTime regDate;
-	private LocalDateTime upDate;
+	
 }

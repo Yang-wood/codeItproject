@@ -53,7 +53,7 @@ public class TestCouponEntity extends CouponBaseDateEntity {
 	@JoinColumn(name = "item_id", nullable = false, foreignKey = @ForeignKey(name = "fk_item_id_test_coupon"))
 	private VendingItemEntity itemId;
 	
-	@Column(name = "coupon_code", nullable = false)
+	@Column(name = "coupon_code", length = 60,nullable = false)
 	private String couponCode;
 	
 	@Column(name = "total_count", nullable = false)
@@ -63,6 +63,7 @@ public class TestCouponEntity extends CouponBaseDateEntity {
 	private Integer remainCnt;
 	
 	@Builder.Default
+	@Column(name = "status", length = 30)
 	private String status = "issued";
 	
 }
