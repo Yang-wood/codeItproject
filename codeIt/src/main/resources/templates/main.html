@@ -14,16 +14,25 @@
 
     <!-- 메뉴 -->
     <nav style="display:flex;gap:20px;align-items:center ; margin-left:auto; padding-right:50px;">
-        <div th:if="${session.member == null}">
-            <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
-            <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
-        </div>
+        
+        <!-- 일반 회원이 로그인한 경우 -->
         <div th:if="${session.member != null}">
-		  <span th:text="${session.member.memberName}">회원이름</span>님 환영합니다!
-		</div>
-        <div th:if="${session.member != null}">
+            <span th:text="${session.member.memberName}">회원이름</span>님 환영합니다!
             <a th:href="@{/member/mypage}" style="text-decoration:none;color:#333;">마이페이지</a>
             <a th:href="@{/member/logout}" style="text-decoration:none;color:#333;">로그아웃</a>
+        </div>
+
+        <!-- <!-- 관리자가 로그인한 경우 -->
+        <div th:if="${session.admin != null}">
+            <span th:text="${session.admin.adminName}">관리자</span>님 환영합니다!
+            <a th:href="@{/admin/dashboard}" style="text-decoration:none;color:#333;">관리자 페이지</a>
+            <a th:href="@{/admin/logout}" style="text-decoration:none;color:#333;">로그아웃</a>
+        </div> -->
+
+        <!-- 로그인하지 않은 경우 -->
+        <div th:if="${session.member == null and session.admin == null}">
+            <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+            <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
         </div>
         
     </nav>
