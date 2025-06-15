@@ -13,7 +13,12 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
+@Builder
 @Entity
 @SequenceGenerator(
 			name = "REVIEW_SEQ_GEN",
@@ -22,6 +27,9 @@ import jakarta.persistence.Table;
 			allocationSize = 1
 		)
 @Table(name = "review")
+@AllArgsConstructor
+@NoArgsConstructor
+@Getter
 public class ReviewEntity extends BaseEntity{
 	
 	@Id

@@ -131,42 +131,9 @@
 
 <div class="container py-4">
     <div class="container">
-        <form class="mb-4" method="get" action="/book/search" id="searchForm">
-            <div class="row g-2 align-items-end justify-content-center">
-                <div class="col-md-2">
-                    <select id="searchType" name="type" class="form-select">
-                        <option value="all" th:selected="${type == 'all'}">통합검색</option>
-                        <option value="title" th:selected="${type == 'title'}">제목</option>
-                        <option value="author" th:selected="${type == 'author'}">작가</option>
-                        <option value="category" th:selected="${type == 'category'}">카테고리</option>
-                        <option value="point" th:selected="${type == 'point'}">포인트</option>
-                    </select>
-                </div>
-                <div class="col-md-6">
-                    <input type="text" id="keyword" name="keyword" class="form-control" th:value="${keyword}"> </div>
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-primary">검색</button>
-                </div>
-            </div>
-			<div class="row g-2 align-items-end justify-content-end mt-2">
-				<div class="col-md-1 offset-md-8">
-					<select id="pageSize" name="size" class="form-select">
-						<option value="10" th:selected="${page.size == 10}">10개</option>
-						<option value="20" th:selected="${page.size == 20}">20개</option>
-						<option value="30" th:selected="${page.size == 30}">30개</option>
-						<option value="50" th:selected="${page.size == 50}">50개</option>
-					</select>
-				</div>
-			</div>
-        </form>
-		
         <hr>
-
         <div id="bookListContainer">
-            <div th:if="${#lists.isEmpty(books)}" class="text-center text-muted mt-5">
-                <p>검색 결과가 없습니다.</p>
-            </div>
-            <div th:each="book : ${books}" class="book-item d-flex align-items-start">
+            <div th:each="book : ${wishList}" class="book-item d-flex align-items-start">
                 <img th:src="${book.coverImage}" alt="표지" class="book-cover">
                 <div class="book-info">
                     <div class="book-title" th:text="${book.title}">도서 제목</div>
