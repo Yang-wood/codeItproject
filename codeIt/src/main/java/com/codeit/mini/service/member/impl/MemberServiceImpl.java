@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.entity.member.MemberEntity;
+import com.codeit.mini.repository.book.IRentRepository;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.member.IMemberService;
 
@@ -19,6 +20,8 @@ import lombok.extern.log4j.Log4j2;
 public class MemberServiceImpl implements IMemberService{
 	
 	private final IMemberRepository memberRepository;
+	
+	private final IRentRepository rentRepository;
 	
 	@Override
 	public Long register(MemberDTO dto) {
@@ -106,6 +109,12 @@ public class MemberServiceImpl implements IMemberService{
 	        memberRepository.save(entity);
 	    });
 		
+	}
+
+	@Override
+	public int getRentCount(Long memberId) {
+		
+		return rentRepository.countByMemberEntity_MemberId(memberId);
 	}
 
 	

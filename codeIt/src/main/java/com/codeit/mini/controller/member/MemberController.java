@@ -97,11 +97,23 @@ public class MemberController {
     // 마이페이지 이동
     @GetMapping("/mypage")
     public String mypage(HttpSession session, RedirectAttributes rttr, Model model) {
-        MemberDTO member = (MemberDTO) session.getAttribute("member");
+    	MemberDTO member = (MemberDTO) session.getAttribute("member");
 
-        log.info("마이페이지 접속 : " + member.getLoginId());
-        model.addAttribute("member", member);
-        return "/member/mypage";
+        Optional<MemberDTO> refreshed = memberService.read(member.getMemberId());
+
+        if (refreshed.isPresent()) {
+            MemberDTO latest = refreshed.get();
+            session.setAttribute("member", latest);  // 세션 갱신
+            model.addAttribute("member", latest);    // 화면에도 반영
+            
+            int rentCount = memberService.getRentCount(latest.getMemberId());
+            model.addAttribute("rentCount", rentCount); // 추가
+            
+            return "/member/mypage";
+        } else {
+            rttr.addFlashAttribute("msg", "회원 정보를 불러올 수 없습니다.");
+            return "redirect:/main";
+        }
     }
     
     // 내 정보 수정 폼

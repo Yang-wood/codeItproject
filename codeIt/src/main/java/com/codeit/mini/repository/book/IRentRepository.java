@@ -28,4 +28,6 @@ public interface IRentRepository extends JpaRepository<RentEntity, Long>{
 	@Query(value = "SELECT r FROM RentEntity r WHERE r.memberEntity.memberId = :memberId",
 	  countQuery = "SELECT count(r) FROM RentEntity r WHERE r.memberEntity.memberId = :memberId")
 	Page<RentEntity> findByMemberEntity_MemberId(@Param("memberId") Long memberId, Pageable pageable) throws Exception;
+	
+	int countByMemberEntity_MemberId(Long memberId); // 추가
 }
