@@ -124,6 +124,28 @@ public class PageMoveController {
 		return "book/read";
 	}
 	
+	// 도서 열람 - epubReader 연결
+	@GetMapping("/epubRead")
+	public String epubRead(@RequestParam("bookId") Long bookId, Model model) {
+		try {
+			BookEntity bookEntity = bookService.findByBookId(bookId);
+			
+			if (bookEntity != null && bookEntity.getEpubPath() != null) {
+				String epubPath = bookEntity.getEpubPath();
+				model.addAttribute("epubPath", epubPath);
+				log.info("연결할 경로 : {}", epubPath);
+			} else {
+				log.warn("NOT epub");
+				model.addAttribute("errorMessage", "NOT FOUND EPUB");
+			}
+		} catch (Exception e) {
+			log.error("SERVER ERROR");
+			model.addAttribute("errorMessage", "SERVER ERROR");
+		}
+		
+		return "book/epub/epubReader";
+	}
+	
 	// 서브 도서 목록 이동
 	@GetMapping("/subList")
 	public String subListPage() {
@@ -136,6 +158,5 @@ public class PageMoveController {
 	public String adminPage() {
 		return "book/admin";
 	}
-	
 	
 }

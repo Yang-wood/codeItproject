@@ -187,7 +187,7 @@
                     		class="btn btn-outline-primary wishBtn">♡</button>
                     
                     <a th:if="${book.rentedByCurrentUser}"
-                       th:href="@{/book/search}" class="btn btn-primary read-button">열람하기</a>
+                       th:href="@{/book/epubRead(bookId=${book.bookId})}" class="btn btn-primary read-button">열람하기</a>
                     
                     <button th:if="${!book.rentedByCurrentUser}" 
                     		th:data-book-id="${book.bookId}"
@@ -245,7 +245,7 @@ $(document).ready(function() {
 	$(".rentBtn").click(function() {
 		const rentBtn = $(this);
 		const bookId = rentBtn.data("book-id");
-		const memId = /*[[${finalmemberId}]]*/ null;
+		const memId = /*[[${finalmemberId}]]*/ "";
 		console.log("memId value:", memId, typeof memId);
 		var openBtn = '<a href="' + /*[[@{/book/search}]]*/ '/book/search' 
 							+ '" class="btn btn-primary read-button">열람하기</a>';
@@ -278,7 +278,7 @@ $(document).ready(function() {
 	$(".wishBtn").click(function() {
 		const wishBtn = $(this);
 		const bookId = wishBtn.data("book-id");
-		const memId = /*[[${finalmemberId}]]*/ null;
+		const memId = /*[[${finalmemberId}]]*/ "";
 		console.log("memId value:", memId, typeof memId);
 		
 		if(!memId) {

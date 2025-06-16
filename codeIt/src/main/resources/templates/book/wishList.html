@@ -155,7 +155,7 @@
                     		class="btn btn-outline-primary wishBtn">♡</button>
                     
                     <a th:if="${book.rentedByCurrentUser}"
-                       th:href="@{/book/search}" class="btn btn-primary read-button">열람하기</a>
+                       th:href="@{/book/epubRead(bookId=${book.bookId})}" class="btn btn-primary read-button">열람하기</a>
                     
                     <button th:if="${!book.rentedByCurrentUser}" 
                     		th:data-book-id="${book.bookId}"

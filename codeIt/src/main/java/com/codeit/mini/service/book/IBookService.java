@@ -26,6 +26,9 @@ public interface IBookService {
 	// 도서 전체 목록
 	List<BookDTO> getAllBooks() throws Exception;
 	
+	// 도서뷰어 연결
+	BookEntity findByBookId(Long bookId) throws Exception;
+	
 	default BookDTO entityToDto(BookEntity bookEntity) {
 		BookDTO bookDTO = BookDTO.builder().bookId(bookEntity.getBookId())
 										   .title(bookEntity.getTitle())

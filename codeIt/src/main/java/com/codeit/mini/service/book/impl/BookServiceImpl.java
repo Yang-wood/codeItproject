@@ -52,6 +52,7 @@ public class BookServiceImpl implements IBookService {
 
         String finalEpubPath = null;
         Path sourceEpubPath = Paths.get(tempEpubFilePath);
+        String epubWebPath = null;
 
         try {
             // 1. EPUB 파일 영구 저장
@@ -66,7 +67,10 @@ public class BookServiceImpl implements IBookService {
             Files.move(sourceEpubPath, destinationEpubPath, StandardCopyOption.REPLACE_EXISTING);
             finalEpubPath = destinationEpubPath.toString();
             log.info("EPUB 파일 영구 저장 완료: " + finalEpubPath);
-
+            
+            // 웹에서 접근할 epub경로
+            epubWebPath = "/uploadepub/" + EPUB_SUB_DIR + uniqueEpubFileName;
+            
         } catch (IOException e) {
             log.error("EPUB 파일 영구 저장 중 오류 발생: {}", e.getMessage(), e);
             throw new IOException("EPUB 파일을 저장할 수 없습니다.", e); // 예외를 다시 던져서 상위에서 처리
@@ -130,7 +134,7 @@ public class BookServiceImpl implements IBookService {
         bookEntity.setRentPoint(rentPoint);
 
         // 최종적으로 저장된 파일의 경로를 엔터티에 설정
-        bookEntity.setEpubPath(finalEpubPath); // 서버 파일 시스템의 절대 경로
+        bookEntity.setEpubPath(epubWebPath); // 서버 파일 시스템의 절대 경로
         bookEntity.setCoverImg(coverImageWebPath); // 웹 접근 가능한 상대 경로 (DB 저장용)
 
         // 출판일 String을 LocalDateTime으로 파싱 시도
@@ -263,6 +267,13 @@ public class BookServiceImpl implements IBookService {
 											.collect(Collectors.toList());
 		
 		return bookDTOList;
+	}
+	
+	// 도서 뷰어 연결
+	@Override
+	public BookEntity findByBookId(Long bookId) throws Exception {
+		
+		return bookRepository.findById(bookId).orElse(null);
 	}
 
 }
