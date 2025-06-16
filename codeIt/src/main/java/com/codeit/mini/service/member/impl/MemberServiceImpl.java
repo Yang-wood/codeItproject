@@ -2,6 +2,7 @@ package com.codeit.mini.service.member.impl;
 
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,12 +27,17 @@ public class MemberServiceImpl implements IMemberService{
 	
 	private final IWishRepository wishRepository;
 	
+	private final PasswordEncoder passwordEncoder;
+	
 	@Override
 	public Long register(MemberDTO dto) {
 		
+		String rawPw = dto.getMemberPw();
+		String encPw = passwordEncoder.encode(rawPw);
+		
 		MemberEntity memberEntity = MemberEntity.builder()
 										.loginId(dto.getLoginId())
-										.memberPw(dto.getMemberPw())
+										.memberPw(encPw) // 암호화된 비밀번호 저장
 										.memberName(dto.getMemberName())
 										.memberEmail(dto.getMemberEmail())
 										.termsAgreed(dto.getTermsAgreed())
@@ -72,7 +78,7 @@ public class MemberServiceImpl implements IMemberService{
 	            return Optional.empty(); // 탈퇴한 계정은 로그인 불가
 	        }
 	        
-	        if (rawPw.equals(member.getMemberPw())) {
+	        if (passwordEncoder.matches(rawPw, member.getMemberPw())) {
 	        	member.updateLastLogin();  // 로그인 시각 갱신
 	            memberRepository.save(member);  // 변경 내용 저장
 	            return Optional.of(entityToDto(member));
@@ -96,6 +102,11 @@ public class MemberServiceImpl implements IMemberService{
                 .memberName(entity.getMemberName())
                 .memberEmail(entity.getMemberEmail())
                 .emailVerified(entity.getEmailVerified())
+                .termsAgreed(entity.getTermsAgreed())
+                .status(entity.getStatus())
+                .role(entity.getRole())
+                .points(entity.getPoints())
+                .coupon(entity.getCoupon())
                 .regDate(entity.getRegDate())
                 .updateDate(entity.getUpDate())
                 .lastLogin(entity.getLastLogin())
