@@ -2,6 +2,7 @@ package com.codeit.mini.controller.admin;
 
 import java.util.Optional;
 
+
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.codeit.mini.dto.AdminDTO;
 import com.codeit.mini.dto.comm.PageRequestDTO;
@@ -18,10 +20,12 @@ import com.codeit.mini.service.admin.IAdminService;
 
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Controller
 @RequestMapping("/admin")
 @RequiredArgsConstructor
+@Log4j2
 public class AdminController {
 
 private final IAdminService adminService;
@@ -60,28 +64,28 @@ private final IAdminService adminService;
     public String memberList(@ModelAttribute PageRequestDTO pageRequestDTO, Model model) {
         PageResultDTO<MemberDTO, ?> result = adminService.getMemberList(pageRequestDTO);
         model.addAttribute("result", result);
-        return "admin/member_list";
+        return "admin/members";
     }
     
-    // 회원 상세 조회/수정 폼
+    // 회원 수정 폼
     @GetMapping("/members/edit")
-    public String editMemberForm(@RequestParam Long memberId, Model model) {
-    	Optional<MemberDTO> result = adminService.read(memberId);
-        
+    public String editMemberForm(@RequestParam("memberId") Long memberId, Model model) {
+        Optional<MemberDTO> result = adminService.read(memberId);
         if (result.isPresent()) {
             model.addAttribute("dto", result.get());
             return "admin/member_edit";
         } else {
-            model.addAttribute("msg", "해당 회원 없음");
+            model.addAttribute("msg", "해당 회원이 존재하지 않습니다.");
             return "redirect:/admin/members";
         }
     }
     
     // 회원 수정 처리
     @PostMapping("/members/edit")
-    public String editMember(MemberDTO dto) {
+    public String editMember(MemberDTO dto, RedirectAttributes redirectAttributes) {
         adminService.updateMember(dto);
-        return "redirect:/admin/members";
+        redirectAttributes.addAttribute("memberId", dto.getMemberId());
+        return "redirect:/admin/members/edit";
     }
     
     // 회원 삭제 처리
@@ -89,6 +93,19 @@ private final IAdminService adminService;
     public String deleteMember(@RequestParam Long memberId) {
         adminService.removeMember(memberId);
         return "redirect:/admin/members";
+    }
+    
+    @GetMapping("/members/detail")
+    public String memberDetail(@RequestParam("memberId") Long memberId, Model model) {
+        Optional<MemberDTO> result = adminService.read(memberId);
+
+        if (result.isPresent()) {
+            model.addAttribute("dto", result.get());
+            return "admin/member_detail";
+        } else {
+            model.addAttribute("msg", "해당 회원 없음");
+            return "redirect:/admin/members";
+        }
     }
     
     // 로그아웃

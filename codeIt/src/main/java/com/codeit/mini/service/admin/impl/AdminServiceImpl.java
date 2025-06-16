@@ -1,6 +1,7 @@
 package com.codeit.mini.service.admin.impl;
 
 import java.util.Optional;
+
 import java.util.function.Function;
 
 import org.springframework.data.domain.Page;
@@ -113,19 +114,35 @@ public class AdminServiceImpl implements IAdminService{
         String keyword = requestDTO.getKeyword();
         BooleanBuilder builder = new BooleanBuilder();
         QMemberEntity qMember = QMemberEntity.memberEntity;
-
-        if (type != null && keyword != null) {
-            if (type.contains("i")) {
-                builder.or(qMember.loginId.contains(keyword));
-            }
-            if (type.contains("e")) {
-                builder.or(qMember.memberEmail.contains(keyword));
-            }
-            if (type.contains("n")) {
-                builder.or(qMember.memberName.contains(keyword));
-            }
+        
+     // 검색어가 비어있으면 전체 검색
+        if (keyword == null || keyword.trim().isEmpty()) {
+            return builder;
         }
 
+        BooleanBuilder condition = new BooleanBuilder();
+
+        if (type == null || type.isBlank()) {
+            // 전체 검색: 이름, 아이디, 이메일 중 하나라도 포함되면
+            condition.or(qMember.memberName.containsIgnoreCase(keyword));
+            condition.or(qMember.loginId.containsIgnoreCase(keyword));
+            condition.or(qMember.memberEmail.containsIgnoreCase(keyword));
+        } else {
+            if (type.contains("n")) {
+                condition.or(qMember.memberName.containsIgnoreCase(keyword));
+            }
+            if (type.contains("i")) {
+                condition.or(qMember.loginId.containsIgnoreCase(keyword));
+            }
+            if (type.contains("e")) {
+                condition.or(qMember.memberEmail.containsIgnoreCase(keyword));
+            }
+            
+            builder.and(condition);
+        }
+        
+
+        builder.and(condition);
         return builder;
     }
 	
@@ -144,17 +161,21 @@ public class AdminServiceImpl implements IAdminService{
 	@Override
 	@Transactional
 	public void updateMember(MemberDTO dto) {
-		
-		Optional<MemberEntity> optional = memberRepository.findById(dto.getMemberId());
-        if (optional.isPresent()) {
-            MemberEntity entity = optional.get();
-            entity.changeName(dto.getMemberName());
-            entity.changeEmail(dto.getMemberEmail());
-            entity.changepw(dto.getMemberPw());
-            memberRepository.save(entity);
-        }
-		
+	    Optional<MemberEntity> optional = memberRepository.findById(dto.getMemberId());
+
+	    if (optional.isPresent()) {
+	        MemberEntity entity = optional.get();
+
+	        // 이름, 이메일, 비밀번호는 수정하지 않음
+	        entity.changeStatus(dto.getStatus());
+	        entity.changeRole(dto.getRole());
+	        entity.changePoints(dto.getPoints());
+	        entity.changeCoupon(dto.getCoupon());
+
+	        memberRepository.save(entity);
+	    }
 	}
+	
 	@Override
 	public Optional<MemberDTO> read(Long memberId) {
 		

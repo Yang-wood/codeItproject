@@ -33,11 +33,31 @@ public interface IAdminService {
 	 					.memberName(entity.getMemberName())
 	 					.memberEmail(entity.getMemberEmail())
 	 					.emailVerified(entity.getEmailVerified())
+	 					.termsAgreed(entity.getTermsAgreed())
+	 					.status(entity.getStatus())
+	 					.role(entity.getRole())
+	 					.points(entity.getPoints())
+	 					.coupon(entity.getCoupon())
 	 					.regDate(entity.getRegDate())
 	 					.updateDate(entity.getUpDate())
 	 					.lastLogin(entity.getLastLogin())
 	 					.build();
 	 		return dto;
+	 	}
+	 	
+	 	default MemberEntity dtoToEntity(MemberDTO dto) {
+	 		MemberEntity entity = MemberEntity.builder()
+	 						.memberId(dto.getMemberId())
+	 			            .loginId(dto.getLoginId())
+	 			            .memberPw(dto.getMemberPw())
+	 			            .memberName(dto.getMemberName())
+	 			            .memberEmail(dto.getMemberEmail())
+	 			            .status(dto.getStatus())
+	 			            .role(dto.getRole())
+	 			            .points(dto.getPoints())
+	 			            .coupon(dto.getCoupon())
+	 			            .build();
+	 		return entity;
 	 	}
 	 	
 	 	void removeMember(Long memberId);

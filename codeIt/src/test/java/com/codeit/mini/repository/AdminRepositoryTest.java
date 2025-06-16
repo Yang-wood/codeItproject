@@ -20,10 +20,10 @@ class AdminRepositoryTest {
 	@Test
 	void testInsertAdmin() {
 		
-		Admin admin = Admin.builder().adminLoginId("admin2")
+		Admin admin = Admin.builder().adminLoginId("admin1")
 									 .adminPw("1234")
-									 .adminName("관리자2")
-									 .adminEmail("admin2@naver.com")
+									 .adminName("관리자1")
+									 .adminEmail("admin1@naver.com")
 									 .build();
 		
 		adminRepository.save(admin);
