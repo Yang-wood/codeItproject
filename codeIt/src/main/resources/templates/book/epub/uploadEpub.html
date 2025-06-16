@@ -95,7 +95,10 @@
                 
                 <input type="hidden" name="epubFilePath" th:if="${epubFilePath}" th:value="${epubFilePath}">
                 <input type="hidden" name="originalFileName" th:if="${originalFileName}" th:value="${originalFileName}">
-
+				<div class="preview-item">
+			        <strong>대여 포인트 : </strong>
+			        <input type="number" name="rentPoint" min="0" required style="padding: 6px; width: 100px;">
+			    </div>
                 <div style="margin-top: 20px;">
                     <input type="submit" value="확인 후 저장">
                 </div>
@@ -112,7 +115,12 @@
 	        <small>(여러 파일 동시 업로드 가능)</small>
 	    </div>
 
-	    <div id="uploadStatus"></div>
+	    <div id="uploadStatus">
+	    </div>
+	    <div class="preview-item">
+	        <strong>대여 포인트 : </strong>
+	        <input type="number" name="rentPoint" id="bulkRentPoint" min="0" required style="padding: 6px; width: 100px;">
+	    </div>
 	    
 	    <button id="saveBulkButton" disabled>선택된 EPUB 파일 저장</button>
         
@@ -120,36 +128,36 @@
     <script>
 	    $(document).ready(function() {
         const singleFileMessageArea = $("#singleFileMessageArea");
-        const previewSectionContainer = $("#previewSectionContainer"); // 미리보기 섹션을 삽입할 컨테이너
+        const previewSectionContainer = $("#previewSectionContainer"); 
 
         // --- 단일 파일 업로드 (미리보기) 처리 시작 ---
         $("#epubFile").on("change", function() {
             const fileInput = this;
-            singleFileMessageArea.empty(); // 이전 메시지 초기화
-            previewSectionContainer.empty(); // 이전 미리보기 초기화
+            singleFileMessageArea.empty(); 
+            previewSectionContainer.empty();
 
             if (fileInput.files.length === 0) {
-                singleFileMessageArea.append('<div class="error-message">파일이 선택되지 않았습니다.</div>');
+                singleFileMessageArea.append("<div class='error-message'>파일이 선택되지 않았습니다.</div>");
                 return;
             }
 
             const file = fileInput.files[0];
             const formData = new FormData();
-            formData.append("epubFile", file); // 서버의 @RequestParam("epubFile")과 매칭
+            formData.append("epubFile", file); 
 
-            singleFileMessageArea.append('<div class="success-message">파일 미리보기 정보 로드 중...</div>');
+            singleFileMessageArea.append("<div class='success-message'>파일 미리보기 정보 로드 중...</div>");
 
             // 미리보기 정보를 가져오기 위한 AJAX 요청
             // 서버에 /uploadEpubForPreview 엔드포인트가 JSON 응답을 반환한다고 가정합니다.
             $.ajax({
-                url: "/uploadEpubForPreview", // 서버의 미리보기 전용 엔드포인트
+                url: "/uploadEpubForPreview",
                 type: "POST",
                 data: formData,
-                processData: false, // FormData를 사용할 때 필수
-                contentType: false, // FormData를 사용할 때 필수
-                dataType: "json", // 서버에서 JSON 응답을 기대
+                processData: false, 
+                contentType: false, 
+                dataType: "json", 
                 success: function(response) {
-                    singleFileMessageArea.empty(); // 로딩 메시지 제거
+                    singleFileMessageArea.empty();
                     if (response && response.bookDTO) {
                         const book = response.bookDTO;
                         const epubFilePath = response.epubFilePath; // 서버에서 임시 저장된 파일 경로
@@ -197,7 +205,7 @@
                             singleFileMessageArea.append(`<div class="success-message">${response.successMessage}</div>`);
                         }
                     } else {
-                        singleFileMessageArea.append('<div class="error-message">파일 미리보기 정보를 가져오지 못했습니다.</div>');
+                        singleFileMessageArea.append("<div class='error-message'>파일 미리보기 정보를 가져오지 못했습니다.</div>");
                     }
                 },
                 error: function(xhr, status, error) {
@@ -294,6 +302,10 @@
             droppedEpubFiles.forEach((file, index) => {
                 formData.append("epubFiles", file);
             });
+            
+         	// 렌트 포인트 추가
+            const rentPoint = $("#bulkRentPoint").val() || 0;
+            formData.append("rentPoint", rentPoint);
 
             try {
                 // AJAX로 일괄 업로드
@@ -305,6 +317,7 @@
                     contentType: false,
                     dataType: "json"
                 });
+                console.log(response);
 
                 // 결과 처리
                 let successCount = 0;
