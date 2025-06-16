@@ -58,7 +58,7 @@
     <div class="container">
         <h1>전자책 업로드</h1>
 
-        <form id="previewForm" action="/uploadEpub" method="post" enctype="multipart/form-data">
+        <form id="previewForm" action="/admin/uploadEpub" method="post" enctype="multipart/form-data">
             <div>
                 <label for="epubFile">EPUB 파일:</label>
                 <input type="file" id="epubFile" name="epubFile" accept=".epub" required onchange="document.getElementById('previewForm').submit();">
@@ -84,7 +84,7 @@
                 <strong>표지 이미지:</strong> <span style="color: #666;">(이미지 없음 또는 미리보기 불가)</span>
             </div>
 
-            <form action="/saveBook" method="post" style="margin-top: 20px;">
+            <form action="/admin/saveBook" method="post" style="margin-top: 20px;">
                 <input type="hidden" name="title" th:value="${bookDTO.title}">
                 <input type="hidden" name="author" th:value="${bookDTO.author}">
                 <input type="hidden" name="publisher" th:value="${bookDTO.publisher}">
@@ -181,7 +181,7 @@
                                     }
                                 </div>
 
-                                <form action="/saveBook" method="post" style="margin-top: 20px;">
+                                <form action="/admin/saveBook" method="post" style="margin-top: 20px;">
                                     <input type="hidden" name="title" value="${book.title || ''}">
                                     <input type="hidden" name="author" value="${book.author || ''}">
                                     <input type="hidden" name="publisher" value="${book.publisher || ''}">
@@ -310,7 +310,7 @@
             try {
                 // AJAX로 일괄 업로드
                 const response = await $.ajax({
-                    url: "/multiUploadEpub",
+                    url: "/admin/multiUploadEpub",
                     type: "POST",
                     data: formData,
                     processData: false,
