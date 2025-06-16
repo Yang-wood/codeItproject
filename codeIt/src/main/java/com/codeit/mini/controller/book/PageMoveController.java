@@ -130,63 +130,6 @@ public class PageMoveController {
 		return "book/subList";
 	}
 	
-	// 내 서재- 위시리스트 이동
-	@GetMapping("/wishList")
-	public String wishList(@RequestParam(value = "page", defaultValue = "0") int page,
-						   @RequestParam(value = "size", defaultValue = "10") int size,
-						   Model model, HttpSession session) {
-		
-		Pageable pageable = PageRequest.of(page, size);
-	    Page<BookDTO> dtoPage = Page.empty(pageable);
-	    Long finalMemberId = null;
-
-	    try {
-	        MemberDTO member = (MemberDTO) session.getAttribute("member");
-	        if (member != null) {
-	            finalMemberId = member.getMemberId();
-	        }
-
-	        log.info("wishList: session member = " + (member != null ? member.getMemberName() : "null"));
-	        log.info("wishList: finalMemberId = " + finalMemberId);
-
-	        if (finalMemberId == null) {
-	            model.addAttribute("wishList", List.of());
-	            model.addAttribute("page", Page.empty(pageable));
-	            return "member/login";
-	        }
-
-	        Page<BookEntity> wishListPage = wishService.findWishListByMemberId(finalMemberId, pageable);
-	        final Long finalMemberIdRamda = finalMemberId;
-	        dtoPage = wishListPage.map(bookEntity -> {
-	            BookDTO bookDTO = bookService.entityToDto(bookEntity);
-	            try {
-	                bookDTO.setRentedByCurrentUser(rentService.isRented(bookEntity.getBookId(), finalMemberIdRamda));
-	            } catch (Exception e) {
-	                bookDTO.setRentedByCurrentUser(false);
-	            }
-	            try {
-	                bookDTO.setWishedByCurrentUser(true); // 위시리스트 책이므로 무조건 true
-	            } catch (Exception e) {
-	                bookDTO.setWishedByCurrentUser(false);
-	            }
-	            return bookDTO;
-	        });
-
-	        model.addAttribute("wishList", dtoPage.getContent());
-	        model.addAttribute("page", dtoPage);
-
-	    } catch (Exception e) {
-	        log.error("도서 위시리스트 페이지 로드 중 오류 발생: {}", e.getMessage(), e);
-	        model.addAttribute("errorMessage", "로드 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.");
-	        model.addAttribute("wishList", List.of());
-	        model.addAttribute("page", Page.empty(pageable));
-	    }
-
-	    model.addAttribute("finalmemberId", finalMemberId);
-	    log.info("finalMemberId in model = {}", model.getAttribute("finalMemberId"));
-
-	    return "book/wishList";
-	}
 	
 	// 관리자 페이지이동
 	@GetMapping("/admin")

@@ -134,7 +134,7 @@
         
         <hr>
         <div id="bookListContainer">
-            <div th:each="book : ${wishList}" class="book-item d-flex align-items-start">
+            <div th:each="book : ${rentList}" class="book-item d-flex align-items-start">
                 <img th:src="${book.coverImage}" alt="표지" class="book-cover">
                 <div class="book-info">
                     <div class="book-title" th:text="${book.title}">도서 제목</div>
@@ -171,28 +171,28 @@
             <ul class="pagination justify-content-center">
                 <li class="page-item" th:if="${!page.first}">
                     <a class="page-link"
-                       th:href="@{/book/wishList(page=0, size=${page.size})}"
+                       th:href="@{/book/rentList(page=0, size=${page.size})}"
                        tabindex="-1">&lt;&lt;</a>
                 </li>
                 <li class="page-item" th:if="${!page.first}">
                     <a class="page-link"
-                       th:href="@{/book/wishList(page=${page.number - 1}, size=${page.size})}"
+                       th:href="@{/book/rentList(page=${page.number - 1}, size=${page.size})}"
                        tabindex="-1">&lt;</a>
                 </li>
                 <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
                     th:classappend="${i} == ${page.number} ? 'active'" class="page-item">
                     <a class="page-link"
-                       th:href="@{/book/wishList(page=${i}, size=${page.size})}"
+                       th:href="@{/book/rentList(page=${i}, size=${page.size})}"
                        th:text="${i + 1}">1</a>
                 </li>
                 <li class="page-item" th:if="${!page.last}">
                     <a class="page-link"
-                       th:href="@{/book/wishList(page=${page.number + 1}, size=${page.size})}"
+                       th:href="@{/book/rentList(page=${page.number + 1}, size=${page.size})}"
                        tabindex="-1">&gt;</a>
                 </li>
                 <li class="page-item" th:if="${!page.last}">
                     <a class="page-link"
-                       th:href="@{/book/wishList(page=${page.totalPages - 1}, size=${page.size})}"
+                       th:href="@{/book/rentList(page=${page.totalPages - 1}, size=${page.size})}"
                        tabindex="-1">&gt;&gt;</a>
                 </li>
             </ul>

@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,5 +96,14 @@ public class RentServiceImpl implements IRentService {
 			rentRepository.save(rentEntity);
 			log.info("반납처리 rentId : {}", rentEntity.getRentId());
 		}
+	}
+	
+	// 대여 목록
+	@Override
+	public Page<BookEntity> findRentListByMemberId(Long memberId, Pageable pageable) throws Exception {
+		
+		Page<RentEntity> rentPage = rentRepository.findByMemberEntity_MemberId(memberId, pageable);
+		
+		return rentPage.map(RentEntity::getBookEntity);
 	}
 }
