@@ -1,121 +1,153 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <title>회원가입</title>
-  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-  <style>
-    body {
-      font-family: 'Arial', sans-serif;
-      background-color: #fafafa;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-    }
+<meta charset="UTF-8">
+<title>회원가입</title>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: #fafafa;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+}
 
-    .login-wrapper {
-      width: 500px;
-      background-color: white;
-      padding: 40px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
+.login-wrapper {
+  width: 500px;
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
 
-    h1 {
-      font-size: 26px;
-      font-weight: bold;
-      margin-bottom: 30px;
-      text-align: center;
-    }
+h1 {
+  font-size: 26px;
+  font-weight: bold;
+  margin-bottom: 30px;
+  text-align: center;
+}
 
-    .box {
-      border: 1px solid #ddd;
-      padding: 30px;
-    }
+.box {
+  border: 1px solid #ddd;
+  padding: 30px;
+}
 
-    .box h2 {
-      font-size: 16px;
-      margin-bottom: 15px;
-    }
+.box h2 {
+  font-size: 16px;
+  margin-bottom: 15px;
+}
 
-    .register-form {
-      display: flex;
-      flex-direction: column;
-    }
+.register-form {
+  display: flex;
+  flex-direction: column;
+}
 
-    .register-form input[type="text"],
-    .register-form input[type="password"],
-    .register-form input[type="email"] {
-      padding: 10px;
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      font-size: 14px;
-    }
+.register-form input[type="text"],
+.register-form input[type="password"],
+.register-form input[type="email"] {
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+  font-size: 14px;
+}
 
-    .checkbox-group {
-      display: flex;
-      align-items: center;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
+.checkbox-group {
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  margin-bottom: 15px;
+}
 
-    .checkbox-group input[type="checkbox"] {
-      margin-right: 5px;
-    }
+.checkbox-group input[type="checkbox"] {
+  margin-right: 5px;
+}
 
-    .register-btn {
-      width: 100%;
-      background-color: black;
-      color: white;
-      padding: 12px;
-      border: none;
-      font-weight: bold;
-      cursor: pointer;
-      font-size: 15px;
-    }
+.register-btn {
+  width: 100%;
+  background-color: black;
+  color: white;
+  padding: 12px;
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 15px;
+}
 
-    .register-btn:hover {
-      background-color: #222;
-    }
+.register-btn:hover {
+  background-color: #222;
+}
 
-    .msg {
-      font-size: 12px;
-      margin-bottom: 8px;
-      color: red;
-      min-height: 18px;
-      line-height: 18px;
-      display: block;
-    }
+.msg {
+  font-size: 12px;
+  margin-bottom: 8px;
+  color: red;
+  min-height: 18px;
+  line-height: 18px;
+  display: block;
+}
 
-    .msg.valid {
-      color: green;
-    }
-    
-	.modal {
-	  display: none; position: fixed; z-index: 1000;
-	  left: 0; top: 0; width: 100%; height: 100%;
-	  background-color: rgba(0,0,0,0.4);
-	}
+.msg.valid {
+  color: green;
+}
+   
+.modal {
+  display: none; position: fixed; z-index: 1000;
+  left: 0; top: 0; width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+  background-color: #fff; margin: 10% auto; padding: 20px;
+  border-radius: 8px; width: 500px; max-height: 70%;
+  overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+.modal-content h3 {
+  margin-top: 0;
+}
+
+.terms-text p {
+  font-size: 14px; line-height: 1.6;
+}
+
+.close {
+  color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;
+}
 	
-	.modal-content {
-	  background-color: #fff; margin: 10% auto; padding: 20px;
-	  border-radius: 8px; width: 500px; max-height: 70%;
-	  overflow-y: auto; box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-	}
-	
-	.modal-content h3 {
-	  margin-top: 0;
-	}
-	
-	.terms-text p {
-	  font-size: 14px; line-height: 1.6;
-	}
-	
-	.close {
-	  color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer;
-	}
+.email-auth-box,
+.email-code-box {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.email-auth-box input,
+.email-code-box input {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 3px;
+}
+
+.email-auth-box button,
+.email-code-box button {
+  padding: 10px 16px;
+  background-color: #1f2d3d;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.code-msg {
+  margin-left: 10px;
+  font-size: 14px;
+  line-height: 36px;
+}
 </style>
 
 </head>
@@ -137,9 +169,19 @@
       <input type="text" name="memberName" id="memberName" placeholder="이름" required />
       <div id="nameMsg" class="msg">&nbsp;</div>
 
-      <input type="email" name="memberEmail" id="memberEmail" placeholder="이메일" required />
-      <div id="emailMsg" class="msg">&nbsp;</div>
-
+      <div class="email-auth-box">
+		  <input type="email" id="memberEmail" name="memberEmail" placeholder="이메일" required />
+		  <button type="button" id="sendCodeBtn">인증 코드 발송</button>
+		</div>
+		<div id="emailMsg" class="msg">&nbsp;</div>
+		
+		<!-- 인증 코드 입력 -->
+		<div class="email-code-box" style="display:none;">
+		  <input type="text" id="authCode" maxlength="6" placeholder="인증 코드 입력">
+		  <button type="button" id="verifyCodeBtn">인증 확인</button>
+		  <span id="verifyMessage" class="code-msg"></span>
+		</div>	
+		
       <!-- 이용약관 체크박스 + 보기 링크 -->
 	  <div class="checkbox-group">
 	  	<input type="checkbox" name="termsAgreed" value="Y" required>
@@ -356,6 +398,48 @@ $('.register-form').on('submit', function (e) {
 	    document.getElementById("termsModal").style.display = "none";
 	  }
 	};
+</script>
+
+<script>
+  $('#sendCodeBtn').on('click', function () {
+    const email = $('#memberEmail').val();
+    if (!email) {
+      alert('이메일을 입력해주세요.');
+      return;
+    }
+
+    $.post('/member/send-auth-email', { email })
+      .done(function (res) {
+        alert(res);
+        $('.email-code-box').show();
+      })
+      .fail(function () {
+        alert('인증 메일 전송 실패');
+      });
+  });
+
+  $('#verifyCodeBtn').on('click', function () {
+    const email = $('#memberEmail').val();
+    const code = $('#authCode').val();
+
+    if (!code) {
+      alert('인증 코드를 입력해주세요.');
+      return;
+    }
+
+    $.post('/member/verify-auth-code', { email, code })
+      .done(function (res) {
+        $('#verifyMessage').text(res);
+        if (res.includes("성공")) {
+          $('#verifyMessage').css("color", "green");
+        } else {
+          $('#verifyMessage').css("color", "red");
+        }
+      })
+      .fail(function () {
+        alert('인증 확인 실패');
+      });
+  });
 </script>
 </body>
 </html>
