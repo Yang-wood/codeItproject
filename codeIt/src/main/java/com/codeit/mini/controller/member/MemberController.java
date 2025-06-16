@@ -106,8 +106,8 @@ public class MemberController {
             session.setAttribute("member", latest);  // 세션 갱신
             model.addAttribute("member", latest);    // 화면에도 반영
             
-            int rentCount = memberService.getRentCount(latest.getMemberId());
-            model.addAttribute("rentCount", rentCount); // 추가
+            model.addAttribute("rentCount", memberService.getRentCount(latest.getMemberId())); //내 서재 개수
+            model.addAttribute("wishCount", memberService.getWishCount(latest.getMemberId())); //위시리스트 개수
             
             return "/member/mypage";
         } else {

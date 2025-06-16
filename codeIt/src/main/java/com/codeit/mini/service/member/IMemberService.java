@@ -19,4 +19,6 @@ Long register(MemberDTO dto);
 	void delete(Long memberId);
 	
 	int getRentCount(Long memberId); // 추가
+	
+	int getWishCount(Long memberId);
 }

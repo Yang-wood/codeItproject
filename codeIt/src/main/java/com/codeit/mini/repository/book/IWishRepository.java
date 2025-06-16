@@ -21,4 +21,6 @@ public interface IWishRepository extends JpaRepository<WishEntity, Long> {
 														 BookEntity bookEntity) throws Exception;
 	
 	Page<WishEntity> findByMemberEntity_MemberId(Long memberId, Pageable pageable) throws Exception;
+	
+	int countByMemberEntity_MemberId(Long memberId); // 추가
 }

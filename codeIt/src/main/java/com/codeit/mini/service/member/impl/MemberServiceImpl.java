@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.repository.book.IRentRepository;
+import com.codeit.mini.repository.book.IWishRepository;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.member.IMemberService;
 
@@ -22,6 +23,8 @@ public class MemberServiceImpl implements IMemberService{
 	private final IMemberRepository memberRepository;
 	
 	private final IRentRepository rentRepository;
+	
+	private final IWishRepository wishRepository;
 	
 	@Override
 	public Long register(MemberDTO dto) {
@@ -115,6 +118,12 @@ public class MemberServiceImpl implements IMemberService{
 	public int getRentCount(Long memberId) {
 		
 		return rentRepository.countByMemberEntity_MemberId(memberId);
+	}
+
+	@Override
+	public int getWishCount(Long memberId) {
+		
+		return wishRepository.countByMemberEntity_MemberId(memberId);
 	}
 
 	
