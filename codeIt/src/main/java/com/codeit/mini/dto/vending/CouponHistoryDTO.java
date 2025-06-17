@@ -20,7 +20,7 @@ public class CouponHistoryDTO {
 	private Long itemId;
 	private String couponCode;
 	private String couponType;
-	private CouponStatusEnum status;
+	private String status;
 	private LocalDateTime issuedDate;
 	private LocalDateTime usedDate;
 	private LocalDateTime expireDate;

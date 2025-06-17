@@ -2,6 +2,8 @@ package com.codeit.mini.dto.vending;
 
 import java.time.LocalDateTime;
 
+import com.codeit.mini.entity.comm.VendingType;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

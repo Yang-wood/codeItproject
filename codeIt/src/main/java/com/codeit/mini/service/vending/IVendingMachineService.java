@@ -6,6 +6,7 @@ import java.util.Optional;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
 import com.codeit.mini.dto.vending.VendingResultDTO;
 import com.codeit.mini.entity.admin.Admin;
+import com.codeit.mini.entity.comm.VendingType;
 import com.codeit.mini.entity.vending.VendingMachinesEntity;
 
 import jakarta.annotation.Nullable;
@@ -31,25 +32,19 @@ public interface IVendingMachineService {
 														.machineId(vm.getMachineId())
 														.adminId(vm.getAdminId().getAdminId())
 														.name(vm.getName())
-														.type(vm.getType())
+														.type(vm.getType().name())
 														.build();
 		return machineDTO;
 	}
 	
-	default VendingMachinesEntity toEntity(VendingMachineDTO vmDto) {
-		
-		Admin admin = null;
-		
-	    if (vmDto.getAdminId() != null) {
-	        admin = Admin.builder().adminId(vmDto.getAdminId()).build();
-	    }
+	default VendingMachinesEntity toEntity(VendingMachineDTO vmDto, Admin admin) {
 		
 		VendingMachinesEntity vmEntity = VendingMachinesEntity.builder()
 															 .machineId(vmDto.getMachineId())
 															 .adminId(admin)
 															 .name(vmDto.getName())
 															 .description(vmDto.getDescription())
-															 .type(vmDto.getType())
+															 .type(VendingType.valueOf(vmDto.getType()))
 															 .build();
 		return vmEntity;
 	}

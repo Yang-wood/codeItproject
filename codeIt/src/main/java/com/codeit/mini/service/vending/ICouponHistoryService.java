@@ -8,6 +8,8 @@ import org.springframework.data.domain.Pageable;
 import com.codeit.mini.dto.vending.CouponHistoryDTO;
 import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
 import com.codeit.mini.dto.vending.CouponStatusDTO;
+import com.codeit.mini.entity.comm.CouponStatusEnum;
+import com.codeit.mini.entity.comm.VendingType;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.VendingItemEntity;
@@ -39,7 +41,7 @@ public interface ICouponHistoryService {
 											   .itemId(entity.getItemId().getItemId())
 											   .couponCode(entity.getCouponCode())
 											   .couponType(entity.getCouponType())
-											   .status(entity.getStatus())
+											   .status(entity.getStatus().name())
 											   .issuedDate(entity.getIssuedDate())
 											   .usedDate(entity.getUsedDate())
 											   .expireDate(entity.getExpireDate())
@@ -55,7 +57,7 @@ public interface ICouponHistoryService {
 														.itemId(itemEntity)
 														.couponCode(dto.getCouponCode())
 														.couponType(dto.getCouponType())
-														.status(dto.getStatus())
+														.status(CouponStatusEnum.valueOf(dto.getStatus()))
 														.build();
 		
 		entity.setUsedDate(dto.getUsedDate());

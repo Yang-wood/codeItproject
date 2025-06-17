@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.entity.comm.CouponStatusEnum;
+import com.codeit.mini.entity.comm.VendingType;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.MachineItemEntity;
 import com.codeit.mini.entity.vending.TestCouponEntity;
@@ -52,7 +53,7 @@ public class TestCouponServiceImpl implements ITestCouponService{
 		MachineItemEntity machineItem = machineItemRepository.findMachineItem(machineId, itemId)
 															 .orElseThrow(() -> new RuntimeException("해당 자판기와 상품 연결 없음"));
 		
-		String machineType = machineItem.getVendingMachine().getType().toLowerCase();
+		VendingType machineType = machineItem.getVendingMachine().getType();
 	    boolean isRandom = machineType.equals("random");
 	    
 	    if (!isRandom && isTest) {

@@ -56,7 +56,7 @@ public class CouponHistoryServiceImpl implements ICouponHistoryService{
 															 .orElseThrow(() -> new RuntimeException("해당 자판기와 상품 연결 없음"));
 		
 		VendingMachinesEntity vendingMachine = machineItem.getVendingMachine();
-	    String vendingType = vendingMachine.getType().toLowerCase();
+	    String vendingType = vendingMachine.getType().name().toLowerCase();
 	    String itemType = item.getItemType().toLowerCase();
 
 	    boolean isRandom = vendingType.equals("random");

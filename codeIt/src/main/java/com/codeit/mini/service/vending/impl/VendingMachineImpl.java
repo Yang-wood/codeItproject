@@ -10,6 +10,7 @@ import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
 import com.codeit.mini.dto.vending.VendingResultDTO;
 import com.codeit.mini.entity.admin.Admin;
+import com.codeit.mini.entity.comm.VendingType;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.MachineItemEntity;
@@ -65,7 +66,13 @@ public class VendingMachineImpl implements IVendingMachineService{
 			throw new IllegalArgumentException(vmDto.getName() + "라는 이름은 이미 존재하는 자판기 이름입니다.");
 		}
 		
-		VendingMachinesEntity vmEntity = toEntity(vmDto);
+	    Admin admin = null;
+	    if (vmDto.getAdminId() != null) {
+	        admin = adminRepository.findById(vmDto.getAdminId())
+	                               .orElseThrow(() -> new IllegalArgumentException("관리자 정보가 없습니다. 관리자 번호 = " + vmDto.getAdminId()));
+	    }
+		
+		VendingMachinesEntity vmEntity = toEntity(vmDto, admin);
 		
 		machinesRepository.save(vmEntity);
 		
@@ -75,12 +82,8 @@ public class VendingMachineImpl implements IVendingMachineService{
 	@Override
 	public Optional<VendingMachineDTO> findVendingMachineById(Long vmId) {
 		
-//		VendingMachinesEntity readVm = machinesRepository.findById(vmId)
-//														 .orElseThrow(() -> new IllegalArgumentException("해당 자판기 정보가 없습니다. 자판기 번호 = " +vmId));
-		
 		return machinesRepository.findById(vmId).map(this::toDTO);
 		
-//		return Optional.of(entitiesToDto(readVm));
 	}
 
 	@Override
@@ -91,7 +94,7 @@ public class VendingMachineImpl implements IVendingMachineService{
 																								   .machineId(vmEntity.getMachineId())
 																								   .adminId(vmEntity.getAdminId() == null ? null : vmEntity.getAdminId().getAdminId())
 																								   .name(vmEntity.getName())
-																								   .type(vmEntity.getType())
+																								   .type(vmEntity.getType().name())
 																								   .description(vmEntity.getDescription())
 																								   .active(vmEntity.getIsActive())
 																								   .regDate(vmEntity.getRegDate())
@@ -173,48 +176,44 @@ public class VendingMachineImpl implements IVendingMachineService{
 	    MemberEntity member = memberRepository.findById(memberId)
 	    									  .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
 	    
-	    String type = vendingMachine.getType();
+	    VendingType type = vendingMachine.getType();
+	    
 	    List<MachineItemEntity> itemList = machineItemRepository.findAllByVendingMachineWithLock(vmId);
-        
 	    if (itemList.isEmpty()) {
-            throw new IllegalStateException("자판기에 등록된 아이템이 없습니다.");
-        }
+	        throw new IllegalStateException("자판기에 등록된 아이템이 없습니다.");
+	    }
 	    
-	    List<MachineItemEntity> filtered = itemList.stream()
-	            								   .filter(mi -> {
-	            									   VendingItemEntity item = mi.getVendingItem();
-	            									   return item.getIsActive() == 1 && (item.getStock() == null || item.getStock() > 0);
-	            								   })
-	            								   .toList();
-	    
+	    List<MachineItemEntity> filtered = itemList.stream().filter(mi -> {
+	                														VendingItemEntity item = mi.getVendingItem();
+	                														return item.getIsActive() == 1 && (item.getStock() == null || item.getStock() > 0);
+	            														  }).toList();
+
 	    if (filtered.isEmpty()) {
-	        throw new IllegalStateException("사용 가능한 아이템이 없습니다.");
+	    	throw new IllegalStateException("사용 가능한 아이템이 없습니다.");
 	    }
 	    
 	    MachineItemEntity selected;
 	    boolean isFreePassUsed = false;
 	    TestCouponDTO usedFreePass = null;
 	    
-	    if ("choice".equalsIgnoreCase(type)) {
-	        if (itemId == null) {
-	            throw new IllegalArgumentException("선택 자판기에는 itemId가 필요합니다.");
+	    switch (type) {
+	        case CHOICE -> {
+		    	if (itemId == null) {
+		    		throw new IllegalArgumentException("선택 자판기에는 itemId가 필요합니다.");
+		    	}
+		    	selected = itemList.stream().filter(mi -> mi.getVendingItem().getItemId().equals(itemId))
+		                					.findFirst()
+		                					.orElseThrow(() -> new RuntimeException("해당 아이템은 자판기에 없습니다."));
+		    }
+	        case RANDOM -> {
+	        	Optional<TestCouponDTO> passOpt = testCouponService.useFreePassIfExists(memberId);
+	        	if (passOpt.isPresent()) {
+	        		isFreePassUsed = true;
+	        		usedFreePass = passOpt.get();
+	        	}
+	        	selected = drawRandomItem(filtered);
 	        }
-
-	        selected = itemList.stream().filter(mi -> mi.getVendingItem().getItemId().equals(itemId))
-							            .findFirst()
-							            .orElseThrow(() -> new RuntimeException("해당 아이템은 자판기에 없습니다."));
-	        
-	    } else if ("random".equalsIgnoreCase(type)) {
-	    	Optional<TestCouponDTO> passOpt = testCouponService.useFreePassIfExists(memberId);
-	        
-	    	if (passOpt.isPresent()) {
-	            isFreePassUsed = true;
-	            usedFreePass = passOpt.get();
-	        }
-	    	
-	    	selected = drawRandomItem(filtered);
-	    } else {
-	        throw new IllegalArgumentException("알 수 없는 자판기 타입입니다: " + type);
+	        default -> throw new IllegalArgumentException("알 수 없는 자판기 타입입니다: " + type);
 	    }
 	    
 	    VendingItemEntity item = selected.getVendingItem();
@@ -236,7 +235,7 @@ public class VendingMachineImpl implements IVendingMachineService{
 	    CouponHistoryEntity coupon = null;
 
 	    if (!isFreePassUsed) {
-	        costPoint = "random".equalsIgnoreCase(type) ? 100 : item.getValue();
+	    	costPoint = (type == VendingType.RANDOM) ? 100 : item.getValue();
 	        if (costPoint > 0) {
 	            pointHistory = pointService.usePoint(memberId, costPoint, "자판기 이용 - " + item.getName());
 	        }
