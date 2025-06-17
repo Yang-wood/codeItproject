@@ -1,4 +1,4 @@
-package com.codeit.mini.repository.vending.impl;
+package com.codeit.mini.repository.vending.querydsl;
 
 import java.util.List;
 
@@ -13,7 +13,6 @@ import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
 import com.codeit.mini.dto.vending.CouponStatusDTO;
 import com.codeit.mini.entity.comm.CouponStatusEnum;
 import com.codeit.mini.entity.vending.QCouponHistoryEntity;
-import com.codeit.mini.repository.vending.ICouponStatusRepository;
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.core.types.Order;
 import com.querydsl.core.types.OrderSpecifier;

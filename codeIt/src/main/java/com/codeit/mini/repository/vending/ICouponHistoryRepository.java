@@ -4,14 +4,16 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.codeit.mini.entity.comm.CouponStatusEnum;
+import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
+import com.codeit.mini.repository.vending.querydsl.ICouponStatusRepository;
 
-public interface ICouponHistoryRepository extends JpaRepository<CouponHistoryEntity, Long>, ICouponStatusRepository{
+public interface ICouponHistoryRepository extends JpaRepository<CouponHistoryEntity, Long> {
 
 	Optional<CouponHistoryEntity> findByCouponCode(String couponCode);
 	
@@ -24,4 +26,6 @@ public interface ICouponHistoryRepository extends JpaRepository<CouponHistoryEnt
     boolean existsByCouponCode(String couponCode);
     
     Page<CouponHistoryEntity> findByMemberId_MemberId(Long memberId, Pageable pageable);
+    
+    List<CouponHistoryEntity> findAllByMemberId(MemberEntity member);
 }

@@ -4,8 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.codeit.mini.dto.vending.CouponHistoryDTO;
@@ -19,10 +19,12 @@ import com.codeit.mini.entity.vending.VendingItemEntity;
 import com.codeit.mini.entity.vending.VendingMachinesEntity;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.repository.vending.ICouponHistoryRepository;
-import com.codeit.mini.repository.vending.ICouponStatusRepository;
 import com.codeit.mini.repository.vending.IMachineItemRepository;
 import com.codeit.mini.repository.vending.IVendingItemRepository;
+import com.codeit.mini.repository.vending.IVendingMachinesRepository;
+import com.codeit.mini.repository.vending.querydsl.ICouponStatusRepository;
 import com.codeit.mini.service.vending.ICouponHistoryService;
+import com.codeit.mini.service.vending.IVendingMachineService;
 import com.codeit.mini.util.CouponCodeGenerator;
 
 import jakarta.transaction.Transactional;
@@ -50,42 +52,40 @@ public class CouponHistoryServiceImpl implements ICouponHistoryService{
 		VendingItemEntity item = itemRepository.findById(itemId)
 											   .orElseThrow(() -> new RuntimeException("존재하지 않는 상품"));
 		
-		MachineItemEntity machineItem = machineItemRepository.findMachineItem(itemId, machineId)
+		MachineItemEntity machineItem = machineItemRepository.findMachineItem(machineId, itemId)
 															 .orElseThrow(() -> new RuntimeException("해당 자판기와 상품 연결 없음"));
 		
-		boolean alreadyIssued = couponRepository.existsByMemberId_MemberIdAndItemId_ItemIdAndStatus(memberId, itemId, CouponStatusEnum.ISSUED);
-		
-		if (alreadyIssued) {
-			throw new IllegalStateException("이미 유효한 쿠폰이 존재합니다.");
-		}
-		
-		String couponCode;
-		
+		VendingMachinesEntity vendingMachine = machineItem.getVendingMachine();
+	    String vendingType = vendingMachine.getType().toLowerCase();
+	    String itemType = item.getItemType().toLowerCase();
+
+	    boolean isRandom = vendingType.equals("random");
+	    boolean isRentalOrDiscount = itemType.equals("rental") || itemType.equals("discount");
+	    
+	    if (!isRandom || !isRentalOrDiscount) {
+	        boolean alreadyIssued = couponRepository.existsByMemberId_MemberIdAndItemId_ItemIdAndStatus(
+	        										 memberId, itemId, CouponStatusEnum.ISSUED);
+	        if (alreadyIssued) {
+	            throw new IllegalStateException("이미 유효한 쿠폰이 존재합니다.");
+	        }
+	    }
+	    
+	    String couponCode;
 	    do {
 	        couponCode = CouponCodeGenerator.generateCode();
 	    } while (couponRepository.existsByCouponCode(couponCode));
+	    
+	    LocalDateTime expireDate = LocalDateTime.now().plusDays(7);
 		
-		VendingMachinesEntity vendingMachine = machineItem.getVendingMachine();
-		String vendingType = vendingMachine.getType();
+	    CouponHistoryEntity entity = CouponHistoryEntity.builder()
+											            .memberId(member)
+											            .itemId(item)
+											            .couponCode(couponCode)
+											            .couponType(item.getItemType())
+											            .status(CouponStatusEnum.ISSUED)
+											            .build();
 		
-		LocalDateTime expireDate = null;
-		
-	    if ("RANDOM".equalsIgnoreCase(machineItem.getVendingMachine().getType())) {
-	    	expireDate = LocalDateTime.now().plusDays(7);
-	    }
-		
-		CouponHistoryEntity entity = CouponHistoryEntity.builder()
-														.memberId(member)
-														.itemId(item)
-														.couponCode(couponCode)
-														.couponType(item.getItemType())
-														.status(CouponStatusEnum.ISSUED)
-														.build();
-		
-		if (expireDate != null) {
-		    entity.setExpireDate(expireDate);
-		}
-		
+		entity.setExpireDate(expireDate);
 		return couponRepository.save(entity);
 	}
 

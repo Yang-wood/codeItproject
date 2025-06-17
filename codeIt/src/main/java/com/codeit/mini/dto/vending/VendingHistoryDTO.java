@@ -25,4 +25,6 @@ public class VendingHistoryDTO {
 	private String statusFilter;
 	private Long machineIdFilter;
 
+	private String itemName;
+	private String couponCode;
 }

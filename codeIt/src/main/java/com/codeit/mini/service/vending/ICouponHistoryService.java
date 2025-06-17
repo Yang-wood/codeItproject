@@ -2,13 +2,12 @@ package com.codeit.mini.service.vending;
 
 import java.util.List;
 
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import com.codeit.mini.dto.vending.CouponHistoryDTO;
 import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
 import com.codeit.mini.dto.vending.CouponStatusDTO;
-import com.codeit.mini.entity.comm.CouponStatusEnum;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.VendingItemEntity;

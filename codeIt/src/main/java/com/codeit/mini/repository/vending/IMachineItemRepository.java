@@ -28,18 +28,18 @@ public interface IMachineItemRepository extends JpaRepository<MachineItemEntity,
 	
 	@Modifying
 	@Query("DELETE FROM MachineItemEntity mi "
-		 + "WHERE mi.id.machineId = :machineId")
+		 + "WHERE mi.vendingMachine.machineId = :machineId")
 	int deleteByMachineId(@Param("machineId") Long machineId);
 	
 	@Modifying
 	@Query("DELETE FROM MachineItemEntity mi "
-		 + "WHERE mi.id.itemId = :itemId")
+		 + "WHERE mi.vendingItem.itemId = :itemId")
 	int deleteByItemId(@Param("itemId") Long itemId);
 	
 	@Query("SELECT mi FROM MachineItemEntity mi "
 	     + "WHERE mi.vendingMachine.machineId = :machineId "
 		 + "AND mi.vendingItem.itemId = :itemId")
-		Optional<MachineItemEntity> findMachineItem(@Param("machineId") Long machineId,
-		                                            @Param("itemId") Long itemId);
+	Optional<MachineItemEntity> findMachineItem(@Param("machineId") Long machineId,
+												@Param("itemId") Long itemId);
 	
 }

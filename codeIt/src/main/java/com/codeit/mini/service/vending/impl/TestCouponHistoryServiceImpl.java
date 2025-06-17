@@ -50,7 +50,7 @@ public class TestCouponHistoryServiceImpl implements ITestCouponHistoryService {
 	public PageResultDTO<TestCouponHistoryDTO, TestCouponHistoryEntity> getHistoriesByMember(Long memberId, PageRequestDTO requestDTO) {
     	Pageable pageable = requestDTO.getPageable(Sort.by("regDate").descending());
         
-    	Page<TestCouponHistoryEntity> result = historyRepository.findByTestCoupon_MemberId_MemberId(memberId, pageable);
+    	Page<TestCouponHistoryEntity> result = historyRepository.findByTestCouponId_MemberId_MemberId(memberId, pageable);
         
     	return new PageResultDTO<>(result, this::toDTO);
 	}
@@ -59,7 +59,7 @@ public class TestCouponHistoryServiceImpl implements ITestCouponHistoryService {
     public PageResultDTO<TestCouponHistoryDTO, TestCouponHistoryEntity> getHistoriesByCouponCode(String couponCode, PageRequestDTO requestDTO) {
         Pageable pageable = requestDTO.getPageable(Sort.by("regDate").descending());
         
-        Page<TestCouponHistoryEntity> result = historyRepository.findByTestCoupon_CouponCode(couponCode, pageable);
+        Page<TestCouponHistoryEntity> result = historyRepository.findByTestCouponId_CouponCode(couponCode, pageable);
         
         return new PageResultDTO<>(result, this::toDTO);
     }

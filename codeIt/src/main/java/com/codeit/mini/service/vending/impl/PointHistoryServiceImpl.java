@@ -23,8 +23,8 @@ import lombok.extern.log4j.Log4j2;
 @RequiredArgsConstructor
 public class PointHistoryServiceImpl implements IPointHistoryService{
 	
-	private IPointHistoryRepository	pointRepository;
-	private IMemberRepository memberRepository;
+	private final IPointHistoryRepository	pointRepository;
+	private final IMemberRepository memberRepository;
 	
 	@Transactional
 	@Override
@@ -84,7 +84,7 @@ public class PointHistoryServiceImpl implements IPointHistoryService{
 	@Transactional
 	@Override
 	public Page<PointHistoryDTO> getPointHistory(Long memberId, Pageable page) {
-		return pointRepository.findByMember_MemberId(memberId, page).map(this::toDTO);
+		return pointRepository.findByMemberId_MemberId(memberId, page).map(this::toDTO);
 	}
 	
 }

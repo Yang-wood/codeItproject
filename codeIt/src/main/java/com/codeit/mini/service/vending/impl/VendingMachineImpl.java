@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
+import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
 import com.codeit.mini.dto.vending.VendingResultDTO;
 import com.codeit.mini.entity.admin.Admin;
@@ -24,6 +25,7 @@ import com.codeit.mini.repository.vending.IVendingHistoryRepository;
 import com.codeit.mini.repository.vending.IVendingMachinesRepository;
 import com.codeit.mini.service.vending.ICouponHistoryService;
 import com.codeit.mini.service.vending.IPointHistoryService;
+import com.codeit.mini.service.vending.ITestCouponService;
 import com.codeit.mini.service.vending.IVendingMachineService;
 
 import jakarta.annotation.Nullable;
@@ -43,6 +45,7 @@ public class VendingMachineImpl implements IVendingMachineService{
 	private final IPointHistoryService pointService;
 	private final IVendingHistoryRepository vendingHistoryRepository;
 	private final ICouponHistoryService couponService;
+	private final ITestCouponService testCouponService;
 	
 	@Override
 	@Transactional
@@ -178,16 +181,20 @@ public class VendingMachineImpl implements IVendingMachineService{
         }
 	    
 	    List<MachineItemEntity> filtered = itemList.stream()
-	            								   .filter(mi -> mi.getVendingItem().getIsActive() == 1 && mi.getVendingItem().getStock() > 0)
+	            								   .filter(mi -> {
+	            									   VendingItemEntity item = mi.getVendingItem();
+	            									   return item.getIsActive() == 1 && (item.getStock() == null || item.getStock() > 0);
+	            								   })
 	            								   .toList();
 	    
 	    if (filtered.isEmpty()) {
 	        throw new IllegalStateException("사용 가능한 아이템이 없습니다.");
 	    }
 	    
-	    boolean isFreePassUsed = false;
-	    
 	    MachineItemEntity selected;
+	    boolean isFreePassUsed = false;
+	    TestCouponDTO usedFreePass = null;
+	    
 	    if ("choice".equalsIgnoreCase(type)) {
 	        if (itemId == null) {
 	            throw new IllegalArgumentException("선택 자판기에는 itemId가 필요합니다.");
@@ -198,60 +205,78 @@ public class VendingMachineImpl implements IVendingMachineService{
 							            .orElseThrow(() -> new RuntimeException("해당 아이템은 자판기에 없습니다."));
 	        
 	    } else if ("random".equalsIgnoreCase(type)) {
-	    	 Optional<MachineItemEntity> freeItem = filtered.stream()
-	    	            									.filter(mi -> "free".equalsIgnoreCase(mi.getVendingItem().getItemType()))
-	    	            									.findFirst();
-	    	 
-	    	 if (freeItem.isPresent()) {
-	             selected = freeItem.get();
-	             isFreePassUsed = true;
-	         } else {
-	             selected = drawRandomItem(filtered);
-	         }
+	    	Optional<TestCouponDTO> passOpt = testCouponService.useFreePassIfExists(memberId);
+	        
+	    	if (passOpt.isPresent()) {
+	            isFreePassUsed = true;
+	            usedFreePass = passOpt.get();
+	        }
+	    	
+	    	selected = drawRandomItem(filtered);
 	    } else {
 	        throw new IllegalArgumentException("알 수 없는 자판기 타입입니다: " + type);
 	    }
-
+	    
 	    VendingItemEntity item = selected.getVendingItem();
 	    
 	    if (item.getValue() < 0) {
 	        throw new IllegalStateException("아이템 가격은 0P 이상이어야 합니다.");
 	    }
 	    
-	    if (item.getStock() <= 0) {
+	    if (item.getStock() != null && item.getStock() <= 0) {
 	        throw new IllegalStateException("재고 부족으로 자판기 이용이 불가합니다.");
 	    }
-	    item.setStock(item.getStock() - 1);
 	    
+	    if (item.getStock() != null) {
+	        item.setStock(item.getStock() - 1);
+	    }
+	    
+	    int costPoint = 0;
 	    PointHistoryEntity pointHistory = null;
 	    CouponHistoryEntity coupon = null;
 
-	    if (!isFreePassUsed && item.getValue() > 0) {
-	    	pointHistory = pointService.usePoint(memberId, item.getValue(), "자판기 이용 - " + item.getName());
+	    if (!isFreePassUsed) {
+	        costPoint = "random".equalsIgnoreCase(type) ? 100 : item.getValue();
+	        if (costPoint > 0) {
+	            pointHistory = pointService.usePoint(memberId, costPoint, "자판기 이용 - " + item.getName());
+	        }
 	    }
-	    
+
 	    if ("point".equalsIgnoreCase(item.getItemType())) {
 	        pointService.chargePoint(memberId, item.getValue(), "자판기 보상 - " + item.getName());
-
+	    
 	    } else if (!"free".equalsIgnoreCase(item.getItemType())) {
 	        coupon = couponService.issueCoupon(memberId, item.getItemId(), vmId);
 	    }
 	    
 	    vendingHistoryRepository.save(VendingHistoryEntity.builder()
-	            										  .memberId(member)
-	            										  .itemId(item)
-	            										  .pointId(pointHistory)
-	            										  .couponId(coupon)
-	            										  .payment(isFreePassUsed ? "free" : "point")
-	            										  .status("success")
-	            										  .build());
+														  .memberId(member)
+														  .itemId(item)
+														  .pointId(pointHistory)
+														  .couponId(coupon)
+														  .payment("point")
+														  .status("success")
+														  .build());
+	    
+	    String message;
+	    
+	    if ("point".equalsIgnoreCase(item.getItemType())) {
+	        message = item.getValue() + "P가 지급되었습니다!";
+	    } else if (coupon != null) {
+	        message = "'" + item.getName() + "' 쿠폰이 발급되었습니다!";
+	    } else if (isFreePassUsed) {
+	        message = "무료 뽑기권이 사용되었습니다!";
+	    } else {
+	        message = "'" + item.getName() + "'이(가) 사용되었습니다.";
+	    }
 
-	    return VendingResultDTO.builder().itemName(item.getName())
-	            						 .couponCode(coupon != null ? coupon.getCouponCode() : null)
-	            						 .costPoint(isFreePassUsed ? 0 : item.getValue())
-	            						 .rewardPoint("point".equals(item.getItemType()) ? item.getValue() : 0)
-	            						 .message("point".equals(item.getItemType()) ? item.getValue() + "P가 지급되었습니다!" : (coupon != null ? "'" + item.getName() + "' 쿠폰이 발급되었습니다!" : "'" + item.getName() + "'이(가) 사용되었습니다."))
-	            						 .build();
+	    return VendingResultDTO.builder()
+							   .itemName(item.getName())
+							   .couponCode(coupon != null ? coupon.getCouponCode() : null)
+							   .costPoint(isFreePassUsed ? 0 : costPoint)
+							   .rewardPoint("point".equals(item.getItemType()) ? item.getValue() : 0)
+							   .message(message)
+							   .build();
 	}
 
 	private MachineItemEntity drawRandomItem(List<MachineItemEntity> itemList) {

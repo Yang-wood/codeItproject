@@ -15,11 +15,11 @@ import com.codeit.mini.entity.vending.TestCouponHistoryEntity;
 
 public interface ITestCouponHistoryRepository extends JpaRepository<TestCouponHistoryEntity, Long> {
 
-	Page<TestCouponHistoryEntity> findByTestCoupon_TestCouponId(Long couponId, Pageable pageable);
+	Page<TestCouponHistoryEntity> findByTestCouponId_TestCouponId(Long couponId, Pageable pageable);
 
-    Page<TestCouponHistoryEntity> findByTestCoupon_MemberId_MemberId(Long memberId, Pageable pageable);
+    Page<TestCouponHistoryEntity> findByTestCouponId_MemberId_MemberId(Long memberId, Pageable pageable);
 
-    Page<TestCouponHistoryEntity> findByTestCoupon_CouponCode(String couponCode, Pageable pageable);
+    Page<TestCouponHistoryEntity> findByTestCouponId_CouponCode(String couponCode, Pageable pageable);
     
     @Query("SELECT h FROM TestCouponHistoryEntity h WHERE "
     	 + "(:memberId IS NULL OR h.memberId.memberId = :memberId) AND "

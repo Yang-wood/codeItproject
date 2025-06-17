@@ -5,7 +5,9 @@ import java.io.Serializable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @Embeddable
 @Data
 public class MachineItemId implements Serializable{
@@ -16,9 +18,6 @@ public class MachineItemId implements Serializable{
 	@Column(name = "item_id")
 	private Long itemId;
 	
-	public MachineItemId() {
-		
-	}
 	public MachineItemId(Long machineId, Long itemId) {
 		this.machineId = machineId;
 		this.itemId = itemId;

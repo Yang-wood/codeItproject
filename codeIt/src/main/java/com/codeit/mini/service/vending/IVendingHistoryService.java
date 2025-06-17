@@ -8,6 +8,7 @@ import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.PointHistoryEntity;
 import com.codeit.mini.entity.vending.VendingHistoryEntity;
 import com.codeit.mini.entity.vending.VendingItemEntity;
+import com.codeit.mini.entity.vending.VendingMachinesEntity;
 
 public interface IVendingHistoryService {
 
@@ -15,7 +16,7 @@ public interface IVendingHistoryService {
 	
 	PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> getHistoriesByMember(Long memberId, PageRequestDTO requestDTO);
 	
-	PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> getHistoriesByMachine(Long machineId, PageRequestDTO requestDTO);
+	PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> getHistoriesByMachine(Long machineId, Long itemId, PageRequestDTO requestDTO);
 	
 	long countByMember(Long memberId);
 	
@@ -29,13 +30,18 @@ public interface IVendingHistoryService {
 
 	
 	default VendingHistoryDTO toDTO (VendingHistoryEntity entity) {
+	    CouponHistoryEntity coupon = entity.getCouponId();
+	    VendingItemEntity item = entity.getItemId();
+	    
 		VendingHistoryDTO dto = VendingHistoryDTO.builder()
 												 .memberId(entity.getMemberId().getMemberId())
 												 .itemId(entity.getItemId().getItemId())
+												 .itemName(item.getName()) 
 												 .payment(entity.getPayment())
 												 .status(entity.getStatus())
 												 .pointId(entity.getPointId().getPointId())
 												 .couponId(entity.getCouponId().getCouponId())
+											     .couponCode(coupon != null ? coupon.getCouponCode() : null)
 												 .build();
 		
 		return dto;

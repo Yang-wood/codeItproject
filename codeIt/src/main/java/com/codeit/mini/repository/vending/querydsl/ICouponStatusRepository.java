@@ -1,4 +1,4 @@
-package com.codeit.mini.repository.vending;
+package com.codeit.mini.repository.vending.querydsl;
 
 import java.util.List;
 

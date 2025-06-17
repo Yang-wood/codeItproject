@@ -16,7 +16,15 @@ public interface IVendingHistoryRepository extends JpaRepository<VendingHistoryE
 	
 	Page<VendingHistoryEntity> findAllByCouponIdIsNotNull(Pageable pageable);
 	
-	Page<VendingHistoryEntity> findByItemId_VendingMachine_MachineId(Long machineId, Pageable pageable);
+	@Query("SELECT vh "
+		 + "FROM VendingHistoryEntity vh "
+		 + "WHERE vh.itemId.itemId = :itemId AND vh.itemId "
+		 + "IN (SELECT mi.vendingItem "
+		 	 + "FROM MachineItemEntity mi "
+		 	 + "WHERE mi.vendingMachine.machineId = :machineId)")
+	Page<VendingHistoryEntity> findByMachineIdAndItemId(@Param("machineId") Long machineId,
+														@Param("itemId") Long itemId,
+														Pageable pageable);
 	
 	@Query("SELECT COUNT(v) "
 		 + "FROM VendingHistoryEntity v "
@@ -25,7 +33,10 @@ public interface IVendingHistoryRepository extends JpaRepository<VendingHistoryE
 	
 	@Query("SELECT COUNT(v) "
 		 + "FROM VendingHistoryEntity v "
-		 + "WHERE v.itemId.vendingMachine.machineId = :machineId")
+		 + "WHERE v.itemId.itemId IN ( "
+		 + "SELECT mi.vendingItem.itemId "
+		 + "FROM MachineItemEntity mi "
+		 + "WHERE mi.vendingMachine.machineId = :machineId )")
 	long countByMachine(@Param("machineId") Long machineId);
 	
 	@Query("SELECT COALESCE(SUM(p.amount), 0) "
@@ -42,10 +53,12 @@ public interface IVendingHistoryRepository extends JpaRepository<VendingHistoryE
 	
 	@Query("SELECT v "
 		+ " FROM VendingHistoryEntity v "
-		+ " WHERE (:memberId IS NULL OR v.memberId.memberId = :memberId) AND "
-		+ "(:machineId IS NULL OR v.itemId.vendingMachine.machineId = :machineId) AND "
-		+ "(:payment IS NULL OR v.payment = :payment) AND "
-		+ "(:status IS NULL OR v.status = :status)")
+		+ " WHERE (:memberId IS NULL OR v.memberId.memberId = :memberId) "
+		+ " AND (:machineId IS NULL OR v.itemId.itemId IN "
+				+ " (SELECT mi.vendingItem.itemId FROM MachineItemEntity mi "
+				+ "  WHERE mi.vendingMachine.machineId = :machineId))"
+		+ " AND (:payment IS NULL OR v.payment = :payment) "
+		+ " AND (:status IS NULL OR v.status = :status)")
 	Page<VendingHistoryEntity> searchHistoriesWithFilters(@Param("memberId") Long memberId,
 		                                                  @Param("machineId") Long machineId,
 		                                                  @Param("payment") String payment,

@@ -48,10 +48,10 @@ public class VendingHistoryServiceImpl implements IVendingHistoryService{
 	}
 	
 	@Override
-	public  PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> getHistoriesByMachine(Long machineId, PageRequestDTO requestDTO) {
+	public  PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> getHistoriesByMachine(Long machineId, Long itemId, PageRequestDTO requestDTO) {
 		Pageable pageable = requestDTO.getPageable(Sort.by("regDate").descending());
 		
-		Page<VendingHistoryEntity> result = historyRepository.findByItemId_VendingMachine_MachineId(machineId, pageable);
+		Page<VendingHistoryEntity> result = historyRepository.findByMachineIdAndItemId(machineId, itemId, pageable);
 
 		Function<VendingHistoryEntity, VendingHistoryDTO> fn = (dto -> toDTO(dto));
 		
