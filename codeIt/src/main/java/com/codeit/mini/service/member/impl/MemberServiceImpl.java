@@ -2,11 +2,14 @@ package com.codeit.mini.service.member.impl;
 
 import java.util.Optional;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.entity.member.MemberEntity;
+import com.codeit.mini.repository.book.IRentRepository;
+import com.codeit.mini.repository.book.IWishRepository;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.member.IMemberService;
 
@@ -20,12 +23,20 @@ public class MemberServiceImpl implements IMemberService{
 	
 	private final IMemberRepository memberRepository;
 	
+	private final IRentRepository rentRepository;
+	
+	private final IWishRepository wishRepository;
+	
+	private final PasswordEncoder passwordEncoder;
 	@Override
 	public Long register(MemberDTO dto) {
 		
+		String rawPw = dto.getMemberPw();
+		String encPw = passwordEncoder.encode(rawPw);
+		
 		MemberEntity memberEntity = MemberEntity.builder()
 										.loginId(dto.getLoginId())
-										.memberPw(dto.getMemberPw())
+										.memberPw(encPw) // 암호화된 비밀번호 저장
 										.memberName(dto.getMemberName())
 										.memberEmail(dto.getMemberEmail())
 										.termsAgreed(dto.getTermsAgreed())
@@ -41,15 +52,23 @@ public class MemberServiceImpl implements IMemberService{
 	public void modify(MemberDTO dto) {
 		
 		Optional<MemberEntity> result = memberRepository.findById(dto.getMemberId());
-		
-		if (result.isPresent()) {
-			MemberEntity entity = result.get();
-			entity.changeName(dto.getMemberName());
-			entity.changeEmail(dto.getMemberEmail());
-			entity.changepw(dto.getMemberPw());
-            
-			memberRepository.save(entity);
-		}
+
+	    if (result.isPresent()) {
+	        MemberEntity entity = result.get();
+
+	        if (dto.getMemberName() != null)
+	            entity.changeName(dto.getMemberName());
+
+	        if (dto.getMemberEmail() != null)
+	            entity.changeEmail(dto.getMemberEmail());
+
+	        if (dto.getMemberPw() != null && !dto.getMemberPw().isBlank()) {
+	            String encPw = passwordEncoder.encode(dto.getMemberPw());
+	            entity.changepw(encPw);
+	        }
+
+	        memberRepository.save(entity);
+	    }
 		
 	}
 
@@ -66,7 +85,7 @@ public class MemberServiceImpl implements IMemberService{
 	            return Optional.empty(); // 탈퇴한 계정은 로그인 불가
 	        }
 	        
-	        if (rawPw.equals(member.getMemberPw())) {
+	        if (passwordEncoder.matches(rawPw, member.getMemberPw())) {
 	        	member.updateLastLogin();  // 로그인 시각 갱신
 	            memberRepository.save(member);  // 변경 내용 저장
 	            return Optional.of(entityToDto(member));
@@ -90,6 +109,11 @@ public class MemberServiceImpl implements IMemberService{
                 .memberName(entity.getMemberName())
                 .memberEmail(entity.getMemberEmail())
                 .emailVerified(entity.getEmailVerified())
+                .termsAgreed(entity.getTermsAgreed())
+                .status(entity.getStatus())
+                .role(entity.getRole())
+                .points(entity.getPoints())
+                .coupon(entity.getCoupon())
                 .regDate(entity.getRegDate())
                 .updateDate(entity.getUpDate())
                 .lastLogin(entity.getLastLogin())
@@ -106,6 +130,18 @@ public class MemberServiceImpl implements IMemberService{
 	        memberRepository.save(entity);
 	    });
 		
+	}
+
+	@Override
+	public int getRentCount(Long memberId) {
+		
+		return rentRepository.countByMemberEntity_MemberId(memberId);
+	}
+
+	@Override
+	public int getWishCount(Long memberId) {
+		
+		return wishRepository.countByMemberEntity_MemberId(memberId);
 	}
 
 	

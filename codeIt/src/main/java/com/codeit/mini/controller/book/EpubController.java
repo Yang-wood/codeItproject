@@ -1,4 +1,4 @@
-package com.codeit.mini.entity.epub;
+package com.codeit.mini.controller.book;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -16,6 +16,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.SessionAttributes;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.codeit.mini.dto.book.BookDTO;
+import com.codeit.mini.service.book.EpubService;
 import com.codeit.mini.service.book.IBookService;
 
 import jakarta.servlet.http.HttpSession;
@@ -32,6 +34,7 @@ import lombok.extern.log4j.Log4j2;
 @Controller
 @Log4j2
 @SessionAttributes("bookDTO")
+@RequestMapping("/admin")
 public class EpubController {
 
     @Autowired
@@ -40,18 +43,13 @@ public class EpubController {
     @Autowired
     private IBookService bookService;
 
-    @GetMapping("/epubTest")
-    public void epubGet() {
-        log.info("GET /epubTest 호출됨.");
-    }
-
     @GetMapping("/uploadEpub")
-    public String showUpload(Model model, SessionStatus sessionStatus) {
+    public String showUpload(Model model, SessionStatus sessionStatus, HttpSession session) {
         if (model.containsAttribute("bookDTO")) {
             sessionStatus.setComplete();
             log.info("@SessionAttributes 'bookDTO' 초기화 완료.");
         }
-        return "/book/epub/uploadEpub";
+        return "book/epub/uploadEpub";
     }
 
     @PostMapping("/uploadEpub")
@@ -61,7 +59,7 @@ public class EpubController {
         if (file.isEmpty()) {
             model.addAttribute("errorMessage", "업로드된 파일이 비어있습니다.");
             log.warn("업로드된 파일이 비어 있음.");
-            return "/book/epub/uploadEpub";
+            return "book/epub/uploadEpub";
         }
 
         try {
@@ -88,7 +86,7 @@ public class EpubController {
             model.addAttribute("errorMessage", "EPUB 파일 처리 중 오류가 발생했습니다: " + e.getMessage());
         }
 
-        return "/book/epub/uploadEpub";
+        return "book/epub/uploadEpub";
     }
 
     @PostMapping("/saveBook")
@@ -106,7 +104,7 @@ public class EpubController {
         if (!StringUtils.hasText(epubFilePath) || !Files.exists(Paths.get(epubFilePath))) {
             rttr.addFlashAttribute("errorMessage", "저장할 EPUB 파일 정보를 찾을 수 없습니다. 다시 업로드해주세요.");
             log.warn("임시 EPUB 파일이 존재하지 않음.");
-            return "redirect:/uploadEpub";
+            return "redirect:/admin/uploadEpub";
         }
 
         try {
@@ -117,12 +115,12 @@ public class EpubController {
             log.info("@SessionAttributes 'bookDTO' 초기화 완료.");
 
             rttr.addFlashAttribute("successMessage", "도서 정보가 성공적으로 저장되었습니다!");
-            return "redirect:/uploadEpub";
+            return "redirect:/admin/uploadEpub";
 
         } catch (Exception e) {
             log.error("도서 정보 저장 중 오류 발생: {}", e.getMessage(), e);
             rttr.addFlashAttribute("errorMessage", "도서 정보 저장 중 오류가 발생했습니다: " + e.getMessage());
-            return "redirect:/uploadEpub";
+            return "redirect:/admin/uploadEpub";
         }
     }
 

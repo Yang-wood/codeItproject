@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>회원 목록</title>
+<style>
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+.search-form {
+    margin-bottom: 20px;
+}
+
+.search-form input, .search-form select {
+    padding: 6px;
+    margin-right: 10px;
+}
+
+.btn {
+    padding: 6px 12px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.pagination {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.pagination ul {
+    list-style: none;
+    padding: 0;
+    display: inline-block;
+}
+
+.pagination ul li {
+    display: inline;
+    margin: 0 5px;
+}
+
+.pagination ul li a {
+    text-decoration: none;
+    padding: 5px 10px;
+    background: #eee;
+    border: 1px solid #ccc;
+    color: #333;
+}
+
+.pagination ul li a.active {
+    background: #2c3e50;
+    color: white;
+    border-color: #2c3e50;
+}
+
+.text-link {
+    color: inherit;       /* 파란색 링크 색 제거 */
+    text-decoration: none; /* 밑줄 제거 */
+}
+    
+</style>
+</head>
+<body>
+
+<header style="position:fixed;top:0;width:100%;height:64px;background:white;
+               border-bottom:1px solid #eee;padding:0 24px;display:flex;
+               justify-content:flex-start;align-items:center;gap:40px;z-index:1000;">
+
+    <!-- 로고 -->
+    <a th:href="@{/main}" class="logo"
+       style="font-size:1.4rem;font-weight:bold;color:#1f2d3d;text-decoration:none;">CODEIT</a>
+
+    <!-- 메뉴 -->
+    <nav style="display:flex;gap:20px;align-items:center ; margin-left:auto; padding-right:50px;">
+        
+        <!-- 일반 회원 -->
+        <div th:if="${session.member != null}">
+            <span th:text="${session.member.memberName}">회원이름</span>님 환영합니다!
+            <a th:href="@{/member/mypage}" style="text-decoration:none;color:#333;">마이페이지</a>
+            <a th:href="@{/member/logout}" style="text-decoration:none;color:#333;">로그아웃</a>
+        </div>
+
+        <!-- 관리자 -->
+        <div th:if="${session.admin != null}">
+            <span th:text="${session.admin.adminName}">관리자</span>님 환영합니다!
+            <a th:href="@{/admin/dashboard}" style="text-decoration:none;color:#333;">관리자 페이지</a>
+            <a th:href="@{/admin/logout}" style="text-decoration:none;color:#333;">로그아웃</a>
+        </div>
+
+        <!-- 비로그인 -->
+        <div th:if="${session.member == null and session.admin == null}">
+            <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+            <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
+        </div>
+        
+    </nav>
+</header>
+
+<h2>회원 목록</h2>
+
+<form class="search-form" th:action="@{/admin/members}" method="get">
+    <select name="type">
+        <option value="" th:selected="${#strings.isEmpty(param.type)}">전체</option>
+        <option value="n" th:selected="${#strings.equals(param.type, 'n')}">이름</option>
+        <option value="i" th:selected="${#strings.equals(param.type, 'i')}">아이디</option>
+        <option value="e" th:selected="${#strings.equals(param.type, 'e')}">이메일</option>
+    </select>
+    <input type="text" name="keyword" th:value="${param.keyword}" placeholder="검색어 입력">
+    <button type="submit" class="btn">검색</button>
+</form>
+
+<table>
+    <thead>
+    <tr>
+        <th>회원 ID</th>
+        <th>아이디</th>
+        <th>이름</th>
+        <th>이메일</th>
+        <th>가입일</th>
+        <th>상태</th>
+        <th>관리</th>
+    </tr>
+    </thead>
+	    <tbody>
+			<tr th:each="member : ${result.dtoList}">
+			    <td th:text="${member.memberId}">ID</td>
+			    
+			    <!-- 아이디 클릭 시 상세 페이지로 이동 -->
+			    <td>
+			        <a th:href="@{/admin/members/detail(memberId=${member.memberId})}" class="text-link"
+			           th:text="${member.loginId}">아이디</a>
+			    </td>
+			    
+			    <!-- 이름 클릭해도 이동 가능하게 하려면 아래처럼 -->
+			    <td>
+			        <a th:href="@{/admin/members/detail(memberId=${member.memberId})}" class="text-link"
+			           th:text="${member.memberName}">이름</a>
+			    </td>
+			    
+			    <td th:text="${member.memberEmail}">이메일</td>
+			    <td th:text="${#temporals.format(member.regDate, 'yyyy-MM-dd')}">가입일</td>
+			    <td th:text="${member.status == 0 ? '활동' : (member.status == 1 ? '정지' : '탈퇴')}">상태</td>
+			    <td>
+			        <a th:href="@{/admin/members/edit(memberId=${member.memberId})}" class="btn">수정</a>
+			        <form th:action="@{/admin/members/delete}" method="post" style="display:inline;">
+			            <input type="hidden" name="memberId" th:value="${member.memberId}" />
+			            <button type="submit" class="btn">삭제</button>
+			        </form>
+			    </td>
+			</tr>
+		</tbody>
+</table>
+
+<!-- 페이징 영역 -->
+<div class="pagination">
+    <ul>
+        <li th:if="${result.prev}">
+            <a th:href="@{/admin/members(page=${result.start - 1}, type=${param.type}, keyword=${param.keyword})}">이전</a>
+        </li>
+        <li th:each="page : ${result.pageList}">
+            <a th:href="@{/admin/members(page=${page}, type=${param.type}, keyword=${param.keyword})}"
+               th:text="${page}"
+               th:classappend="${page == result.page ? 'active' : ''}">1</a>
+        </li>
+        <li th:if="${result.next}">
+            <a th:href="@{/admin/members(page=${result.end + 1}, type=${param.type}, keyword=${param.keyword})}">다음</a>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

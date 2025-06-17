@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 상세 정보</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            padding: 40px;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+        }
+
+        .info-box {
+            max-width: 600px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+        }
+
+        .info-box dt {
+            font-weight: bold;
+            margin-top: 15px;
+        }
+
+        .info-box dd {
+            margin-left: 0;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            margin-top: 20px;
+            display: inline-block;
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<h2>회원 상세 정보</h2>
+
+<div class="info-box">
+    <dl>
+        <dt>회원 ID</dt>
+        <dd th:text="${dto.memberId}">1</dd>
+
+        <dt>아이디</dt>
+        <dd th:text="${dto.loginId}">testuser</dd>
+
+        <dt>이름</dt>
+        <dd th:text="${dto.memberName}">홍길동</dd>
+
+        <dt>이메일</dt>
+        <dd th:text="${dto.memberEmail}">test@example.com</dd>
+
+        <dt>회원 상태</dt>
+        <dd th:text="${dto.status == 0 ? '활동' : (dto.status == 1 ? '정지' : '탈퇴')}">활동</dd>
+
+        <dt>권한</dt>
+        <dd th:text="${dto.role == 0 ? '일반회원' : '관리자'}">일반회원</dd>
+
+        <dt>이메일 인증</dt>
+        <dd th:text="${dto.emailVerified.toString().equals('Y') ? '완료' : '미완료'}">완료</dd>
+
+        <dt>약관 동의</dt>
+        <dd th:text="${dto.termsAgreed.toString().equals('Y') ? '동의' : '미동의'}">동의</dd>
+
+        <dt>포인트</dt>
+        <dd th:text="${dto.points}">0</dd>
+
+        <dt>쿠폰</dt>
+        <dd th:text="${dto.coupon}">0</dd>
+    </dl>
+</div>
+
+<a th:href="@{/admin/members}" class="back-link"> 목록으로 돌아가기</a>
+
+</body>
+</html>

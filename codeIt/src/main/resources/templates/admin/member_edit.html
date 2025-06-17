@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>회원 정보 수정</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; padding: 40px; }
+        h2 { margin-bottom: 20px; }
+        form { max-width: 500px; }
+        label { display: block; margin-top: 20px; font-weight: bold; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; }
+        button { margin-top: 30px; padding: 12px 20px; background-color: #2c3e50; color: white; border: none; cursor: pointer; }
+        .back-link { margin-top: 20px; display: inline-block; color: #3498db; text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<h2>회원 정보 수정</h2>
+
+<form th:action="@{/admin/members/edit}" method="post">
+    <input type="hidden" name="memberId" th:value="${dto.memberId}" />
+
+    <label>회원 상태</label>
+    <select name="status">
+	    <option value="0" th:selected="${dto.status == 0}">활동</option>
+	    <option value="1" th:selected="${dto.status == 1}">정지</option>
+	    <option value="2" th:selected="${dto.status == 2}">탈퇴</option>
+	</select>
+
+    <label>권한 (Role)</label>
+    <select name="role">
+	    <option value="0" th:selected="${dto.role == 0}">일반회원</option>
+	    <option value="1" th:selected="${dto.role == 1}">관리자</option>
+	</select>
+
+    <label>포인트</label>
+    <input type="number" name="points" min="0" th:value="${dto.points}" />
+
+    <label>쿠폰</label>
+    <input type="number" name="coupon" min="0" th:value="${dto.coupon}" />
+
+    <button type="submit">수정 완료</button>
+</form>
+
+<a th:href="@{/admin/members}" class="back-link"> 목록으로 돌아가기</a>
+
+</body>
+</html>

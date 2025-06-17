@@ -1,4 +1,4 @@
-  package com.codeit.mini.entity.epub;
+  package com.codeit.mini.service.book;
   
   import java.io.File;
 import java.io.IOException;

@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 대시보드</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background-color: #2c3e50;
+            color: white;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .admin-name {
+            font-weight: bold;
+        }
+
+        nav a {
+            color: white;
+            margin-left: 20px;
+            text-decoration: none;
+        }
+
+        .container {
+            padding: 40px;
+        }
+
+        .card {
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            margin-top: 0;
+        }
+
+        .card a {
+            display: inline-block;
+            margin-top: 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <div>
+        <span class="admin-name" th:text="${session.admin.adminName} + ' 관리자님 안녕하세요!'">관리자님 안녕하세요!</span>
+    </div>
+    <nav>
+        <a th:href="@{/admin/logout}">로그아웃</a>
+    </nav>
+</header>
+
+<div class="container">
+    <h2>관리자 대시보드</h2>
+
+    <div class="card">
+        <h3>회원 관리</h3>
+        <a th:href="@{/admin/members}">회원 목록 보기</a>
+    </div>
+
+    <div class="card">
+        <h3>도서 등록</h3>
+        <a th:href="@{/admin/books/register}">신규 도서 등록</a>
+    </div>
+
+    <div class="card">
+        <h3>통계</h3>
+        <a th:href="@{/admin/stats}">사이트 통계 보기</a>
+    </div>
+</div>
+
+<script th:inline="javascript">
+/*<![CDATA[*/
+let msg = /*[[${msg}]]*/ null;
+if (msg) alert(msg);
+/*]]>*/
+</script>
+
+</body>
+</html>

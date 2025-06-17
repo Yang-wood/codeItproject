@@ -91,4 +91,20 @@ public class MemberEntity extends BaseEntity{
 	public void updateLastLogin() {
 	    this.lastLogin = LocalDateTime.now();
 	}
+	
+	public void changeStatus(int status) {
+		this.status = status;
+	}
+
+	public void changeRole(int role) {
+		this.role = role;
+	}
+
+	public void changePoints(int points) {
+		this.points = points;
+	}
+
+	public void changeCoupon(int coupon) {
+		this.coupon = coupon;
+	}
 }

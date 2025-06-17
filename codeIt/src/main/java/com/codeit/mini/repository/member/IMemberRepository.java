@@ -9,5 +9,10 @@ import com.codeit.mini.entity.member.MemberEntity;
 
 public interface IMemberRepository extends JpaRepository<MemberEntity, Long>, QuerydslPredicateExecutor<MemberEntity>{
 
+	
 	Optional<MemberEntity> findByLoginId(String loginId);
+	
+	Optional<MemberEntity> findByMemberEmail(String memberEmail);
+	
+	Optional<MemberEntity> findByMemberNameAndMemberEmail(String memberName, String memberEmail);
 }

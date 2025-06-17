@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Epub.js Reader with TOC</title>
+    <title>CODEIT eBookReader</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.5/jszip.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/epubjs/dist/epub.min.js"></script>
     <style>
@@ -176,9 +176,8 @@
         <div id="next">›</div>
         </div>
 
-    <script>
-        const bookPath = "/upload/epubs/755d2234-e80f-4980-a754-ca4938738762_pierre-souvestre_marcel-allain_fantomas_cranstoun-metcalfe.epub";
-        // const bookPath = "https://s3.amazonaws.com/moby-dick/moby-dick.epub"; // 테스트용 Moby Dick
+    <script th:inline="javascript">
+        const bookPath = /*[[${epubPath}]]*/ "";
 
         const viewer = document.getElementById('viewer');
         const prevButton = document.getElementById('prev');
