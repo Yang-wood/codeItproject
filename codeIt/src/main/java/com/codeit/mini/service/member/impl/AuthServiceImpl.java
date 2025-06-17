@@ -55,22 +55,22 @@ public class AuthServiceImpl implements AuthService{
     @Override
     @Transactional
     public boolean verifyAuthCode(String email, String code) {
-        Optional<EmailAuthEntity> result = emailAuthRepository.findById(email);
+    	
+    	Optional<EmailAuthEntity> result = emailAuthRepository.findById(email);
 
         if (result.isPresent()) {
             EmailAuthEntity auth = result.get();
 
             if (!auth.isExpired() && auth.getAuthCode().equals(code)) {
-                // 인증 성공 처리
-                memberRepository.findByMemberEmail(email).ifPresent(member -> {
-                    member.setEmailVerified('Y');
-                    memberRepository.save(member);
-                });
+                // ✅ verified 필드를 true로 변경
+                auth.setVerified(true);
+                emailAuthRepository.save(auth);  // 수정된 인증 정보 저장
 
-                emailAuthRepository.delete(auth); // 인증 완료 시 삭제
+                log.info("✅ 인증 코드 일치 및 verified 처리 완료");
                 return true;
             }
         }
+
         return false;
     }
 }

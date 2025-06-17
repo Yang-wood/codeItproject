@@ -28,7 +28,6 @@ public class MemberServiceImpl implements IMemberService{
 	private final IWishRepository wishRepository;
 	
 	private final PasswordEncoder passwordEncoder;
-	
 	@Override
 	public Long register(MemberDTO dto) {
 		
@@ -53,15 +52,23 @@ public class MemberServiceImpl implements IMemberService{
 	public void modify(MemberDTO dto) {
 		
 		Optional<MemberEntity> result = memberRepository.findById(dto.getMemberId());
-		
-		if (result.isPresent()) {
-			MemberEntity entity = result.get();
-			entity.changeName(dto.getMemberName());
-			entity.changeEmail(dto.getMemberEmail());
-			entity.changepw(dto.getMemberPw());
-            
-			memberRepository.save(entity);
-		}
+
+	    if (result.isPresent()) {
+	        MemberEntity entity = result.get();
+
+	        if (dto.getMemberName() != null)
+	            entity.changeName(dto.getMemberName());
+
+	        if (dto.getMemberEmail() != null)
+	            entity.changeEmail(dto.getMemberEmail());
+
+	        if (dto.getMemberPw() != null && !dto.getMemberPw().isBlank()) {
+	            String encPw = passwordEncoder.encode(dto.getMemberPw());
+	            entity.changepw(encPw);
+	        }
+
+	        memberRepository.save(entity);
+	    }
 		
 	}
 

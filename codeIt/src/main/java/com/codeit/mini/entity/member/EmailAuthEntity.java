@@ -21,6 +21,7 @@ import lombok.Setter;
 @Builder
 public class EmailAuthEntity {
 
+	
 	@Id
     @Column(length = 100)
     private String email; // member_email과 동일한 이메일
@@ -30,6 +31,9 @@ public class EmailAuthEntity {
 
     @Column(nullable = false)
     private LocalDateTime expireTime;
+    
+    @Column(nullable = false)
+    private boolean verified;  // 인증 성공 여부
 
     public boolean isExpired() {
         return LocalDateTime.now().isAfter(this.expireTime);
