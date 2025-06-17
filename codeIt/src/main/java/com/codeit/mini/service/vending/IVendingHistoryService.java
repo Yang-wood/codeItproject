@@ -35,13 +35,13 @@ public interface IVendingHistoryService {
 	    
 		VendingHistoryDTO dto = VendingHistoryDTO.builder()
 												 .memberId(entity.getMemberId().getMemberId())
-												 .itemId(entity.getItemId().getItemId())
-												 .itemName(item.getName()) 
+												 .itemId(entity.getItemId() != null ? entity.getItemId().getItemId() : null)
+												 .itemName(entity.getItemId() != null ? entity.getItemId().getName() : null) 
 												 .payment(entity.getPayment())
 												 .status(entity.getStatus())
-												 .pointId(entity.getPointId().getPointId())
-												 .couponId(entity.getCouponId().getCouponId())
-											     .couponCode(coupon != null ? coupon.getCouponCode() : null)
+												 .pointId(entity.getPointId() != null ? entity.getPointId().getPointId() : null)
+												 .couponId(entity.getCouponId() != null ? entity.getCouponId().getCouponId() : null)
+											     .couponCode(entity.getCouponId() != null ? entity.getCouponId().getCouponCode() : null)
 												 .build();
 		
 		return dto;

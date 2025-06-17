@@ -21,10 +21,8 @@ import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.repository.vending.ICouponHistoryRepository;
 import com.codeit.mini.repository.vending.IMachineItemRepository;
 import com.codeit.mini.repository.vending.IVendingItemRepository;
-import com.codeit.mini.repository.vending.IVendingMachinesRepository;
 import com.codeit.mini.repository.vending.querydsl.ICouponStatusRepository;
 import com.codeit.mini.service.vending.ICouponHistoryService;
-import com.codeit.mini.service.vending.IVendingMachineService;
 import com.codeit.mini.util.CouponCodeGenerator;
 
 import jakarta.transaction.Transactional;

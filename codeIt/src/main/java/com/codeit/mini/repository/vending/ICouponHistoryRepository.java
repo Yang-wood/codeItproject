@@ -21,9 +21,13 @@ public interface ICouponHistoryRepository extends JpaRepository<CouponHistoryEnt
 	
 	List<CouponHistoryEntity> findAllByStatusAndExpireDateBefore(CouponStatusEnum status, LocalDateTime dateTime);
 
+	long countByStatus(CouponStatusEnum status);
+	
 	boolean existsByMemberId_MemberIdAndItemId_ItemIdAndStatus(Long memberId, Long itemId, CouponStatusEnum status);
 
     boolean existsByCouponCode(String couponCode);
+    
+    List<CouponHistoryEntity> findAllByStatus(CouponStatusEnum status);
     
     Page<CouponHistoryEntity> findByMemberId_MemberId(Long memberId, Pageable pageable);
     
