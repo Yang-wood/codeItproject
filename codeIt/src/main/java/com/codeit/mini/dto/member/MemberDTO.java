@@ -24,6 +24,5 @@ public class MemberDTO {
     private int status;            // 관리 용도
     private int role;              // 권한
     private int points;            // 포인트
-    private int coupon;            // 쿠폰 수
     private LocalDateTime regDate, updateDate, lastLogin;
 }

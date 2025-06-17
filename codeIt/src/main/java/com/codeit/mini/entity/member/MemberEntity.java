@@ -70,9 +70,6 @@ public class MemberEntity extends BaseEntity{
 	@Column(name = "points", nullable = false, columnDefinition = "NUMBER(8) DEFAULT 0")
 	private int points = 0;
 	
-	@Column(name = "coupon", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
-	private int coupon = 0;
-	
 	@Column(name = "role", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
 	private int role = 0;
 	
@@ -104,7 +101,4 @@ public class MemberEntity extends BaseEntity{
 		this.points = points;
 	}
 
-	public void changeCoupon(int coupon) {
-		this.coupon = coupon;
-	}
 }

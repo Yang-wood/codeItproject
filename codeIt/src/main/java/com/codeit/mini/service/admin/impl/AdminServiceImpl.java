@@ -170,7 +170,6 @@ public class AdminServiceImpl implements IAdminService{
 	        entity.changeStatus(dto.getStatus());
 	        entity.changeRole(dto.getRole());
 	        entity.changePoints(dto.getPoints());
-	        entity.changeCoupon(dto.getCoupon());
 
 	        memberRepository.save(entity);
 	    }

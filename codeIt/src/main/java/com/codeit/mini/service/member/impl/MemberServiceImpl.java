@@ -113,7 +113,6 @@ public class MemberServiceImpl implements IMemberService{
                 .status(entity.getStatus())
                 .role(entity.getRole())
                 .points(entity.getPoints())
-                .coupon(entity.getCoupon())
                 .regDate(entity.getRegDate())
                 .updateDate(entity.getUpDate())
                 .lastLogin(entity.getLastLogin())

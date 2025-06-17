@@ -37,7 +37,6 @@ public interface IAdminService {
 	 					.status(entity.getStatus())
 	 					.role(entity.getRole())
 	 					.points(entity.getPoints())
-	 					.coupon(entity.getCoupon())
 	 					.regDate(entity.getRegDate())
 	 					.updateDate(entity.getUpDate())
 	 					.lastLogin(entity.getLastLogin())
@@ -55,7 +54,6 @@ public interface IAdminService {
 	 			            .status(dto.getStatus())
 	 			            .role(dto.getRole())
 	 			            .points(dto.getPoints())
-	 			            .coupon(dto.getCoupon())
 	 			            .build();
 	 		return entity;
 	 	}
