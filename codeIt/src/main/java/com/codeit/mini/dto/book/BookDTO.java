@@ -1,5 +1,7 @@
 package com.codeit.mini.dto.book;
   
+import java.time.LocalDateTime;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -25,7 +27,9 @@ public class BookDTO {
 	private Integer rentCount; 
 	private Integer wishCount; 
 	private Integer reviewCount; 
-	private Double avgRating; 
+	private Double avgRating;
+	private LocalDateTime regDate;
+	private LocalDateTime updateDate;
 	private String epubPath; // 서버에 EPUB 파일이 저장될 최종 경로 (DB 저장 시 사용) 
 	private String coverImageDataBase64; // 웹 페이지 미리보기를 위한 Base64 인코딩된 이미지 문자열 (HTML에서 사용) 
 	private String coverImage; // 서버에 저장될 표지 이미지의 최종 경로 (DB 저장 시 사용) 
@@ -33,5 +37,8 @@ public class BookDTO {
 	
 	private boolean rentedByCurrentUser;
 	private boolean wishedByCurrentUser;
+	private boolean reviewByCurrentUser;
+	
+	private Long rentId;
 }
  

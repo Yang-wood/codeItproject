@@ -208,22 +208,13 @@ $(document).ready(function() {
 	$(".rentBtn").click(function() {
 		const rentBtn = $(this);
 		const bookId = rentBtn.data("book-id");
-		const memId = /*[[${finalmemberId}]]*/ null;
-		console.log("memId value:", memId, typeof memId);
-		var openBtn = '<a href="' + /*[[@{/book/search}]]*/ '/book/search' 
-							+ '" class="btn btn-primary read-button">열람하기</a>';
-		
-		if(!memId) {
-			alert("로그인 후 이용해주세요.");
-			return;
-		}
+		var openBtn = `<a href="/book/epubRead?bookId=${bookId}" class="btn btn-primary read-button">열람하기</a>`;
 		
 		$.ajax({
 			url: "/api/book/rent",
 			type: "post",
 			data: {
-				bookId: bookId,
-				memberId: memId
+				bookId: bookId
 			},
 			success: function(rs) {
 				alert("대여 신청 완료");
@@ -241,13 +232,6 @@ $(document).ready(function() {
 	$(".wishBtn").click(function() {
 		const wishBtn = $(this);
 		const bookId = wishBtn.data("book-id");
-		const memId = /*[[${finalmemberId}]]*/ null;
-		console.log("memId value:", memId, typeof memId);
-		
-		if(!memId) {
-			alert("로그인 후 이용해주세요.");
-			return;
-		}
 		
 		var isWished = wishBtn.text() === "♥";
 		
@@ -258,8 +242,7 @@ $(document).ready(function() {
 			url: url,
 			type: method,
 			data: {
-				bookId: bookId,
-				memberId: memId
+				bookId: bookId
 			},
 			success: function(rs) {
 				if(isWished) {
@@ -269,7 +252,7 @@ $(document).ready(function() {
 				}
 			},
 			error: function(xhr, status, error) {
-				var errorMessage = xhr.responseText || "알 수 없는 찜 처리 오류"; 
+				var errorMessage = xhr.responseText || "알 수 없는 찜 처리 오류";
 	            alert("오류: " + errorMessage + " (HTTP 상태 코드: " + xhr.status + ")"); 
             }
 		});

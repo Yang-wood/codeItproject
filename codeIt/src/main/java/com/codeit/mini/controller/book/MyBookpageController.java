@@ -15,9 +15,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import com.codeit.mini.dto.book.BookDTO;
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.entity.book.BookEntity;
+import com.codeit.mini.entity.book.RentEntity;
 import com.codeit.mini.service.book.IBookSearchService;
 import com.codeit.mini.service.book.IBookService;
 import com.codeit.mini.service.book.IRentService;
+import com.codeit.mini.service.book.IReviewService;
 import com.codeit.mini.service.book.IWishService;
 
 import jakarta.servlet.http.HttpSession;
@@ -33,6 +35,7 @@ public class MyBookpageController {
 	private final IBookService bookService;
 	private final IRentService rentService;
 	private final IWishService wishService;
+	private final IReviewService reviewService;
 	
 	// 내 서재- 위시리스트 이동
 	@GetMapping("/wishList")
@@ -40,13 +43,18 @@ public class MyBookpageController {
 						   @RequestParam(value = "size", defaultValue = "10") int size,
 						   Model model, HttpSession session) {
 		
+		MemberDTO member = (MemberDTO) session.getAttribute("member");
+		
+		if (member == null) {
+			return "member/login";
+		}
+		
 		Sort sort = Sort.by(Sort.Direction.DESC, "regDate");
 		Pageable pageable = PageRequest.of(page, size, sort);
 	    Page<BookDTO> dtoPage = Page.empty(pageable);
 	    Long finalMemberId = null;
 
 	    try {
-	        MemberDTO member = (MemberDTO) session.getAttribute("member");
 	        if (member != null) {
 	            finalMemberId = member.getMemberId();
 	        }
@@ -100,13 +108,18 @@ public class MyBookpageController {
 			   			   @RequestParam(value = "size", defaultValue = "10") int size,
 			   			   Model model, HttpSession session) {
 		
+		MemberDTO member = (MemberDTO) session.getAttribute("member");
+		
+		if (member == null) {
+			return "member/login";
+		}
+		
 		Sort sort = Sort.by(Sort.Direction.DESC, "rentDate");
 		Pageable pageable = PageRequest.of(page, size, sort);
 	    Page<BookDTO> dtoPage = Page.empty(pageable);
 	    Long finalMemberId = null;
 
 	    try {
-	        MemberDTO member = (MemberDTO) session.getAttribute("member");
 	        if (member != null) {
 	            finalMemberId = member.getMemberId();
 	        }
@@ -120,12 +133,13 @@ public class MyBookpageController {
 	            return "member/login";
 	        }
 
-	        Page<BookEntity> rentListPage = rentService.findRentListByMemberId(finalMemberId, pageable);
+	        Page<RentEntity> rentListPage = rentService.findRentListByMemberId(finalMemberId, pageable);
 	        final Long finalMemberIdRamda = finalMemberId;
-	        dtoPage = rentListPage.map(bookEntity -> {
-	            BookDTO bookDTO = bookService.entityToDto(bookEntity);
+	        dtoPage = rentListPage.map(rentEntity -> {
+	            BookDTO bookDTO = bookService.entityToDto(rentEntity.getBookEntity());
+	            bookDTO.setRentId(rentEntity.getRentId());
 	            try {
-	                bookDTO.setWishedByCurrentUser(wishService.isWished(bookEntity.getBookId(), finalMemberIdRamda));
+	                bookDTO.setWishedByCurrentUser(wishService.isWished(bookDTO.getBookId(), finalMemberIdRamda));
 	            } catch (Exception e) {
 	                bookDTO.setWishedByCurrentUser(false);
 	            }
@@ -135,15 +149,19 @@ public class MyBookpageController {
 	                bookDTO.setRentedByCurrentUser(false);
 	            }
 	            
+	            Long currentRentId = rentEntity.getRentId();
+	            log.info("Processing RentEntity with rentId: {}", currentRentId);
 	            
+	            try {
+					boolean isReview = reviewService.hasReview(currentRentId);
+					log.info("For rentId: {}, reviewService.hasReview returned: {}", currentRentId, isReview);
+					bookDTO.setReviewByCurrentUser(isReview);
+				} catch (Exception e) {
+					log.error("Error checking review for rentId {}: {}", currentRentId, e.getMessage(), e); // <--- 로그 메시지 명확화
+					bookDTO.setReviewByCurrentUser(false);
+				}
 	            
-	            log.info("총 대여 수: {}", rentListPage.getTotalElements());
-	            log.info("총 페이지 수: {}", rentListPage.getTotalPages());
-	            log.info("현재 페이지 번호: {}", rentListPage.getNumber());
-	            log.info("현재 페이지의 대여 수: {}", rentListPage.getNumberOfElements());
-	            log.info("전체 대여 수: {}", rentListPage.getTotalElements());
-	            
-	            
+	            log.info("BookDTO for rentId {}: reviewByCurrentUser = {}", currentRentId, bookDTO.isReviewByCurrentUser());
 	            return bookDTO;
 	        });
 

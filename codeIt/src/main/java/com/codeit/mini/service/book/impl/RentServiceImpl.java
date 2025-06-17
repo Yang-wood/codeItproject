@@ -39,6 +39,7 @@ public class RentServiceImpl implements IRentService {
 		BookEntity bookEntity = bookRepository.findById(bookId)
 							  .orElseThrow(() -> new IllegalAccessException("bookInfo : No"));
 		
+		
 		Optional<RentEntity> isRent = rentRepository.findByBookEntityAndMemberEntityAndIsReturned(bookEntity, memberEntity, 0);
 		if (isRent.isPresent()) {
 			log.warn("이미 대여중입니다.");
@@ -48,7 +49,6 @@ public class RentServiceImpl implements IRentService {
 		LocalDateTime now = LocalDateTime.now();
         LocalDateTime returnDate = now.plusDays(7);
         
-   
         RentEntity rentEntity = RentEntity.builder().bookEntity(bookEntity)
         											.memberEntity(memberEntity)
         											.rentDate(now)
@@ -93,6 +93,16 @@ public class RentServiceImpl implements IRentService {
 	
 		for (RentEntity rentEntity : expiredRent) {
 			rentEntity.setIsReturned(1);
+			
+			BookEntity bookEntity = rentEntity.getBookEntity();
+			if (bookEntity != null) {
+				bookEntity.setRentCount(bookEntity.getRentCount() - 1);
+				bookRepository.save(bookEntity);
+			} else {
+				log.warn("NOT BOOK");
+				throw new IllegalAccessException("NOT BOOK");
+			}
+			
 			rentRepository.save(rentEntity);
 			log.info("반납처리 rentId : {}", rentEntity.getRentId());
 		}
@@ -100,10 +110,10 @@ public class RentServiceImpl implements IRentService {
 	
 	// 대여 목록
 	@Override
-	public Page<BookEntity> findRentListByMemberId(Long memberId, Pageable pageable) throws Exception {
+	public Page<RentEntity> findRentListByMemberId(Long memberId, Pageable pageable) throws Exception {
 		
 		Page<RentEntity> rentPage = rentRepository.findByMemberEntity_MemberId(memberId, pageable);
 		
-		return rentPage.map(RentEntity::getBookEntity);
+		return rentPage;
 	}
 }

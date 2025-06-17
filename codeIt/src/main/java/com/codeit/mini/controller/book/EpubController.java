@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
@@ -24,7 +25,9 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import com.codeit.mini.dto.AdminDTO;
 import com.codeit.mini.dto.book.BookDTO;
+import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.service.book.EpubService;
 import com.codeit.mini.service.book.IBookService;
 
@@ -45,7 +48,14 @@ public class EpubController {
 
     @GetMapping("/uploadEpub")
     public String showUpload(Model model, SessionStatus sessionStatus, HttpSession session) {
-        if (model.containsAttribute("bookDTO")) {
+        
+    	AdminDTO admin = (AdminDTO)session.getAttribute("admin");
+    	
+    	if (admin == null) {
+			return "admin/login";
+		}
+    	
+    	if (model.containsAttribute("bookDTO")) {
             sessionStatus.setComplete();
             log.info("@SessionAttributes 'bookDTO' 초기화 완료.");
         }
@@ -55,7 +65,14 @@ public class EpubController {
     @PostMapping("/uploadEpub")
     public String uploadEpub(@RequestParam("epubFile") MultipartFile file, Model model,
                              RedirectAttributes rttr, HttpSession session) {
-
+    	
+    	AdminDTO admin = (AdminDTO)session.getAttribute("admin");
+    	
+    	if (admin == null) {
+			log.error("관리자만 도서 등록이 가능합니다.");
+			return "admin/login";
+		}
+    	
         if (file.isEmpty()) {
             model.addAttribute("errorMessage", "업로드된 파일이 비어있습니다.");
             log.warn("업로드된 파일이 비어 있음.");
@@ -94,8 +111,15 @@ public class EpubController {
                            @RequestParam("epubFilePath") String epubFilePath,
                            @RequestParam("originalFileName") String originalFileName,
                            @RequestParam("rentPoint") int rentPoint,
-                           RedirectAttributes rttr, SessionStatus sessionStatus) {
-
+                           RedirectAttributes rttr, SessionStatus sessionStatus, HttpSession session) {
+    	
+    	AdminDTO admin = (AdminDTO)session.getAttribute("admin");
+    	
+    	if (admin == null) {
+			log.error("관리자만 도서 등록이 가능합니다.");
+			return "admin/login";
+		}
+    	
         log.info("POST /saveBook 호출됨");
         log.info("저장 대상 BookDTO: {}", bookDTO);
         log.info("EPUB 임시 파일 경로: {}", epubFilePath);
@@ -128,7 +152,14 @@ public class EpubController {
     @ResponseBody
     public List<Map<String, String>> multiUploadEpub(
     						@RequestParam("epubFiles") MultipartFile[] files,
-    						@RequestParam("rentPoint") int rentPoint) {
+    						@RequestParam("rentPoint") int rentPoint, HttpSession session) {
+    	
+    	AdminDTO admin = (AdminDTO)session.getAttribute("admin");
+    	
+    	if (admin == null) {
+			log.error("관리자만 도서 등록이 가능합니다.");
+		}
+    	
         List<Map<String, String>> results = new ArrayList<>();
         log.info("POST /multiUploadEpub 호출됨 - 총 {}개 파일", files.length);
 

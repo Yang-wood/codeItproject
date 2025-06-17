@@ -67,5 +67,4 @@ public class RentEntity {
 	@Column(name = "has_review", nullable = false, columnDefinition = "NUMBER(1) DEFAULT 0 CHECK (has_review IN (0, 1))")
 	private Integer hasReview = 0;
 	
-
 }

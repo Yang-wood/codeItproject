@@ -17,6 +17,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 @Builder
 @Entity
@@ -30,6 +32,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
+@ToString
 public class ReviewEntity extends BaseEntity{
 	
 	@Id
@@ -48,8 +52,8 @@ public class ReviewEntity extends BaseEntity{
 	@JoinColumn(name = "book_id")
 	private BookEntity bookEntity;
 	
-	@Column(name = "rating", nullable = false, columnDefinition = "NUMBER(2,1) CHECK (rating BETWEEN 0 AND 5)")
-	private Double rating;
+	@Column(name = "rating", nullable = false, columnDefinition = "NUMBER(1) CHECK (rating BETWEEN 0 AND 5)")
+	private Integer rating;
 	
 	@Column(name = "title", nullable = false, length = 300)
 	private String title;

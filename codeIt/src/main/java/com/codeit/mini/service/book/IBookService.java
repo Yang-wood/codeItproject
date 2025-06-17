@@ -44,6 +44,8 @@ public interface IBookService {
 										   .wishCount(bookEntity.getWishCount())
 										   .avgRating(bookEntity.getAvgRating())
 										   .reviewCount(bookEntity.getReviewCount())
+										   .regDate(bookEntity.getPubDate())
+										   .updateDate(bookEntity.getUpDate())
 										   .build();
 		
 		return bookDTO;

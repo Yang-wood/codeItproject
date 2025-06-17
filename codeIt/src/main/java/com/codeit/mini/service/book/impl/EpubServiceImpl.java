@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.codeit.mini.dto.book.BookDTO;
 import com.codeit.mini.service.book.EpubService;
 
+import lombok.extern.log4j.Log4j2;
 import nl.siegmann.epublib.domain.Author;
 import nl.siegmann.epublib.domain.Book;
 import nl.siegmann.epublib.domain.Metadata;
@@ -20,6 +21,7 @@ import nl.siegmann.epublib.epub.EpubReader;
 import nl.siegmann.epublib.service.MediatypeService;
 
 @Service
+@Log4j2
 public class EpubServiceImpl implements EpubService {
 
     @Override
@@ -101,13 +103,9 @@ public class EpubServiceImpl implements EpubService {
                  potentialCoverPage.getMediaType().equals(MediatypeService.GIF))) {
 
                 coverResource = potentialCoverPage;
-                System.out.println("[DEBUG] getCoverPage() returned a direct image resource.");
 
             } else {
                 // 2. getCoverPage()가 이미지가 아니거나 null인 경우, 명시적으로 흔한 경로들을 찾아 시도
-                System.out.println("[DEBUG] getCoverPage() did not return a direct image. Searching common paths.");
-
-                // 가장 흔한 경로들을 시도 (EPUB의 내부 구조에 따라 다름)
                 // images/cover.jpg
                 coverResource = book.getResources().getByHref("images/cover.jpg");
                 if (coverResource == null) {
@@ -120,23 +118,21 @@ public class EpubServiceImpl implements EpubService {
                 }
                 if (coverResource == null) {
                     // 마지막 수단: 책에서 첫 번째로 발견되는 이미지 (표지 이미지가 아닐 수 있음)
-                    // 이 로직은 정확도가 떨어지므로, 다른 방법이 실패했을 때만 사용
                     for (Resource res : book.getResources().getAll()) {
                         if (res.getMediaType() != null &&
                             (res.getMediaType().equals(MediatypeService.JPG) ||
                              res.getMediaType().equals(MediatypeService.PNG) ||
                              res.getMediaType().equals(MediatypeService.GIF))) {
                             coverResource = res;
-                            System.out.println("[DEBUG] Falling back to first found image resource: " + res.getHref());
                             break; // 첫 번째 이미지만 찾으면 중단
                         }
                     }
                 }
 
                 if (coverResource != null) {
-                    System.out.println("[DEBUG] Found cover image by direct Href lookup or fallback: " + coverResource.getHref());
+                	log.info("Found cover image by direct Href lookup or fallback: {}", coverResource.getHref());
                 } else {
-                    System.out.println("[DEBUG] No direct image resource found via common Hrefs or fallback.");
+                	log.info("No direct image resource found via common Hrefs or fallback.");
                 }
             }
 
@@ -153,18 +149,15 @@ public class EpubServiceImpl implements EpubService {
                     mimeType = coverResource.getMediaType() != null ?
                                coverResource.getMediaType().getName() : "image/jpeg";
                     bookDTO.setCoverImageDataBase64("data:" + mimeType + ";base64," + base64Image);
-
-                    System.out.println("[DEBUG] Final Base64 Image Length: " + base64Image.length());
-                    System.out.println("[DEBUG] Base64 Image starts with: " + base64Image.substring(0, Math.min(base64Image.length(), 50)) + "...");
-                    System.out.println("[DEBUG] Final Image MIME Type: " + mimeType);
-
+                    log.info("Final Base64 Image Length: {}", base64Image.length());
+                    log.info("Base64 Image starts with: {}", base64Image.substring(0, Math.min(base64Image.length(), 50)));
+                    log.info("Final Image MIME Type: {}", mimeType);
                 } else {
-                    System.out.println("[DEBUG] Image data from coverResource is null or empty.");
+                	log.info("Image data from coverResource is null or empty.");
                     bookDTO.setCoverImageData(null);
                     bookDTO.setCoverImageDataBase64(null); // 명시적으로 null 설정
                 }
             } else {
-                System.out.println("[DEBUG] No suitable cover image resource found. bookDTO.coverImageDataBase64 will be null.");
                 bookDTO.setCoverImageData(null);
                 bookDTO.setCoverImageDataBase64(null); // 명시적으로 null 설정
             }

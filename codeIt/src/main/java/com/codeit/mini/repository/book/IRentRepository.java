@@ -6,6 +6,7 @@ import java.util.Optional;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -27,6 +28,7 @@ public interface IRentRepository extends JpaRepository<RentEntity, Long>{
 	
 	@Query(value = "SELECT r FROM RentEntity r WHERE r.memberEntity.memberId = :memberId",
 	  countQuery = "SELECT count(r) FROM RentEntity r WHERE r.memberEntity.memberId = :memberId")
+	@EntityGraph(attributePaths = {"bookEntity"})
 	Page<RentEntity> findByMemberEntity_MemberId(@Param("memberId") Long memberId, Pageable pageable) throws Exception;
 	
 	int countByMemberEntity_MemberId(Long memberId); // 추가

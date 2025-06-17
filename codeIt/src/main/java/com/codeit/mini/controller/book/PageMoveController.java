@@ -126,7 +126,15 @@ public class PageMoveController {
 	
 	// 도서 열람 - epubReader 연결
 	@GetMapping("/epubRead")
-	public String epubRead(@RequestParam("bookId") Long bookId, Model model) {
+	public String epubRead(@RequestParam("bookId") Long bookId, Model model,
+							HttpSession session) {
+		
+		MemberDTO member = (MemberDTO) session.getAttribute("member");
+		
+		if (member == null) {
+			return "member/login";
+		}
+		
 		try {
 			BookEntity bookEntity = bookService.findByBookId(bookId);
 			
