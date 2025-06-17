@@ -15,6 +15,11 @@ public class CouponStatusDTO {
 	
     private Long itemId;
     private String itemName;
-    private int issuedCount;
-    private int usedCount;
+    private int issuedCnt;
+    private int usedCnt;
+    private int expiredCnt;
+    
+    public int getTotalCount() {
+        return issuedCnt + usedCnt + expiredCnt;
+    }
 }

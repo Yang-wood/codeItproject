@@ -4,8 +4,11 @@ import java.util.List;
 import java.util.Optional;
 
 import com.codeit.mini.dto.vending.VendingMachineDTO;
+import com.codeit.mini.dto.vending.VendingResultDTO;
 import com.codeit.mini.entity.admin.Admin;
 import com.codeit.mini.entity.vending.VendingMachinesEntity;
+
+import jakarta.annotation.Nullable;
 
 public interface IVendingMachineService {
 	
@@ -21,7 +24,8 @@ public interface IVendingMachineService {
 	
 	boolean removeVendingMachine(Long vmId);
 	
-
+	VendingResultDTO useVendingMachine(Long vmId, Long memberId, @Nullable Long itemId);
+	
 	default VendingMachineDTO toDTO(VendingMachinesEntity vm) {
 		VendingMachineDTO machineDTO = VendingMachineDTO.builder()
 														.machineId(vm.getMachineId())

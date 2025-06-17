@@ -53,7 +53,7 @@ public class PointHistoryEntity extends BaseEntity {
 	@Column(name = "type", length = 30)
 	private String type = "use";
 	
-	@Column(name = "String", length = 60)
+	@Column(name = "reason", length = 60)
 	private String reason;
-	
+
 }

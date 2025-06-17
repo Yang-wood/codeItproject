@@ -1,12 +1,14 @@
 package com.codeit.mini.service.vending;
 
 import java.util.List;
-import java.util.Optional;
 
-import com.codeit.mini.dto.member.MemberDTO;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties.Pageable;
+import org.springframework.data.domain.Page;
+
 import com.codeit.mini.dto.vending.CouponHistoryDTO;
+import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
 import com.codeit.mini.dto.vending.CouponStatusDTO;
-import com.codeit.mini.dto.vending.VendingItemDTO;
+import com.codeit.mini.entity.comm.CouponStatusEnum;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.VendingItemEntity;
@@ -15,9 +17,9 @@ public interface ICouponHistoryService {
 
 	CouponHistoryEntity issueCoupon(Long memberId, Long itemId, Long machineId);
 	
-	Optional<CouponHistoryEntity> findByCouponCode(String couponCode);
+	CouponHistoryDTO findByCouponCode(String couponCode);
 	
-	List<CouponHistoryEntity> getCouponsByMember(Long memberId);
+	Page<CouponHistoryEntity> getCouponsByMember(Long memberId, Pageable pageable);
 	
 	void useCoupon(String couponCode);
 	
@@ -25,7 +27,9 @@ public interface ICouponHistoryService {
 	
 	int expireOldCoupons();
 	
-	List<CouponHistoryEntity> getAllCouponHistories();
+	List<CouponStatusDTO> getCouponStats(CouponHistoryRequestDTO request);
+	
+	Page<CouponStatusDTO> getCouponStatsPage(CouponHistoryRequestDTO request);
 	
 	CouponStatusDTO getCouponStatsByItem(Long itemId);
 	

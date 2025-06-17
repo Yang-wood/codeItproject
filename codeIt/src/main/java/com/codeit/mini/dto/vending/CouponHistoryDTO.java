@@ -2,6 +2,8 @@ package com.codeit.mini.dto.vending;
 
 import java.time.LocalDateTime;
 
+import com.codeit.mini.entity.comm.CouponStatusEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +20,7 @@ public class CouponHistoryDTO {
 	private Long itemId;
 	private String couponCode;
 	private String couponType;
-	private String status;
+	private CouponStatusEnum status;
 	private LocalDateTime issuedDate;
 	private LocalDateTime usedDate;
 	private LocalDateTime expireDate;

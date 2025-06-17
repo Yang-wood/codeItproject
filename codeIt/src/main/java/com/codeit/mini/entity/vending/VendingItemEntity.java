@@ -77,4 +77,7 @@ public class VendingItemEntity extends BaseEntity{
     @Column(name = "is_active", nullable = false)
     private Integer isActive = 1;
 
+    public int getValue() {
+        return value;
+    }
 }

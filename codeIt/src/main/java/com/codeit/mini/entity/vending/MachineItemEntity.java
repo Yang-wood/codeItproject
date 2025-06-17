@@ -43,4 +43,12 @@ public class MachineItemEntity {
 	@Column(name = "probability")
 	private Double probability;
 	
+	
+	public VendingItemEntity getVendingItem() {
+	    return vendingItem;
+	}
+	
+    public Double getProbability() {
+        return probability;
+    }
 }

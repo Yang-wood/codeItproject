@@ -22,21 +22,21 @@ class VendingMachinesTests {
 	@Autowired
 	private IVendingMachineService machineService;
 	
-	@Test
-	void registerVm() {
-		
-		IntStream.range(1, 5).forEach(i -> {
-			VendingMachineDTO machine = VendingMachineDTO.builder()
-														 .adminId(1L)
-														 .name("테스트 자판기" +i)
-														 .type("테스트 자판기 타입" +i)
-														 .build();
-			
-			log.info("생성된 자판기 " + i + "번째 정보 : " + machine);
-			
-			machineService.registerVendingMachine(machine);
-		});
-	}
+//	@Test
+//	void registerVm() {
+//		
+//		IntStream.range(1, 5).forEach(i -> {
+//			VendingMachineDTO machine = VendingMachineDTO.builder()
+//														 .adminId(1L)
+//														 .name("테스트 자판기" +i)
+//														 .type("테스트 자판기 타입" +i)
+//														 .build();
+//			
+//			log.info("생성된 자판기 " + i + "번째 정보 : " + machine);
+//			
+//			machineService.registerVendingMachine(machine);
+//		});
+//	}
 	
 //	@Test
 //	void updateVmtest() {

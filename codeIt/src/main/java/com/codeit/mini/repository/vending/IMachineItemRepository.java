@@ -4,12 +4,15 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.codeit.mini.entity.vending.MachineItemEntity;
 import com.codeit.mini.entity.vending.MachineItemId;
+
+import jakarta.persistence.LockModeType;
 
 public interface IMachineItemRepository extends JpaRepository<MachineItemEntity, MachineItemId>{
 
@@ -18,6 +21,10 @@ public interface IMachineItemRepository extends JpaRepository<MachineItemEntity,
 	List<MachineItemEntity> findByVendingItem_ItemId(Long itemId);
 	
 	int deleteByVendingMachine_MachineId(Long mamachineId);
+	
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("SELECT mi FROM MachineItemEntity mi WHERE mi.vendingMachine.machineId = :vmId")
+	List<MachineItemEntity> findAllByVendingMachineWithLock(@Param("vmId") Long vmId);
 	
 	@Modifying
 	@Query("DELETE FROM MachineItemEntity mi "

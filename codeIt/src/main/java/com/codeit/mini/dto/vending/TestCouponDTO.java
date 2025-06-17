@@ -1,6 +1,8 @@
 package com.codeit.mini.dto.vending;
 
 
+import com.codeit.mini.entity.comm.CouponStatusEnum;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -16,6 +18,6 @@ public class TestCouponDTO {
 	private String couponCode;
 	private Integer totalCnt;
 	private Integer remainCnt;
-	private String issued;
+	private CouponStatusEnum status;
 	
 }

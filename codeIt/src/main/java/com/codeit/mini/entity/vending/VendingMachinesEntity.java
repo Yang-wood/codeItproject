@@ -5,6 +5,8 @@ import com.codeit.mini.entity.comm.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -58,7 +60,6 @@ public class VendingMachinesEntity extends BaseEntity{
     @Builder.Default
     @Column(name = "is_active", nullable = false)
     private Integer isActive = 1;
-    
     
     
     public void changeName(String newName) {

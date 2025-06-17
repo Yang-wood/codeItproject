@@ -1,10 +1,13 @@
 package com.codeit.mini.entity.vending;
 
 import com.codeit.mini.entity.comm.CouponBaseDateEntity;
+import com.codeit.mini.entity.comm.CouponStatusEnum;
 import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.ForeignKey;
 import jakarta.persistence.GeneratedValue;
@@ -62,8 +65,14 @@ public class TestCouponEntity extends CouponBaseDateEntity {
 	@Column(name = "remain_count", nullable = false)
 	private Integer remainCnt;
 	
+	@Enumerated(EnumType.STRING)
 	@Builder.Default
 	@Column(name = "status", length = 30)
-	private String status = "issued";
+	private CouponStatusEnum status = CouponStatusEnum.ISSUED;
+	
+	
+	public void setCouponCode(String couponCode) {
+		this.couponCode = couponCode;
+	}
 	
 }
