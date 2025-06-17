@@ -135,6 +135,8 @@ public class MyBookpageController {
 	                bookDTO.setRentedByCurrentUser(false);
 	            }
 	            
+	            
+	            
 	            log.info("총 대여 수: {}", rentListPage.getTotalElements());
 	            log.info("총 페이지 수: {}", rentListPage.getTotalPages());
 	            log.info("현재 페이지 번호: {}", rentListPage.getNumber());
