@@ -3,7 +3,6 @@
 	<th:block th:fragment="contentWrapper">
 		<div th:replace="~{/book/subheader :: withSubHeader(~{this::myActualPageContent})}">
 			<th:block th:fragment="myActualPageContent">
-
 				<div class="container py-4">
 					<div class="container">
 				        <form class="mb-4 mt-5" method="get" action="/book/search" id="searchForm">

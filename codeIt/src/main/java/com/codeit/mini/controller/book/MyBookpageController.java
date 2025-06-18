@@ -103,6 +103,8 @@ public class MyBookpageController {
 
 	        model.addAttribute("wishList", dtoPage.getContent());
 	        model.addAttribute("page", dtoPage);
+	        model.addAttribute("startPage", startPage);
+			model.addAttribute("endPage", endPage);
 
 	    } catch (Exception e) {
 	        log.error("도서 위시리스트 페이지 로드 중 오류 발생: {}", e.getMessage(), e);
@@ -197,6 +199,8 @@ public class MyBookpageController {
 
 	        model.addAttribute("rentList", dtoPage.getContent());
 	        model.addAttribute("page", dtoPage);
+	        model.addAttribute("startPage", startPage);
+			model.addAttribute("endPage", endPage);
 
 	    } catch (Exception e) {
 	        log.error("도서 대여리스트 페이지 로드 중 오류 발생: {}", e.getMessage(), e);
