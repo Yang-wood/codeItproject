@@ -152,6 +152,10 @@ border-radius: 6px;
     <form th:action="@{/member/delete}" method="post" onsubmit="return confirm('정말 탈퇴하시겠습니까?');">
       <button type="submit" class="btn btn-danger">회원 탈퇴</button>
     </form>
+    
+    <!-- 마이페이지로 돌아가기 -->
+ 	 <a th:href="@{/member/mypage}" class="btn" style="margin-top: 10px; text-align: center; display: block; background-color: #555; text-decoration: none;">마이페이지로 돌아가기</a>
+    
   </div>
 
   <script>
@@ -212,7 +216,14 @@ border-radius: 6px;
     	  const currentPw = document.getElementById("currentPw").value;
     	  const newPw = document.getElementById("newPw").value;
     	  const confirmPw = document.getElementById("confirmPw").value;
+		  
+    	  const pwRegex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[^\s]{8,}$/;
 
+    	  if (!pwRegex.test(newPw)) {
+    	    alert("비밀번호는 영문+숫자+특수문자 포함 8자 이상이어야 합니다.");
+    	    return;
+    	  }
+    	  
     	  if (newPw !== confirmPw) {
     	    alert("새 비밀번호가 일치하지 않습니다.");
     	    return;
