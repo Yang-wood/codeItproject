@@ -102,6 +102,8 @@ public class RestAPIController {
 		
 		Long memberId = member.getMemberId();
 		
+		log.info("Request bookId: {}, memberId: {}", bookId, memberId);
+		
 		try {
 			RentEntity rentEntity = rentService.rentBook(bookId, memberId);
 			

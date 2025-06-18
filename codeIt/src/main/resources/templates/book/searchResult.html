@@ -3,9 +3,10 @@
 	<th:block th:fragment="contentWrapper">
 		<div th:replace="~{/book/subheader :: withSubHeader(~{this::myActualPageContent})}">
 			<th:block th:fragment="myActualPageContent">
+
 				<div class="container py-4">
-				    <div class="container">
-				        <form class="mb-4" method="get" action="/book/search" id="searchForm">
+					<div class="container">
+				        <form class="mb-4 mt-5" method="get" action="/book/search" id="searchForm">
 				            <div class="row g-2 align-items-end justify-content-center">
 				                <div class="col-md-2">
 				                    <select id="searchType" name="type" class="form-select">
@@ -33,44 +34,44 @@
 								</div>
 							</div>
 				        </form>
-						
-				        <hr>
-				
-				        <div id="bookListContainer">
-				            <div th:if="${#lists.isEmpty(books)}" class="text-center text-muted mt-5">
-				                <p>검색 결과가 없습니다.</p>
-				            </div>
-				            <div th:each="book : ${books}" class="book-item d-flex align-items-start">
-				                <img th:src="${book.coverImage}" alt="표지" class="book-cover">
-				                <div class="book-info">
-				                    <div class="book-title" th:text="${book.title}">도서 제목</div>
-				                    <div class="text-muted mb-1">
-				                        저자 : <span th:text="${book.author}">저자</span> |
-				                        출판사 : <span th:text="${book.publisher}">출판사</span>
-				                    </div>
-				                    <div class="book-description" th:text="${book.description}">
-				                        도서 설명
-				                    </div>
-				                </div>
-				                <div class="book-buttons">
-				                	<button th:if="${book.wishedByCurrentUser}" 
-				                    		th:data-book-id="${book.bookId}"
-				                    		class="btn btn-primary wishBtn">♥</button>
-				                    <button th:if="${!book.wishedByCurrentUser}" 
-				                    		th:data-book-id="${book.bookId}"
-				                    		class="btn btn-outline-primary wishBtn">♡</button>
-				                    
-				                    <a th:if="${book.rentedByCurrentUser}"
-				                       th:href="@{/book/epubRead(bookId=${book.bookId})}" class="btn btn-primary read-button">열람하기</a>
-				                    
-				                    <button th:if="${!book.rentedByCurrentUser}" 
-				                    		th:data-book-id="${book.bookId}"
-				                    		class="btn btn-success rentBtn">대여하기</button>
-				                    <div class="point-text">필요 포인트 : <span th:text="${book.rentPoint}">요구 포인트</span></div>
-				                </div>
-				            </div>
-				        </div>
-				    </div>
+					</div>
+					
+			        <hr>
+			
+			        <div id="bookListContainer">
+			            <div th:if="${#lists.isEmpty(books)}" class="text-center text-muted mt-5">
+			                <p>검색 결과가 없습니다.</p>
+			            </div>
+			            <div th:each="book : ${books}" class="book-item d-flex align-items-start">
+			                <img th:src="${book.coverImage}" alt="표지" class="book-cover">
+			                <div class="book-info">
+			                    <div class="book-title" th:text="${book.title}">도서 제목</div>
+			                    <div class="text-muted mb-1">
+			                        저자 : <span th:text="${book.author}">저자</span> |
+			                        출판사 : <span th:text="${book.publisher}">출판사</span>
+			                    </div>
+			                    <div class="book-description" th:text="${book.description}">
+			                        도서 설명
+			                    </div>
+			                </div>
+			                <div class="book-buttons">
+			                	<button th:if="${book.wishedByCurrentUser == true}" 
+			                    		th:data-book-id="${book.bookId}"
+			                    		class="btn btn-primary wishBtn">♥</button>
+			                    <button th:if="${book.wishedByCurrentUser != true}" 
+			                    		th:data-book-id="${book.bookId}"
+			                    		class="btn btn-outline-primary wishBtn">♡</button>
+			                    
+			                    <a th:if="${book.rentedByCurrentUser  == true}"
+			                       th:href="@{/book/epubRead(bookId=${book.bookId})}" class="btn btn-primary read-button">열람하기</a>
+			                    
+			                    <button th:if="${book.rentedByCurrentUser != true}" 
+			                    		th:data-book-id="${book.bookId}"
+			                    		class="btn btn-success rentBtn">대여하기</button>
+			                    <div class="point-text">필요 포인트 : <span th:text="${book.rentPoint}">요구 포인트</span></div>
+			                </div>
+			            </div>
+			        </div>
 				
 				    <div class="mt-4 text-center" th:if="${page.totalPages > 1}">
 				        <nav>
@@ -105,7 +106,6 @@
 				        </nav>
 				    </div>
 				</div>
-			
 			</th:block>
 		</div>
 	</th:block>
