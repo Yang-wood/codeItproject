@@ -81,6 +81,7 @@ public class RentServiceImpl implements IRentService {
         											.readPage(0)
         											.readState(0)
         											.hasReview(0)
+        											.pointGet(0)
         											.build();
         // 대여 횟수 증가식
 		bookEntity.setRentCount(bookEntity.getRentCount() + 1);

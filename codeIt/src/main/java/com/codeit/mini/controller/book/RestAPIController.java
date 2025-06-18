@@ -176,25 +176,43 @@ public class RestAPIController {
 	
 	// 리뷰 등록
 	@PostMapping("/regReview")
-	public ResponseEntity<?> regReview(@RequestBody ReviewDTO reviewDTO, HttpSession session) {
+	public ResponseEntity<Map<String, Object>> regReview(@RequestBody ReviewDTO reviewDTO, HttpSession session) {
 		
 		MemberDTO member = (MemberDTO) session.getAttribute("member");
 		
 		if (member == null) {
-			return new ResponseEntity<>("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "로그인이 필요합니다.");
+	        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 		}
 		
 		try {
 			reviewDTO.setMemberId(member.getMemberId());
-			ReviewEntity reviewEntity = reviewService.regReview(reviewDTO);
-			return new ResponseEntity<>(reviewEntity, HttpStatus.OK);
+			
+			Map<String, Object> result = reviewService.regReview(reviewDTO);
+			result.put("success", true);
+	        result.put("message", (Boolean.TRUE.equals(result.get("pointGiven")))
+	            ? "리뷰 등록 완료! 50포인트가 적립되었습니다."
+	            : "리뷰 등록 완료! ");
+
+	        return new ResponseEntity<>(result, HttpStatus.OK);
 			
 		} catch (IllegalStateException e) {
-			return new ResponseEntity<>("리뷰가 있습니다.", HttpStatus.CONFLICT);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "이미 리뷰를 등록하셨습니다.");
+	        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 		} catch (IllegalAccessException e) {
-			return new ResponseEntity<>("NOT RENT", HttpStatus.BAD_REQUEST);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "대여 내역이 없습니다.");
+	        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			return new ResponseEntity<>("SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "서버 오류가 발생했습니다.");
+	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

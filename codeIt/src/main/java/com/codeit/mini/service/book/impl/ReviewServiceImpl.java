@@ -1,7 +1,9 @@
 package com.codeit.mini.service.book.impl;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
@@ -58,7 +60,9 @@ public class ReviewServiceImpl implements IReviewService{
 	// 리뷰 등록
 	@Override
 	@Transactional
-	public ReviewEntity regReview(ReviewDTO reviewDTO) throws Exception {
+	public Map<String, Object> regReview(ReviewDTO reviewDTO) throws Exception {
+		
+		Map<String, Object> result = new HashMap<>();
 		
 		MemberEntity memberEntity = memberRepository.findById(reviewDTO.getMemberId())
 				.orElseThrow(() -> new IllegalAccessException("NOT MEMBER"));
@@ -71,19 +75,16 @@ public class ReviewServiceImpl implements IReviewService{
 		}
 		
 		ReviewEntity reviewEntity = dtoToEntity(reviewDTO);
-		log.info("dtoToEntity : {}", reviewEntity.getTitle());
-		
 		ReviewEntity saveReview = reviewRepository.save(reviewEntity);
-		log.info("Saved Review : {}", saveReview);
 		
 		BookEntity bookEntity = rent.getBookEntity();
 		bookEntity.setReviewCount(bookEntity.getReviewCount() + 1);
 		bookRepository.save(bookEntity);
-		log.info("Save book : {}", bookEntity.getTitle());
 		
 		rent.setHasReview(1);
 		rentRepository.save(rent);
-		log.info("Update Rent : {}", rent.getRentId());
+		
+		boolean pointGiven = false;
 		
 		if (rent.getPointGet() == 0) {
 			PointHistoryEntity historyEntity = PointHistoryEntity.builder().memberId(memberEntity)
@@ -94,12 +95,17 @@ public class ReviewServiceImpl implements IReviewService{
 			historyRepository.save(historyEntity);
 			rent.setPointGet(1);
 			rentRepository.save(rent);
+			
+			pointGiven = true;
 		}
 		
 		updateAvgRating(reviewDTO.getBookId());
-		log.info(reviewDTO.getBookId());
 		
-		return saveReview;
+		result.put("message", "리뷰 등록 완료");
+		result.put("pointGiven", pointGiven);
+		result.put("reviewId", saveReview.getReviewId());
+		
+		return result;
 	}
 	
 	// 리뷰 삭제
