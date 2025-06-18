@@ -1,6 +1,8 @@
 package com.codeit.mini.controller.book;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -63,6 +65,28 @@ public class RestAPIController {
 		return new ResponseEntity<>(dtoPage, HttpStatus.OK);
 	}
 	
+	// 회원 포인트 출력
+	@GetMapping("/getPoint")
+	public ResponseEntity<?> getMemberPoint(HttpSession session) throws Exception {
+		MemberDTO member = (MemberDTO)session.getAttribute("member");
+		
+		if (member == null) {
+			return new ResponseEntity<>("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED);
+		}
+		
+		int point = member.getPoints();
+		
+		if (point < 0 ) {
+			return new ResponseEntity<>("잔여 포인트에 오류", HttpStatus.BAD_REQUEST);
+		} 
+		Map<String, Object> result = new HashMap<>();
+		result.put("memberId", member.getMemberId());
+		result.put("name", member.getMemberName());
+		result.put("points", point);
+		
+		return new ResponseEntity<>(result, HttpStatus.OK);
+		
+	}
 	
 	// 도서 대여
 	@PostMapping("/rent")
@@ -79,7 +103,7 @@ public class RestAPIController {
 			RentEntity rentEntity = rentService.rentBook(bookId, memberId);
 			return new ResponseEntity<>(rentEntity, HttpStatus.OK);
 		} catch (Exception e) {
-			return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
 		}
 	}
 	
