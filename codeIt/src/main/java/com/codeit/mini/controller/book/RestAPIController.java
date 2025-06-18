@@ -26,7 +26,9 @@ import com.codeit.mini.entity.book.BookEntity;
 import com.codeit.mini.entity.book.RentEntity;
 import com.codeit.mini.entity.book.ReviewEntity;
 import com.codeit.mini.entity.book.WishEntity;
+import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.repository.book.IBookRepository;
+import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.book.IBookSearchService;
 import com.codeit.mini.service.book.IBookService;
 import com.codeit.mini.service.book.IRentService;
@@ -45,6 +47,7 @@ import lombok.extern.log4j.Log4j2;
 public class RestAPIController {
 	
 	private final IBookRepository bookRepository;
+	private final IMemberRepository memberRepository;
 	private final IBookSearchService searchService;
 	private final IBookService bookService;
 	private final IRentService rentService;
@@ -101,6 +104,13 @@ public class RestAPIController {
 		
 		try {
 			RentEntity rentEntity = rentService.rentBook(bookId, memberId);
+			
+			MemberEntity memberEntity = memberRepository.findById(memberId)
+					.orElseThrow(() -> new IllegalStateException("NOT MEMBER"));
+			
+			member.setPoints(memberEntity.getPoints());
+			session.setAttribute("member", member);
+			
 			return new ResponseEntity<>(rentEntity, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);

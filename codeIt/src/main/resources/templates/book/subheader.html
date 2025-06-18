@@ -158,6 +158,7 @@ $(document).ready(function() {
 					alert("대여 신청 완료");
 					rentBtn.hide();
 					rentBtn.after(openBtn);
+					$("#bookPayConfirmModal").modal("hide");
 				},
 				error: function(xhr, status, error) {
 	                var errorMessage = xhr.responseText || '도서 대여 중 오류가 발생했습니다.';
