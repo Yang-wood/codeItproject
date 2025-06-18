@@ -10,4 +10,9 @@ public class MainController {
 	public String maingpage() {
 		return "main";
 	}
+	
+	@GetMapping("/codeit")
+	public String main2page() {
+		return "codeit";
+	}
 }

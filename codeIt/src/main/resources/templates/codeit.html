@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+    <th:block th:fragment="content">
+    
+    	<h1 class="main-title">당신의 내일을 준비하는 자기개발 플랫폼, CODEIT</h1>
+    	
+        <main class="main-content">
+            <a th:href="@{/book/search}" class="main-button">도서</a>
+            <a th:href="@{/test}" class="main-button">테스트</a>
+            <a th:href="@{/vending}" class="main-button">자판기</a>
+        </main>
+        
+    </th:block>
+</th:block>

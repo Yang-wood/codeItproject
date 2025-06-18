@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="setContent(content)">
+	<head>
+	    <meta charset="UTF-8" />
+	    <title>CODEIT 메인</title>
+	    <meta name="viewport" content="width=device-width, initial-scale=1" />
+	    <link th:href="@{/css/codeit.css}" rel="stylesheet" />
+	</head>
+	<body>
+	
+	<header>
+	    <a th:href="@{/main}" class="logo">CODEIT</a>
+	    <nav class="top-menu">
+	        <a th:href="@{/member/login}">로그인</a>
+	        <a th:href="@{/member/register}">회원가입</a>
+	    </nav>
+	</header>
+	
+	<div class="container">
+	    <th:block th:replace="${content}"></th:block>
+	</div>
+	
+	</body>
+</th:block>
+</html>
