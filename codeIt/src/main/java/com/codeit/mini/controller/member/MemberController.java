@@ -89,11 +89,18 @@ public class MemberController {
             return "redirect:/codeit";
         } else {
             Optional<MemberEntity> entity = memberRepository.findByLoginId(loginId);
-            if (entity.isPresent() && entity.get().getStatus() == 2) {
-                rttr.addFlashAttribute("msg", "탈퇴한 회원입니다.");
+            if (entity.isPresent()) {
+            	int status = entity.get().getStatus();
+            	if (status == 1) {
+					rttr.addFlashAttribute("msg", "정지된 계정입니다.");
+				} else if (status == 2) {
+					rttr.addFlashAttribute("msg", "탈퇴한 회원입니다.");
+				} else {
+					rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+				}
             } else {
-                rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
-            }
+				rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+			}
             return "redirect:/member/login";
         }
     }
