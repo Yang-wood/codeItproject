@@ -35,7 +35,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"memberId", "testId"})
 @Check(constraints = "is_submited IN ('Y', 'N')")
 @Table(name = "test_session")
 public class TestSessionEntity {
@@ -63,7 +63,7 @@ public class TestSessionEntity {
     @Column(name = "score")
     private Integer score;
 
-    @Column(name = "duration")
+    @Column(name = "duration", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
     private Integer duration;
 
     @Column(name = "is_submited", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")

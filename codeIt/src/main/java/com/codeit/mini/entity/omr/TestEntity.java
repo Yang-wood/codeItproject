@@ -34,7 +34,7 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
+@ToString(exclude = {"categoryId", "adminId"})
 @Check(constraints = "test_paid IN ('Y', 'N') AND is_open IN ('Y', 'N')")
 @Table(name = "test")
 public class TestEntity extends BaseEntity{

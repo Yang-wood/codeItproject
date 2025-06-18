@@ -12,9 +12,11 @@ import com.codeit.mini.repository.omr.ICategoryRepository;
 import com.codeit.mini.service.omr.ICategoryService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class CategoryServiceImpl implements ICategoryService{
 	
 	private final ICategoryRepository categoryRepository;
@@ -22,6 +24,8 @@ public class CategoryServiceImpl implements ICategoryService{
 	
 	@Override
 	public CategoryDTO register(CategoryDTO categoryDTO) {
+		log.info("=========================================================");
+		log.info("categoryDTO : {}", categoryDTO);
 		
 		CategoryEntity entity = toEntity(categoryDTO);
 		CategoryEntity regEntity = categoryRepository.save(entity);

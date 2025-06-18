@@ -1,5 +1,7 @@
 package com.codeit.mini.dto.omr;
 
+import java.util.List;
+
 import jakarta.persistence.Lob;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

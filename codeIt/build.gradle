@@ -63,6 +63,10 @@ dependencies {
 	
 	// 이메일 인증
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
+	// 문제 관련 CSV 파서 라이브러리
+	// https://mvnrepository.com/artifact/org.apache.commons/commons-csv
+	implementation 'org.apache.commons:commons-csv:1.10.0'
+	
 }
 
 tasks.named('test') {

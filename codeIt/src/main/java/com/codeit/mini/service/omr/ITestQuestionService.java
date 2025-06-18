@@ -2,6 +2,9 @@ package com.codeit.mini.service.omr;
 
 import java.util.List;
 
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
 import com.codeit.mini.dto.omr.TestQuestionDTO;
 import com.codeit.mini.entity.omr.TestEntity;
 import com.codeit.mini.entity.omr.TestQuestionEntity;
@@ -15,7 +18,17 @@ public interface ITestQuestionService {
     List<TestQuestionDTO> getListByTestId(Long testId);
     void update(TestQuestionDTO dto);
     void delete(Long questionId);
-
+    
+    
+    List<TestQuestionDTO> getRandomQuestions(Long testId);
+    
+    // DB정답 가져오기
+    int getCorrectAnswerFromDB(Long questionId);
+    
+    
+    // 문제ID로 시험ID 가져오기
+    Long getTestIdByQuestion(Long questionId);
+    
     
     
     default TestQuestionEntity dtoToEntity(TestQuestionDTO dto) {
