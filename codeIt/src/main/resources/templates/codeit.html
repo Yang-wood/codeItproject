@@ -3,13 +3,71 @@
 <th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
     <th:block th:fragment="content">
     
-    	<h1 class="main-title">당신의 내일을 준비하는 자기개발 플랫폼, CODEIT</h1>
-    	
-        <main class="main-content">
-            <a th:href="@{/book/search}" class="main-button">도서</a>
-            <a th:href="@{omr/test}" class="main-button">테스트</a>
-            <a th:href="@{/vending}" class="main-button">자판기</a>
-        </main>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500&display=swap" rel="stylesheet">
+
+    <section class="hero">
+      <div class="hero-inner" data-aos="fade-up">
+        <h1>당신의 내일을 준비하는<br><span>자기개발 플랫폼, CODEIT</span></h1>
+        <p>도서 · 테스트 · 자판기, 학습과 실습을 한 번에!</p>
+        <a href="#main-menu" class="cta-button">시작하기</a>
+      </div>
+    </section>
+
+    <section class="carousel-showcase" data-aos="fade-up">
+      <div class="swiper review-section">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">"문제 푸는 재미에 빠졌어요!"</div>
+          <div class="swiper-slide">"취업 준비에 많은 도움이 됐습니다."</div>
+          <div class="swiper-slide">"자판기 기능이 참신해요!"</div>
+        </div>
+      </div>
+    </section>
+
+    <section class="main-content" id="main-menu">
+      <a href="/book/search" class="main-button" data-aos="zoom-in">
+        <span class="button-text">도서</span>
+        <img src="/img/book.jpg" alt="도서 이미지">
+      </a>
+      <a href="/omr/test" class="main-button" data-aos="zoom-in" data-aos-delay="100">
+        <span class="button-text">테스트</span>
+        <img src="/img/test.jpg" alt="OMR 이미지">
+      </a>
+      <a href="/vending" class="main-button" data-aos="zoom-in" data-aos-delay="200">
+        <span class="button-text">자판기</span>
+        <img src="/img/test.jpg" alt="자판기 이미지">
+      </a>
+    </section>
+
+    <section class="features-vertical">
+      <div class="feature-card" data-aos="fade-up">
+        <img src="/img/feature1.jpg" alt="방대한 문제은행 이미지" class="feature-image">
+        <div class="feature-text">📘 방대한 문제은행</div>
+      </div>
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+        <img src="/img/check.jpg" alt="실시간 채점 이미지" class="feature-image">
+        <div class="feature-text">⚡ 실시간 채점 기능</div>
+      </div>
+      <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+        <img src="/img/feature3.jpg" alt="자판기 시스템 이미지" class="feature-image">
+        <div class="feature-text">🎁 보상형 자판기 시스템</div>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2025 CODEIT. All rights reserved.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+      const swiper = new Swiper('.swiper', {
+        autoplay: { delay: 2500 },
+        loop: true,
+      });
+      AOS.init();
+    </script>
         
     </th:block>
 </th:block>
