@@ -1,7 +1,9 @@
 @charset "UTF-8";
 
 body {
-	background: white;
+    margin: 0;
+    padding: 0;
+    font-family: 'Noto Sans KR', sans-serif;
 }
 
 .book-item {
