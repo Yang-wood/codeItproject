@@ -24,7 +24,6 @@ import com.codeit.mini.dto.book.ReviewDTO;
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.entity.book.BookEntity;
 import com.codeit.mini.entity.book.RentEntity;
-import com.codeit.mini.entity.book.ReviewEntity;
 import com.codeit.mini.entity.book.WishEntity;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.repository.book.IBookRepository;

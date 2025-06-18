@@ -61,7 +61,20 @@ public class PageMoveController {
             log.info("searchPage: finalmemberId = " + finalMemberId);
 			
             Page<BookEntity> searchList = searchService.searchBook(type, keyword, point, pageable);
-	        
+            int totalPages = searchList.getTotalPages();
+            int currentPage = searchList.getNumber();
+            int PageNum = 10;
+            int startPage = (currentPage / PageNum) * PageNum;
+            int endPage = Math.min(startPage + PageNum - 1, totalPages - 1);
+            
+            if (totalPages == 0) { 
+                startPage = 0;
+                endPage = 0;
+            } else if (endPage - startPage + 1 < PageNum && totalPages >= PageNum) {
+                
+            	startPage = Math.max(0, endPage - PageNum + 1);
+            }
+            
             final Long finalMemberIdLambda = finalMemberId;
             
             dtoPage = searchList.map(bookEntity -> {
@@ -88,6 +101,8 @@ public class PageMoveController {
 	        });
 			model.addAttribute("books", dtoPage.getContent());
 			model.addAttribute("page", dtoPage);
+			model.addAttribute("startPage", startPage);
+			model.addAttribute("endPage", endPage);
 			
 		} catch (Exception e) {
 			log.error("도서 검색 페이지 로드 중 심각한 오류 발생: {}", e.getMessage(), e);

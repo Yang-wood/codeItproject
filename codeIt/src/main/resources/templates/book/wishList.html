@@ -53,7 +53,7 @@
 				                       th:href="@{/book/wishList(page=${page.number - 1}, size=${page.size})}"
 				                       tabindex="-1">&lt;</a>
 				                </li>
-				                <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+				                <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
 				                    th:classappend="${i} == ${page.number} ? 'active'" class="page-item">
 				                    <a class="page-link"
 				                       th:href="@{/book/wishList(page=${i}, size=${page.size})}"

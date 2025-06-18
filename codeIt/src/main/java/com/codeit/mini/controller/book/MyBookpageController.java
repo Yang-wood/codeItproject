@@ -53,7 +53,7 @@ public class MyBookpageController {
 		Pageable pageable = PageRequest.of(page, size, sort);
 	    Page<BookDTO> dtoPage = Page.empty(pageable);
 	    Long finalMemberId = null;
-
+	    
 	    try {
 	        if (member != null) {
 	            finalMemberId = member.getMemberId();
@@ -69,6 +69,21 @@ public class MyBookpageController {
 	        }
 
 	        Page<BookEntity> wishListPage = wishService.findWishListByMemberId(finalMemberId, pageable);
+	        
+	        int totalPages = wishListPage.getTotalPages();
+            int currentPage = wishListPage.getNumber();
+            int PageNum = 10;
+            int startPage = (currentPage / PageNum) * PageNum;
+            int endPage = Math.min(startPage + PageNum - 1, totalPages - 1);
+            
+            if (totalPages == 0) { 
+                startPage = 0;
+                endPage = 0;
+            } else if (endPage - startPage + 1 < PageNum && totalPages >= PageNum) {
+                
+            	startPage = Math.max(0, endPage - PageNum + 1);
+            }
+	        
 	        final Long finalMemberIdRamda = finalMemberId;
 	        dtoPage = wishListPage.map(bookEntity -> {
 	            BookDTO bookDTO = bookService.entityToDto(bookEntity);
@@ -134,6 +149,21 @@ public class MyBookpageController {
 	        }
 
 	        Page<RentEntity> rentListPage = rentService.findRentListByMemberId(finalMemberId, pageable);
+	       
+	        int totalPages = rentListPage.getTotalPages();
+            int currentPage = rentListPage.getNumber();
+            int PageNum = 10;
+            int startPage = (currentPage / PageNum) * PageNum;
+            int endPage = Math.min(startPage + PageNum - 1, totalPages - 1);
+            
+            if (totalPages == 0) { 
+                startPage = 0;
+                endPage = 0;
+            } else if (endPage - startPage + 1 < PageNum && totalPages >= PageNum) {
+                
+            	startPage = Math.max(0, endPage - PageNum + 1);
+            }
+	        
 	        final Long finalMemberIdRamda = finalMemberId;
 	        dtoPage = rentListPage.map(rentEntity -> {
 	            BookDTO bookDTO = bookService.entityToDto(rentEntity.getBookEntity());
