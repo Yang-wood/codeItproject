@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import com.codeit.mini.entity.book.BookEntity;
 import com.codeit.mini.entity.book.RentEntity;
 import com.codeit.mini.entity.member.MemberEntity;
+import com.codeit.mini.entity.vending.PointHistoryEntity;
 import com.codeit.mini.repository.book.IBookRepository;
 import com.codeit.mini.repository.book.IRentRepository;
 import com.codeit.mini.repository.member.IMemberRepository;
+import com.codeit.mini.repository.vending.IPointHistoryRepository;
 import com.codeit.mini.service.book.IRentService;
 
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class RentServiceImpl implements IRentService {
 	private final IRentRepository rentRepository;
 	private final IMemberRepository memberRepository;
 	private final IBookRepository bookRepository;
+	private final IPointHistoryRepository pointRepository;
 	
 	// 대여 등록
 	@Override
@@ -39,6 +42,23 @@ public class RentServiceImpl implements IRentService {
 		BookEntity bookEntity = bookRepository.findById(bookId)
 							  .orElseThrow(() -> new IllegalAccessException("bookInfo : No"));
 		
+		
+		int rentPoint = bookEntity.getRentPoint();
+		
+		if (memberEntity.getPoints() < rentPoint) {
+			throw new Exception("보유 포인트가 부족합니다.");
+		}
+		
+		memberEntity.setPoints(memberEntity.getPoints() - rentPoint);
+		memberRepository.save(memberEntity);
+		
+		PointHistoryEntity historyEntity = PointHistoryEntity.builder().memberId(memberEntity)
+																	   .amount(-rentPoint)
+																	   .type("use")
+																	   .reason("도서 대여")
+																	   .build();
+		
+		pointRepository.save(historyEntity);
 		
 		Optional<RentEntity> isRent = rentRepository.findByBookEntityAndMemberEntityAndIsReturned(bookEntity, memberEntity, 0);
 		if (isRent.isPresent()) {

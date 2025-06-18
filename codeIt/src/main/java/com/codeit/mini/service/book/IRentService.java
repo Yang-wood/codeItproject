@@ -15,5 +15,5 @@ public interface IRentService {
 	boolean isRented(Long bookId, Long memberId) throws Exception;
 	
 	Page<RentEntity> findRentListByMemberId(Long memberId, Pageable pageable) throws Exception;
-
+	
 }
