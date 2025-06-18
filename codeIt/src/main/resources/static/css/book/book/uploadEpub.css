@@ -1,0 +1,95 @@
+@charset "UTF-8";
+
+.container { 
+	max-width: 800px; 
+	margin: auto; 
+	padding: 20px; 
+	border: 1px solid #ddd; 
+	border-radius: 8px; 
+}
+h1, h2 { 
+	color: #333; 
+}
+form div { 
+	margin-bottom: 10px;
+}
+label { 
+	display: inline-block;
+	width: 120px; 
+	font-weight: bold; 
+}
+input[type="file"], input[type="submit"] { 
+	padding: 8px; 
+	border-radius: 4px; 
+	border: 1px solid #ccc; 
+}
+input[type="submit"] { 
+	background-color: #007bff; 
+	color: white; 
+	cursor: pointer; 
+	border: none; 
+}
+input[type="submit"]:hover { 
+	background-color: #0056b3; 
+}
+.preview-section { 
+	margin-top: 30px; 
+	padding: 20px; 
+	border: 1px dashed #007bff; 
+	border-radius: 8px; 
+	background-color: #e6f3ff; 
+}
+.preview-item { 
+	margin-bottom: 8px; 
+}
+.preview-item strong { 
+	display: inline-block; 
+	width: 100px; 
+}
+.error-message { 
+	color: red; 
+	margin-top: 10px; 
+}
+.success-message { 
+	color: green; 
+	margin-top: 10px; 
+}
+.cover-image { 
+	max-width: 150px; 
+	height: auto; 
+	border: 1px solid #ccc; 
+	margin-top: 10px; 
+}
+        
+/* Styles for drag and drop area */
+.drop-zone {
+    border: 2px dashed #007bff;
+    border-radius: 8px;
+    padding: 50px;
+    text-align: center;
+    color: #666;
+    font-size: 1.2em;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+}
+.drop-zone.highlight {
+    background-color: #e6f3ff;
+    border-color: #0056b3;
+}
+.status-summary {
+    margin-top: 15px;
+    font-weight: bold;
+    color: #333;
+}
+.status-item {
+    margin-left: 20px;
+    font-size: 0.9em;
+    color: #555;
+}
+.status-item.success {
+    color: green;
+}
+.status-item.error {
+    color: red;
+}
