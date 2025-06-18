@@ -26,6 +26,7 @@ import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.member.EmailService;
 import com.codeit.mini.service.member.IMemberService;
 
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -85,7 +86,7 @@ public class MemberController {
         if (result.isPresent()) {
             session.setAttribute("member", result.get());
             log.info("로그인 성공 : " + loginId);
-            return "redirect:/main";
+            return "redirect:/codeit";
         } else {
             Optional<MemberEntity> entity = memberRepository.findByLoginId(loginId);
             if (entity.isPresent() && entity.get().getStatus() == 2) {
@@ -101,12 +102,12 @@ public class MemberController {
     @GetMapping("/logout")
     public String logout(HttpSession session) {
         session.invalidate();
-        return "redirect:/main";
+        return "redirect:/codeit";
     }
     
     // 마이페이지 이동
     @GetMapping("/mypage")
-    public String mypage(HttpSession session, Model model, RedirectAttributes rttr) {
+    public String mypage(HttpSession session, Model model, RedirectAttributes rttr, HttpServletRequest request) {
         MemberDTO member = (MemberDTO) session.getAttribute("member");
 
         Optional<MemberDTO> refreshed = memberService.read(member.getMemberId());
@@ -119,10 +120,12 @@ public class MemberController {
             model.addAttribute("rentCount", memberService.getRentCount(latest.getMemberId())); //내 서재 개수
             model.addAttribute("wishCount", memberService.getWishCount(latest.getMemberId())); //위시리스트 개수
             
+            model.addAttribute("currentUri", request.getRequestURI());
+            
             return "/member/mypage";
         } else {
             rttr.addFlashAttribute("msg", "회원 정보를 불러올 수 없습니다.");
-            return "redirect:/main";
+            return "redirect:/codeit";
         }
     }
     
@@ -170,7 +173,7 @@ public class MemberController {
         session.invalidate(); // 세션 종료 (로그아웃)
         rttr.addFlashAttribute("msg", "회원 탈퇴가 완료되었습니다.");
 
-        return "redirect:/main";
+        return "redirect:/codeit";
     }
     
     @PostMapping("/ajax/find-id")

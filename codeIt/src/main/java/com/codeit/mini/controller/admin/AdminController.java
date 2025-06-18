@@ -46,7 +46,7 @@ private final IAdminService adminService;
         Optional<AdminDTO> result = adminService.login(adminLoginId, adminPw);
         if (result.isPresent()) {
             session.setAttribute("admin", result.get());
-            return "redirect:/main";
+            return "redirect:/codeit";
         } else {
             model.addAttribute("msg", "로그인 실패");
             return "admin/login";

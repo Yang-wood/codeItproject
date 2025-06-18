@@ -1,0 +1,124 @@
+@charset "UTF-8";
+
+    .container {
+      display: flex;
+      max-width: 1200px;
+      margin: 100px auto;
+      padding: 0 24px;
+    }
+
+    .sidebar {
+      width: 220px;
+      margin-right: 40px;
+    }
+
+    .sidebar h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin-bottom: 32px;
+    }
+
+    .sidebar ul li {
+      margin-bottom: 10px;
+      font-size: 14px;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .sidebar ul li:hover {
+      text-decoration: underline;
+    }
+
+    .main {
+      flex: 1;
+    }
+
+    .user-card {
+    display: flex;
+    width: 700px; /* ✅ 카드 폭 넓힘 */
+    margin: 0 auto 30px auto; /* ✅ 가운데 정렬 + 여백 */
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05); /* 약간의 입체감 */
+}
+
+    .user-info {
+    flex: 1; /* ✅ 왼쪽/오른쪽 동일 비율 */
+    background-color: #f0f7ff;
+    padding: 32px; /* ✅ 여백 확대 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+    .user-info .email {
+      font-size: 13px;
+      color: #666;
+    }
+
+    .user-info button {
+      margin-top: 20px;
+      padding: 6px 14px;
+      font-size: 13px;
+      border: 1px solid #999;
+      background-color: #fff;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .user-summary {
+    flex: 1;
+    padding: 32px;
+    display: flex;
+    justify-content: space-between; /* ✅ 가로로 정렬 */
+    align-items: center;
+    text-align: center;
+}
+
+    .summary-item {
+    flex: 1; /* ✅ 동일한 비율로 1:1:1 */
+}
+
+    .summary-item strong {
+    display: block;
+    font-size: 15px;
+    margin-bottom: 4px;
+}
+
+    .summary-item span {
+    font-size: 20px;
+    font-weight: bold;
+    color: #0077cc;
+}
+
+    .recent-section {
+      border-top: 1px solid #ccc;
+      padding-top: 20px;
+    }
+
+    .recent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .recent-header h3 {
+      font-size: 16px;
+    }
+
+    .recent-box {
+      margin-top: 16px;
+      border: 1px solid #eee;
+      background-color: #f9f9f9;
+      padding: 40px;
+      text-align: center;
+      color: #777;
+      font-size: 14px;
+    }

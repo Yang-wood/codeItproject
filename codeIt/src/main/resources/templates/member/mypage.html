@@ -1,184 +1,8 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<head>
-  <meta charset="UTF-8">
-  <title>마이페이지</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #fff;
-    }
+<th:block th:replace="~{layout/basic :: setContent(~{this::content})}">
+	<th:block th:fragment="content">
 
-    header {
-      position: fixed;
-      top: 0;
-      width: 100%;
-      height: 64px;
-      background: white;
-      border-bottom: 1px solid #eee;
-      padding: 0 24px;
-      display: flex;
-      justify-content: flex-start;
-      align-items: center;
-      gap: 40px;
-      z-index: 1000;
-    }
-
-    .logo {
-      font-size: 1.4rem;
-      font-weight: bold;
-      color: #1f2d3d;
-      text-decoration: none;
-    }
-
-    nav {
-      display: flex;
-      gap: 20px;
-      align-items: center;
-      margin-left: auto;
-      padding-right: 50px;
-    }
-
-    .container {
-      display: flex;
-      max-width: 1200px;
-      margin: 100px auto;
-      padding: 0 24px;
-    }
-
-    .sidebar {
-      width: 220px;
-      margin-right: 40px;
-    }
-
-    .sidebar h2 {
-      font-size: 20px;
-      margin-bottom: 16px;
-    }
-
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-      margin-bottom: 32px;
-    }
-
-    .sidebar ul li {
-      margin-bottom: 10px;
-      font-size: 14px;
-      color: #333;
-      cursor: pointer;
-    }
-
-    .sidebar ul li:hover {
-      text-decoration: underline;
-    }
-
-    .main {
-      flex: 1;
-    }
-
-    .user-card {
-      display: flex;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      overflow: hidden;
-      margin-bottom: 30px;
-    }
-
-    .user-info {
-      background-color: #f0f7ff;
-      padding: 24px;
-      width: 200px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .user-info .email {
-      font-size: 13px;
-      color: #666;
-    }
-
-    .user-info button {
-      margin-top: 20px;
-      padding: 6px 14px;
-      font-size: 13px;
-      border: 1px solid #999;
-      background-color: #fff;
-      cursor: pointer;
-      border-radius: 4px;
-    }
-
-    .user-summary {
-      flex: 1;
-      padding: 24px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-    }
-
-    .summary-item {
-      width: 30%;
-      margin-bottom: 16px;
-    }
-
-    .summary-item strong {
-      font-size: 15px;
-    }
-
-    .summary-item span {
-      display: block;
-      margin-top: 6px;
-      font-size: 18px;
-      font-weight: bold;
-      color: #0077cc;
-    }
-
-    .recent-section {
-      border-top: 1px solid #ccc;
-      padding-top: 20px;
-    }
-
-    .recent-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .recent-header h3 {
-      font-size: 16px;
-    }
-
-    .recent-box {
-      margin-top: 16px;
-      border: 1px solid #eee;
-      background-color: #f9f9f9;
-      padding: 40px;
-      text-align: center;
-      color: #777;
-      font-size: 14px;
-    }
-  </style>
-</head>
-<body>
-
-<!-- 직접 포함한 헤더 -->
-<header>
-  <a th:href="@{/main}" class="logo">CODEIT</a>
-  <nav>
-    <div th:if="${session.member == null}">
-      <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
-      <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
-    </div>
-    <div th:if="${session.member != null}">
-      <span th:text="${session.member.memberName}">회원이름</span>님 환영합니다!
-      <a th:href="@{/member/mypage}" style="text-decoration:none;color:#333;">마이페이지</a>
-      <a th:href="@{/member/logout}" style="text-decoration:none;color:#333;">로그아웃</a>
-    </div>
-  </nav>
-</header>
 
 <div class="container">
   <!-- 좌측 메뉴 -->
@@ -188,7 +12,7 @@
       <li><strong>내 서재</strong></li>
       <li><a th:href="@{/book/wishList}" style="color: #333; text-decoration: none;">
       		- 위시리스트</a></li>
-      <li><a th:href="@{/book/rentList}" style="color: #333; text-decoration: none;">
+      <li><a th:href="@{/book/wishList}" style="color: #333; text-decoration: none;">
       		- 대여 목록</a></li>
     </ul>
     <ul>
@@ -225,11 +49,7 @@
       <div class="user-summary">
         <div class="summary-item">
           <strong>포인트</strong>
-          <span th:text="${member.points} + ' P'">0 P</span>
-        </div>
-        <div class="summary-item">
-          <strong>쿠폰</strong>
-          <span th:text="${member.coupon} + ' 개'">0개</span>
+          <span th:text="${totalPoints} + ' P'">0p</span>
         </div>
         <div class="summary-item">
           <strong>내 서재</strong>
@@ -249,5 +69,7 @@ let msg = /*[[${msg}]]*/ null;
 if (msg) alert(msg);
 /*]]>*/
 </script>
+	</th:block>
+</th:block>
 </body>
 </html>
