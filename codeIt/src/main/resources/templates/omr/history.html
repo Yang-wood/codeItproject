@@ -1,0 +1,76 @@
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+
+
+<th:block th:replace="~{layout/basic :: setContent(~{this::content})}">
+	<th:block th:fragment="content">
+	
+		<link th:href="@{/css/omr/history.css}" rel="stylesheet" />
+	
+
+			<!-- 로그인하지 않은 경우 -->
+			<div th:if="${session.member == null and session.admin == null}">
+				<a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+				<a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
+			</div>
+		
+		
+		
+			<div class="layout-wrapper">
+				<aside class="side-nav">
+					<ul>
+						<li><a href="/omr/test">테스트 목록</a></li>
+						<li><a href="/omr/history">시험 응시 목록</a></li>
+					</ul>
+				</aside>
+			
+				<div class="testContainer">
+					<h2 class="page-title">시험 응시 내역</h2>
+					<hr class="divider">
+					
+					<div th:if="${sessionList.isEmpty()}">응시 내역이 없습니다.</div>
+				
+					<a th:each="testSession : ${sessionList}" 
+						 th:href="@{/omr/result/{sessionId}(sessionId=${testSession.sessionId})}" 
+						 class="session-card">
+						<div class="session-grid">
+							<div class="session-title">
+								<h3 th:text="${testSession.categoryType} + ' 시험 결과'"></h3>
+							</div>
+							<div class="session-details">
+								<div class="session-meta">
+									제출시간: <span th:text="${#dates.format(testSession.submitTime, 'yyyy-MM-dd HH:mm:ss')}"></span><br/>
+									걸린 시간: <span th:text="${testSession.duration}"></span>초
+								</div>
+								<div class="session-score">
+									점수: <span th:text="${testSession.score}"></span>점
+								</div>
+							</div>
+						</div>
+					</a>
+				</div>
+			
+				<aside class="ad-banner">
+					<div class="ad-content">
+						<p style="font-weight: bold;">쿠폰 뽑기</p>
+						<a href="/vending/main" target="_blank">
+							<img src="/img/ad-banner.jpg" alt="광고">
+						</a>
+						<p style="font-size: 14px; color: #555;">도서 및 시험 응시 무료쿠폰에 도전해보세요!</p>
+					</div>
+				</aside>
+			</div>
+			
+			
+			<script th:inline="javascript">
+				/*<![CDATA[*/
+				window.couponList = /*[[${session.testCoupons}]]*/ [];
+				window.isAdmin = /*[[${session.admin != null}]]*/ false;
+				window.memberId = /*[[${session.member?.memberId}]]*/ null;
+				window.adminId = /*[[${session.admin?.adminId}]]*/ null;
+				/*]]>*/
+			</script>
+			
+			<script th:src="@{/js/omr/history.js}"></script>
+			
+	</th:block>
+</th:block>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>시험 결과 목록</title>
+  <style>
+    .session-container {
+      max-width: 800px;
+      margin: 40px auto;
+      font-family: 'Noto Sans KR', sans-serif;
+    }
+    .session-card {
+      background: #fff;
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 0 5px rgba(0,0,0,0.1);
+      border-radius: 10px;
+      text-decoration: none;
+      display: block;
+      color: inherit;
+    }
+    .session-card:hover {
+      background-color: #f4f6ff;
+    }
+    .session-card h3 {
+      margin-bottom: 8px;
+      color: #365cff;
+    }
+    .session-meta {
+      font-size: 14px;
+      color: #666;
+    }
+    .session-score {
+      font-weight: bold;
+      font-size: 16px;
+      color: #222;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="session-container">
+    <h2>내 시험 응시 내역</h2>
+    
+    <div th:if="${sessionList.isEmpty()}">응시 내역이 없습니다.</div>
+
+    <a th:each="testSession : ${sessionList}" 
+       th:href="@{/omr/result/{sessionId}(sessionId=${testSession.sessionId})}" 
+       class="session-card">
+      <h3 th:text="${testSession.categoryType} + ' 시험 결과'"></h3>
+      <div class="session-meta">
+        제출시간: <span th:text="${#dates.format(testSession.submitTime, 'yyyy-MM-dd HH:mm:ss')}"></span><br/>
+        걸린 시간: <span th:text="${testSession.duration}"></span>초
+      </div>
+      <div class="session-score">
+        점수: <span th:text="${testSession.score}"></span>점
+      </div>
+    </a>
+  </div>
+</body>
+</html>

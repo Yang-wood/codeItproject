@@ -1,0 +1,113 @@
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+<th:block th:with="pageClass='test-page'"
+		  th:replace="~{layout/basic :: setContent(~{this::content})}">
+	<th:block th:fragment="content">
+	
+	<link th:href="@{/css/omr/test.css}" rel="stylesheet" />
+	
+	
+	
+	<!-- 전체 콘텐츠 감싸는 래퍼 -->
+<div class="layout-wrapper">
+  <!-- 사이드 네비바 -->
+  <aside class="side-nav">
+    <ul>
+      <li><a href="/omr/test">테스트 목록</a></li>
+      <li><a href="/omr/history">시험 응시 목록</a></li>
+    </ul>
+  </aside>
+	
+	
+	
+	<div class="testContainer">
+		<div style="padding-top: 40px;">
+			<h2 class="page-title">시험 목록</h2>
+			<hr class="divider">
+		</div>
+		<!-- 카테고리 필터 -->
+		<div class="filter-wrapper">
+			<div class="filter-section">
+				<label for="categoryFilter">카테고리:</label>
+				<select id="categoryFilter">
+					<option value="all">전체</option>
+					<option value="정보처리기사">정보처리기사</option>
+					<option value="정보보안기사">정보보안기사</option>
+					<option value="산업기사">산업기사</option>
+				</select>
+			</div>
+			<!-- 관리자만 시험지 생성 버튼 표시 -->
+			<div th:if="${session.admin != null}">
+				<a th:href="@{/omr/admin/register}" class="btn-create">
+					시험지 생성
+				</a>
+			</div>
+		</div>
+	
+		<!-- 시험 리스트 -->
+		<div id="testList"></div>
+		
+		<!-- 페이지네이션 -->
+		<div id="pagination"></div>
+	</div>
+	
+	
+	<!-- 오른쪽 광고 배너 -->
+<aside class="ad-banner">
+  <div class="ad-content">
+    <p style="font-weight: bold;">쿠폰 뽑기</p>
+    <a href="/정화님 링크" target="_blank">
+      <img src="/img/ad-banner.jpg" alt="광고" style="width:100%; border-radius:8px;">
+    </a>
+    <p style="font-size: 14px; color: #555;">도서 및 시험 응시 무료쿠폰에 도전해보세요!</p>
+  </div>
+</aside>
+	
+  
+	<!-- 응시 안내 모달 -->
+<div id="testModal" class="custom-modal">
+  <p class="modal-text">이 시험을 응시하시겠습니까?</p>
+  <div class="modal-buttons">
+    <button id="startConfirm" class="btn-start">응시 시작</button>
+    <button id="closeModal" class="btn-cancel">닫기</button>
+  </div>
+</div>
+<div id="modalOverlay" class="modal-overlay"></div>
+
+
+	<!-- 시험 모달 구조 -->
+	<div id="examModal">
+	  <div class="exam-wrapper">
+	    <button class="exam-close" onclick="$('#examModal').fadeOut(); clearInterval(timerInterval);">✕</button>
+	
+	    <div class="exam-header">
+	      <h3><span id="questionIndex"></span></h3>
+	      <div id="timer">경과 시간 : 00:00</div>
+	    </div>
+	
+	    <div id="examContent">
+	      <!-- 문제 + 보기 동적 삽입 -->
+	    </div>
+	
+	    <div class="action-buttons">
+	      <button id="prevBtn">이전</button>
+	      <button id="nextBtn">다음</button>
+	      <button id="submitBtn" style="display:none;">제출</button>
+	    </div>
+	  </div>
+	</div>
+</div>
+
+
+	<script th:inline="javascript">
+		/*<![CDATA[*/
+		window.couponList = /*[[${session.testCoupons}]]*/ [];
+		window.isAdmin = /*[[${session.admin != null}]]*/ false;
+		window.memberId = /*[[${session.member?.memberId}]]*/ null;
+		window.adminId = /*[[${session.admin?.adminId}]]*/ null;
+		/*]]>*/
+	</script>
+	
+	<script th:src="@{/js/omr/test.js}"></script>
+
+	</th:block>
+</th:block>

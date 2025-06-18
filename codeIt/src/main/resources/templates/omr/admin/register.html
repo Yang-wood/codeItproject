@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+
+
+<th:block th:replace="~{layout/basic :: setContent(~{this::content})}">
+	<th:block th:fragment="content">
+					
+					
+		<link th:href="@{/css/omr/register.css}" rel="stylesheet" />
+					
+					<!-- 로그인하지 않은 경우 -->
+					        <div th:if="${session.member == null and session.admin == null}">
+					            <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+					            <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
+					        </div>
+			
+			
+		<div class="layout-wrapper">
+			  <!-- 사이드 네비바 -->
+			  <aside class="side-nav">
+			    <ul>
+			      <li><a href="/omr/test">테스트 목록</a></li>
+			      <li><a href="/omr/history">시험 응시 목록</a></li>
+			    </ul>
+			  </aside>			        
+						        
+			  <div class="testContainer">
+			    <h2>시험지 등록</h2>
+			
+			    <form action="/omr/admin/register" method="post" enctype="multipart/form-data" th:object="${testDTO}">
+			      
+			      <!-- 제목 -->
+			      <div class="form-row">
+			        <div class="form-group" style="flex: 1;">
+			          <label for="testTitle">제목</label>
+			          <input type="text" id="testTitle" name="testTitle" placeholder="제목을 입력해 주세요." />
+			        </div>
+			      </div>
+			
+			      <!-- 카테고리 -->
+			      <div class="form-row">
+			        <div class="form-group" style="max-width: 50%;">
+			          <label for="categoryId">카테고리</label>
+			          <select id="categoryId" name="categoryId">
+			            <option value="">선택하세요</option>
+			            <option value="1">정보처리기사</option>
+			            <option value="2">정보보안기사</option>
+			            <option value="3">산업기사</option>
+			          </select>
+			        </div>
+			      </div>
+			
+			      <!-- 시험 설명 -->
+			      <div class="form-group">
+			        <label for="testDesc">시험 설명</label>
+			        <textarea id="testDesc" name="testDesc" rows="12" placeholder="시험 설명을 입력하세요."></textarea>
+			      </div>
+			
+			      <!-- 시험 제한 시간 -->
+			      <div class="form-group">
+			        <label for="testLimit">시험 제한 시간 (분)</label>
+			        <input type="number" id="testLimit" name="testLimit" min="1" placeholder="예: 60" />
+			      </div>
+			
+			      <!-- 유료 여부 -->
+			      <div class="form-group">
+			        <label for="testPaid">유료 여부</label>
+			        <select id="testPaid" name="testPaid">
+			          <option value="Y">유료</option>
+			          <option value="N">무료</option>
+			        </select>
+			      </div>
+			
+			      <!-- 공개 여부 -->
+			      <div class="form-group">
+			        <label for="isOpen">공개 여부</label>
+			        <select id="isOpen" name="isOpen">
+			          <option value="Y">공개</option>
+			          <option value="N">비공개</option>
+			        </select>
+			      </div>
+			
+			      <!-- 문제 CSV 업로드 -->
+			      <div class="form-group">
+			        <label for="questionCsv">문제 CSV 파일 업로드</label>
+			        <input type="file" id="questionCsv" name="questionCsv" accept=".csv" />
+			        <div class="file-info">※ 보기(choiceJson), 정답, 해설, 문제 내용이 포함된 CSV 파일만 업로드 가능합니다.</div>
+			      </div>
+			
+			      <!-- 등록 버튼 -->
+			      <div class="submit-btn">
+			        <button type="submit">등록</button>
+			      </div>
+			    </form>
+			  </div>
+			</div>		        
+	</th:block>
+</th:block>
