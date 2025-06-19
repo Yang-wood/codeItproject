@@ -204,3 +204,16 @@ body {
   content: "×";
   display: block;
 }
+
+.star-rating {
+  font-family: FontAwesome;
+  color: #FFD700;
+  position: relative;
+  display: inline-block;
+}
+.star-rating .fa-star-o {
+  color: #ddd;
+}
+.star-rating .fa-star-half-o {
+  color: #FFD700;
+}

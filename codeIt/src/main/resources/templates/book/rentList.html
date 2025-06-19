@@ -5,13 +5,15 @@
 			<th:block th:fragment="myActualPageContent">
 				<script th:src="@{/js/starrr.js}"></script>
 				<link th:href="@{/css/starrr.css}" rel="stylesheet">
-				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
 				
 				<div class="container py-4">
 				    <div class="container">
-				        
+	                	<div style="height: 100px;"></div>
 				        <hr>
 				        <div id="bookListContainer">
+				        	<div th:if="${#lists.isEmpty(rentList)}" class="text-center text-muted mt-5">
+			                	<p>대여중인 도서가 없습니다.</p>
+			            	</div>
 				            <div th:each="book : ${rentList}" class="book-item d-flex align-items-start">
 				                <img th:src="${book.coverImage}" alt="표지" class="book-cover">
 				                <div class="book-info">
@@ -23,6 +25,23 @@
 				                    <div class="book-description" th:text="${book.description}">
 				                        도서 설명
 				                    </div>
+				                   	<div style="height: 10px;">
+				                   	</div>
+				                    <div class="star-rating text-warning">
+									  <!-- 꽉 찬 별 -->
+									  <i class="fa fa-star"
+									     th:each="i : ${book.avgRating >= 1 ? #numbers.sequence(1, T(java.lang.Math).floor(book.avgRating)) : {}}"></i>
+									  <!-- 반 별 -->
+									  <i class="fa fa-star-half-o"
+									     th:if="${(book.avgRating % 1) >= 0.25 and (book.avgRating % 1) < 0.75}"></i>
+									  <!-- 0.75 이상이면 반 별 대신 꽉 찬 별 하나 추가 -->
+									  <i class="fa fa-star"
+									     th:if="${(book.avgRating % 1) >= 0.75}"></i>
+									  <!-- 빈 별 계산 -->
+									  <i class="fa fa-star-o"
+									     th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).floor(book.avgRating) - ((book.avgRating % 1 >= 0.75) ? 1 : (book.avgRating % 1 >= 0.25 ? 1 : 0)))}"></i>
+									  <small class="text-muted" th:text="'(' + ${book.avgRating} + ')'"></small>
+									</div>
 				                </div>
 				                <div class="book-buttons">
 				                	<button th:if="${book.wishedByCurrentUser}" 
