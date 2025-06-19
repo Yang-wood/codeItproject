@@ -1,10 +1,10 @@
 package com.codeit.mini.service.omr.impl;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.codeit.mini.dto.omr.TestQuestionDTO;
@@ -83,6 +83,34 @@ public class TestQuestionServiceImpl implements ITestQuestionService{
 		} else {
 			log.info("해당 문제를 찾을 수 없습니다");
 		}
+	}
+
+	@Override
+	public List<TestQuestionDTO> getRandomQuestions(Long testId) {
+		List<TestQuestionEntity> entityList = questionRepository.findByTestId(testId);
+		
+		// 랜덤으로 섞기
+		Collections.shuffle(entityList);
+		
+		List<TestQuestionEntity> selected = entityList.stream()
+													.limit(10)
+													.collect(Collectors.toList());
+		
+		return selected.stream().map(this::entityToDto)
+								.collect(Collectors.toList());
+	}
+
+	@Override
+	public int getCorrectAnswerFromDB(Long questionId) {
+		Optional<TestQuestionEntity> entity = questionRepository.findById(questionId);
+		
+		return entity.map(e -> Character.getNumericValue(e.getAnswer())).orElse(0);
+	}
+
+	@Override
+	public Long getTestIdByQuestion(Long questionId) {
+		
+		return questionRepository.findTestIdByQuestionId(questionId);
 	}
 
 }

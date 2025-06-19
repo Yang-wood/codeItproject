@@ -1,5 +1,6 @@
 package com.codeit.mini.service.vending;
 
+import java.util.List;
 import java.util.Optional;
 
 import com.codeit.mini.dto.vending.TestCouponDTO;
@@ -20,6 +21,17 @@ public interface ITestCouponService {
     public Optional<TestCouponDTO> useFreePassIfExists(Long memberId);
     
     public boolean isValidTestCoupon(String couponCode);
+    
+    
+    
+    List<TestCouponDTO> getCouponByMemberId(Long memberId);
+    
+    
+	// USED/ISSUED 중에 사용가능 쿠폰 가져오기
+	Optional<TestCouponDTO> getAvailabliCoupon(Long memberId);
+    
+    
+    
     
     default TestCouponDTO toDTO(TestCouponEntity entity) {
     	TestCouponDTO dto = TestCouponDTO.builder()

@@ -33,8 +33,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
-@Check(constraints = "choice_answer IN ('A', 'B', 'C', 'D')")
+@ToString(exclude = {"sessionId", "questionId"})
+@Check(constraints = "choice_answer IN ('1', '2', '3', '4')")
 @Table(name = "temp_answer")
 public class TempAnswerEntity {
 	
@@ -59,10 +59,5 @@ public class TempAnswerEntity {
     private LocalDateTime saveTime;
     
     
- /*   
-    public TempAnswerEntity toDto(TempAnswerDTO tempAnswerDto) {
-    	
-    }
-*/
     
 }

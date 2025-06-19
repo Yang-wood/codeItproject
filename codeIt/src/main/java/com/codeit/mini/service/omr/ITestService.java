@@ -1,8 +1,12 @@
 package com.codeit.mini.service.omr;
 
 import java.util.List;
+import java.util.Optional;
+
+import org.springframework.data.domain.Page;
 
 import com.codeit.mini.dto.omr.TestDTO;
+import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.entity.admin.Admin;
 import com.codeit.mini.entity.omr.CategoryEntity;
 import com.codeit.mini.entity.omr.TestEntity;
@@ -14,6 +18,23 @@ public interface ITestService {
 	List<TestDTO> getList();
 	void update(TestDTO dto);
 	void delete(Long testId);
+	
+	// 공개 처리된 게시물만 보기
+	Page<TestDTO> getPublicPageList(String category, int page);
+	
+	// 카테고리별 모든 게시물 보기
+	Page<TestDTO> getPageList(String category, int page);
+	
+	// 모든 게시물 보기
+	Page<TestDTO> getAllPageList(int page);
+	
+	void hideTest(Long testId);
+	
+
+	
+
+	
+	
 	
 	
 	

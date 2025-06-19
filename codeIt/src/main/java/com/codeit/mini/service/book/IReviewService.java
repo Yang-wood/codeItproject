@@ -1,6 +1,7 @@
 package com.codeit.mini.service.book;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -14,7 +15,7 @@ import com.codeit.mini.entity.member.MemberEntity;
 public interface IReviewService {
 	
 	// 리뷰 등록
-	ReviewEntity regReview(ReviewDTO reviewDTO) throws Exception;
+	Map<String, Object> regReview(ReviewDTO reviewDTO) throws Exception;
 	
 	// 리뷰 삭제
 	void removeReview(Long reviewId) throws Exception;

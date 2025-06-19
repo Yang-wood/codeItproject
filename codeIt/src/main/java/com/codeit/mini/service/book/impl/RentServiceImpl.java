@@ -61,6 +61,10 @@ public class RentServiceImpl implements IRentService {
 		pointRepository.save(historyEntity);
 		
 		Optional<RentEntity> isRent = rentRepository.findByBookEntityAndMemberEntityAndIsReturned(bookEntity, memberEntity, 0);
+		log.info("bookEntity : {}", bookEntity);
+		log.info("memberEntity : {}", memberEntity);
+		log.info("rent : {}", isRent);
+		
 		if (isRent.isPresent()) {
 			log.warn("이미 대여중입니다.");
 			throw new IllegalStateException("이미 대여중입니다.");
@@ -77,6 +81,7 @@ public class RentServiceImpl implements IRentService {
         											.readPage(0)
         											.readState(0)
         											.hasReview(0)
+        											.pointGet(0)
         											.build();
         // 대여 횟수 증가식
 		bookEntity.setRentCount(bookEntity.getRentCount() + 1);

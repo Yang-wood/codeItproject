@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+
+
+<th:block th:replace="~{layout/basic :: setContent(~{this::content})}">
+	<th:block th:fragment="content">
+			
+			
+		<link th:href="@{/css/omr/modify.css}" rel="stylesheet" />
+			
+			<!-- 로그인하지 않은 경우 -->
+			        <div th:if="${session.member == null and session.admin == null}">
+			            <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+			            <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
+			        </div>
+			        
+			
+			
+	<div class="layout-wrapper">
+		  <!-- 사이드 네비바 -->
+		  <aside class="side-nav">
+		    <ul>
+		      <li><a href="/omr/test">테스트 목록</a></li>
+		      <li><a href="/omr/history">시험 응시 목록</a></li>
+		    </ul>
+		  </aside>			
+					
+					        
+					        
+		<div class="testContainer">
+		  <h2>시험지 수정</h2>
+		
+		  <form action="/omr/admin/modify" method="post" th:object="${testDto}">
+		  	<input type="hidden" name="testId" th:value="*{testId}" />
+		    
+		    <!-- 시험 ID (readonly) -->
+		    <div class="form-group">
+		      <label>시험 ID</label>
+		      <input type="text" name="testId" th:value="*{testId}" readonly>
+		    </div>
+		    
+		    <!-- 제목 -->
+		    <div class="form-group">
+		      <label for="testTitle">제목</label>
+		      <input type="text" id="testTitle" name="testTitle" th:value="*{testTitle}">
+		    </div>
+		
+		    <!-- 카테고리 (disabled) -->
+		<!--     <div class="form-group">
+		      <label>카테고리</label>
+		      <input type="text" th:value="*{categoryType}" disabled>
+		    </div> -->
+		
+		    <!-- 유료 여부 (disabled) -->
+		    <div class="form-group">
+		      <label>유료 여부</label>
+		      <input type="text" th:value="*{testPaid}" disabled>
+		    </div>
+		
+		    <!-- 제한 시간 (disabled) -->
+		    <div class="form-group">
+		      <label>제한 시간 (분)</label>
+		      <input type="number" th:value="*{testLimit}" disabled>
+		    </div>
+		
+		
+		    <!-- 설명 -->
+		    <div class="form-group">
+		      <label for="testDesc">시험 설명</label>
+		      <textarea id="testDesc" name="testDesc" rows="6" th:text="*{testDesc}"></textarea>
+		    </div>
+		
+		    <!-- 공개 여부 -->
+		    <div class="form-group">
+		      <label for="isOpen">공개 여부</label>
+		      <select id="isOpen" name="isOpen" th:value="*{isOpen}">
+		        <option value="Y" th:selected="*{isOpen} == 'Y'">공개</option>
+		        <option value="N" th:selected="*{isOpen} == 'N'">비공개</option>
+		      </select>
+		    </div>
+		
+		    <!-- 버튼 -->
+		    <div class="submit-btn">
+		      <button type="submit">수정 완료</button>
+		    </div>
+		  </form>
+		</div>
+	</div>
+
+	</th:block>
+</th:block>

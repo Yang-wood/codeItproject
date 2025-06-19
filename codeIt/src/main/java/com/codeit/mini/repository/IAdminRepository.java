@@ -10,5 +10,8 @@ public interface IAdminRepository extends JpaRepository<Admin, Long> {
 	
 	// 로그인 ID로 관리자 조회 (로그인용)
     Optional<Admin> findByAdminLoginId(String adminLoginId);
+    
+    
+    
 
 }

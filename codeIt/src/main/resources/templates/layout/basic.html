@@ -3,20 +3,19 @@
 <th:block th:fragment="setContent(content)">
 	<head>
 	    <meta charset="UTF-8" />
-	    <title>CODEIT 메인</title>
+	    <title>CODEIT</title>
 	    <meta name="viewport" content="width=device-width, initial-scale=1" />
 	    
 	    <!-- 공통 헤더 전용 -->
 	    <link th:href="@{/css/basic.css}" rel="stylesheet" />
 	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-	    
+
 	    <!-- codeit 메인 전용 -->
-	    <link th:if="${currentUri == '/codeit'}" 
-	    	  th:href="@{/css/codeit.css}" rel="stylesheet" />
-	    
+	    <link th:if="${currentUri == '/codeit'}" th:href="@{/css/codeit.css}" rel="stylesheet" />
+	
 	    <!-- 마이페이지 전용 -->
-	    <link th:if="${currentUri == '/member/mypage'}"
-	    	  th:href="@{/css/mypage.css}" rel="stylesheet" />
+	    <link th:if="${currentUri == '/member/mypage'}" th:href="@{/css/mypage.css}" rel="stylesheet" />
+	
 	    <!-- JQuery 적용 -->
 	    <script th:src="@{/jquery/jquery-3.7.1.js}"></script>
 	</head>
@@ -112,10 +111,45 @@
         </th:block>
     </div>
 </header>
+
+	<header>
+	    <a th:href="@{/codeit}" class="logo">CODEIT</a>
+	    
+      <!-- 네비게이션 고정 메뉴 -->
+	  <nav class="nav-buttons">
+	    <a th:href="@{/book/search}">도서 관리</a>
+	    <a th:href="@{/vending/machines}">자판기</a>
+	    <a th:href="@{/omr/test}">OMR</a>
+	    <a th:href="@{/member/mypage}">마이페이지</a>
 	
-	<div class="container">
-	    <th:block th:replace="${content}"></th:block>
-	</div>
+	    <!-- 관리자 전용 메뉴 -->
+	    <a th:if="${session.admin != null}" th:href="@{/admin/dashboard}">관리자페이지</a>
+	  </nav>
+
+	  <!-- 우측 사용자 메뉴 -->
+	  <div class="auth-buttons">
+	    <!-- 비로그인 상태 -->
+	    <div th:if="${session.member == null and session.admin == null}">
+	      <a th:href="@{/member/login}">로그인</a>
+	      <span>|</span>
+	      <a th:href="@{/member/register}">회원가입</a>
+	    </div>
+	
+	    <!-- 일반회원 로그인 시 -->
+	    <div th:if="${session.member != null}">
+	      <a th:href="@{/member/logout}">로그아웃</a>
+	    </div>
+	
+	    <!-- 관리자 로그인 시 -->
+	    <div th:if="${session.admin != null}">
+	      <a th:href="@{/admin/logout}">로그아웃</a>
+	    </div>
+	  </div>
+    </header>
+
+    <div class="container">
+      <th:block th:replace="${content}"></th:block>
+    </div>
 	
 	</body>
 </th:block>

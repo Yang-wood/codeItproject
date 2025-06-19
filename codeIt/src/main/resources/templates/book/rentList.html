@@ -5,13 +5,15 @@
 			<th:block th:fragment="myActualPageContent">
 				<script th:src="@{/js/starrr.js}"></script>
 				<link th:href="@{/css/starrr.css}" rel="stylesheet">
-				<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
 				
 				<div class="container py-4">
 				    <div class="container">
-				        
+	                	<div style="height: 100px;"></div>
 				        <hr>
 				        <div id="bookListContainer">
+				        	<div th:if="${#lists.isEmpty(rentList)}" class="text-center text-muted mt-5">
+			                	<p>대여중인 도서가 없습니다.</p>
+			            	</div>
 				            <div th:each="book : ${rentList}" class="book-item d-flex align-items-start">
 				                <img th:src="${book.coverImage}" alt="표지" class="book-cover">
 				                <div class="book-info">
@@ -23,6 +25,21 @@
 				                    <div class="book-description" th:text="${book.description}">
 				                        도서 설명
 				                    </div>
+				                   	<div style="height: 10px;">
+				                   	</div>
+				                    <div class="star-rating text-warning">
+									    <!-- 꽉 찬 별 -->
+									    <th:block th:if="${book.fullStar > 0}">
+									        <i class="fa fa-star" th:each="i : ${#numbers.sequence(1, book.fullStar)}"></i>
+									    </th:block>
+									    <!-- 반 별 -->
+									    <i class="fa fa-star-half-o" th:if="${book.halfStar}"></i>
+									    <!-- 빈 별 (0개일 경우 생략) -->
+									    <th:block th:if="${book.emptyStar > 0}">
+									        <i class="fa fa-star-o" th:each="i : ${#numbers.sequence(1, book.emptyStar)}"></i>
+									    </th:block>
+									    <small class="text-muted" th:text="'(' + ${book.avgRating} + ')'"></small>
+									</div>
 				                </div>
 				                <div class="book-buttons">
 				                	<button th:if="${book.wishedByCurrentUser}" 
@@ -68,7 +85,7 @@
 				                       th:href="@{/book/rentList(page=${page.number - 1}, size=${page.size})}"
 				                       tabindex="-1">&lt;</a>
 				                </li>
-				                <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+				                <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
 				                    th:classappend="${i} == ${page.number} ? 'active'" class="page-item">
 				                    <a class="page-link"
 				                       th:href="@{/book/rentList(page=${i}, size=${page.size})}"
@@ -210,7 +227,11 @@
 						    contentType: "application/json",
 						    data: JSON.stringify(reviewData),
 						    success: function(response) {
-						    	alert("리뷰가 등록되었습니다.");
+						    	if (response.message) {
+						            alert(response.message);
+						        } else {
+						            alert("리뷰가 등록되었습니다.");
+						        }
 						    	$("#reviewRegModal").modal('hide');
 						    	location.reload();
 						    },
@@ -327,7 +348,7 @@
 				            $("#reviewRegModal").modal("hide");
 				            $("#reviewListModal").modal("show");
 				            // 리뷰 목록 다시 로드 또는 수정된 리뷰 부분만 갱신
-				            loadReviewList(bookId);
+				            location.reload();
 				        },
 				        error: function() {
 				            alert("리뷰 수정에 실패했습니다.");

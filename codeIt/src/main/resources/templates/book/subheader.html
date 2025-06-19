@@ -1,64 +1,14 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <th:block th:fragment="withSubHeader(pageContent)">
  	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  	<link th:href="@{/css/book/main.css}" rel="stylesheet"/>
+  	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.2.0/css/font-awesome.min.css">
  	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
- 	<style>
- 	 body {
- 	 	background: white;
- 	 }
- 	
-     .book-item {
-         border-bottom: 1px solid #e0e0e0;
-         padding: 20px 0;
-     }
-
-     .book-cover {
-         width: 120px;
-         height: auto;
-         object-fit: contain;
-     }
-
-     .book-info {
-         flex-grow: 1;
-         padding-left: 20px;
-     }
-
-     .book-buttons {
-         min-width: 150px;
-         display: flex;
-         flex-direction: column;
-         align-items: flex-end;
-         gap: 8px;
-     }
-     
-     .point-text {
-   		white-space: nowrap;
-   		text-align: right;
-  		width: 100%;
-   		font-size: 0.9rem;
-   		color: #555;
-	 }
-
-     .book-title {
-         font-size: 1.2rem;
-         font-weight: 600;
-         color: #333;
-     }
-
-     .book-description {
-         font-size: 0.9rem;
-         color: #555;
-         margin-top: 0.5rem;
-     }
-
-     .btn-sm {
-         margin-top: 5px;
-         width: 100%;
-     }
-  </style>
+    
+    
     <div class="sub-header">
     	<!-- 결제 선택 모달 -->
-	    <div id="bookPaySelModal" class="modal fade" tabindex="-1" role="dialog"
+	    <!-- <div id="bookPaySelModal" class="modal fade" tabindex="-1" role="dialog"
 	    data-backdrop="static" data-keyboard="false" aria-labelledby="modallabel">
 	    	<div class="modal-dialog">
 	    		<div class="modal-content">
@@ -75,7 +25,7 @@
 					</div>
 	    		</div>
 	    	</div>
-	    </div>
+	    </div> -->
 	    
 	    <!-- 결제 승인 모달 -->
 	    <div id="bookPayConfirmModal" class="modal fade" tabindex="-1" role="dialog"
@@ -97,8 +47,8 @@
 	    </div>
     </div>
     
-    <div class="main-content">
-    	<th:block th:replace="${pageContent}"></th:block>
+    <div class="myContent">
+   		<th:block th:replace="${pageContent}"></th:block>
     </div>
     
 <script th:inline="javascript">
@@ -109,68 +59,69 @@ $(document).ready(function() {
 		$("#searchForm").submit();
 	});
 	
-	let selectedBookId = null;
-    let selectedBookPoint = 0;
-    let memberPoint = 0;
+	let selectBookId = null; 
+    let rentBtn = null;       
+    let openBtn = '';      
+    let bookPoint = 0;        
+    let memberPoint = 0;         
 	
 	// 대여 후 버튼변경
 	$(".rentBtn").click(function() {
-		const rentBtn = $(this);
-		const bookId = rentBtn.data("book-id");
-		var openBtn = `<a href="/book/epubRead?bookId=${bookId}" class="btn btn-primary read-button">열람하기</a>`;
-		
-		selectedBookPoint = $(this).closest(".book-buttons").find(".point-text span").text();
+		rentBtn = $(this);
+		selectBookId = rentBtn.data("book-id");
+		bookPoint = rentBtn.closest(".book-buttons").find(".point-text span").text();
+		openBtn = `<a href="/book/epubRead?bookId=${selectBookId}" class="btn btn-primary read-button">열람하기</a>`;
 		
 		$.ajax({
             url: "/api/book/getPoint",
             type: "get",
             success: function (rs) {
                 memberPoint = rs.points;
-                $("#bookPaySelModal").modal("show");
+                
+                if (parseInt(memberPoint) < parseInt(bookPoint)) {
+                    alert("포인트가 부족합니다.");
+                    return;
+                }
+
+                const html = `
+                    <p><strong>보유 포인트:</strong> ${memberPoint}P</p>
+                    <p><strong>도서 대여 포인트:</strong> ${bookPoint}P</p>
+                `;
+                $("#bookPayment").html(html);
+                $("#bookPayConfirmModal").modal("show");
             },
             error: function (xhr) {
                 alert(xhr.responseText || "포인트 조회 실패");
             }
         });
-		
-		$("#bookUserPoint").click(function () {
-	        if (parseInt(memberPoint) < parseInt(selectedBookPoint)) {
-	            alert("포인트가 부족합니다.");
-	            return;
-	        }
-
-	        const html = `
-	            <p><strong>보유 포인트:</strong> ${memberPoint}P</p>
-	            <p><strong>도서 대여 포인트:</strong> ${selectedBookPoint}P</p>
-	        `;
-	        $("#bookPayment").html(html);
-	        $("#bookPaySelModal").modal("hide");
-	        $("#bookPayConfirmModal").modal("show");
-	    });
-		$("#bookPaymentBtn").click(function () {
-			$.ajax({
-				url: "/api/book/rent",
-				type: "post",
-				data: {
-					bookId: bookId
-				},
-				success: function(rs) {
-					alert("대여 신청 완료");
-					rentBtn.hide();
-					rentBtn.after(openBtn);
-				},
-				error: function(xhr, status, error) {
-	                var errorMessage = xhr.responseText || '도서 대여 중 오류가 발생했습니다.';
-	                alert('오류: ' + errorMessage);
-	            }
-			});
+	});
+	
+	$("#bookPaymentBtn").click(function () {
+		$.ajax({
+			url: "/api/book/rent",
+			type: "post",
+			data: {
+				bookId: selectBookId
+			},
+			success: function(rs) {
+				alert("대여 완료. 이제부터 열람하실 수 있습니다.");
+				rentBtn.hide();
+				rentBtn.after(openBtn);
+				$("#bookPayConfirmModal").modal("hide");
+			},
+			error: function(xhr, status, error) {
+                var errorMessage = xhr.responseText || '도서 대여 중 오류가 발생했습니다.';
+                alert('오류: ' + errorMessage);
+            }
 		});
+		
+		
 	});
 	
 	// 찜 후 버튼변경
 	$(".wishBtn").click(function() {
 		const wishBtn = $(this);
-		const bookId = wishBtn.data("book-id");
+		selectBookId = wishBtn.data("book-id");
 		
 		var isWished = wishBtn.text() === "♥";
 		
@@ -181,7 +132,7 @@ $(document).ready(function() {
 			url: url,
 			type: method,
 			data: {
-				bookId: bookId
+				bookId: selectBookId
 			},
 			success: function(rs) {
 				if(isWished) {

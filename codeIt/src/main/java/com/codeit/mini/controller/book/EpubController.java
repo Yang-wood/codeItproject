@@ -51,6 +51,7 @@ public class EpubController {
         
     	AdminDTO admin = (AdminDTO)session.getAttribute("admin");
     	
+    	
     	if (admin == null) {
 			return "admin/login";
 		}
@@ -59,6 +60,7 @@ public class EpubController {
             sessionStatus.setComplete();
             log.info("@SessionAttributes 'bookDTO' 초기화 완료.");
         }
+    	log.info("adminId : {}", admin.getAdminId());
         return "book/epub/uploadEpub";
     }
 

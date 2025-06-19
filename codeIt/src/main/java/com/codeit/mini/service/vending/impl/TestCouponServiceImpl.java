@@ -1,7 +1,9 @@
 package com.codeit.mini.service.vending.impl;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -188,6 +190,33 @@ public class TestCouponServiceImpl implements ITestCouponService{
         TestCouponEntity coupon = optional.get();
 
         return coupon.getStatus() == CouponStatusEnum.ISSUED && coupon.getRemainCnt() > 0;
+	}
+
+	
+	
+	
+	@Override
+	public List<TestCouponDTO> getCouponByMemberId(Long memberId) {
+		List<TestCouponEntity> entityList = testCouponRepository.findByMemberId(memberId);
+		
+		return entityList.stream().map(this::toDTO).collect(Collectors.toList());
+	}
+
+	@Override
+	public Optional<TestCouponDTO> getAvailabliCoupon(Long memberId) {
+		List<TestCouponEntity> used = testCouponRepository.findUsableUsedCoupon(memberId);
+		
+		if (!used.isEmpty()) {
+			return Optional.of(toDTO(used.get(0)));
+		}
+		
+		List<TestCouponEntity> issued = testCouponRepository.findUsableIssuedCoupon(memberId);
+		
+		if (!issued.isEmpty()) {
+			return Optional.of(toDTO(issued.get(0)));
+		}
+		
+		return Optional.empty();
 	}
 	
 }

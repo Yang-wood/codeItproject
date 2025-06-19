@@ -24,9 +24,10 @@ import com.codeit.mini.dto.book.ReviewDTO;
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.entity.book.BookEntity;
 import com.codeit.mini.entity.book.RentEntity;
-import com.codeit.mini.entity.book.ReviewEntity;
 import com.codeit.mini.entity.book.WishEntity;
+import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.repository.book.IBookRepository;
+import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.book.IBookSearchService;
 import com.codeit.mini.service.book.IBookService;
 import com.codeit.mini.service.book.IRentService;
@@ -45,6 +46,7 @@ import lombok.extern.log4j.Log4j2;
 public class RestAPIController {
 	
 	private final IBookRepository bookRepository;
+	private final IMemberRepository memberRepository;
 	private final IBookSearchService searchService;
 	private final IBookService bookService;
 	private final IRentService rentService;
@@ -99,8 +101,17 @@ public class RestAPIController {
 		
 		Long memberId = member.getMemberId();
 		
+		log.info("Request bookId: {}, memberId: {}", bookId, memberId);
+		
 		try {
 			RentEntity rentEntity = rentService.rentBook(bookId, memberId);
+			
+			MemberEntity memberEntity = memberRepository.findById(memberId)
+					.orElseThrow(() -> new IllegalStateException("NOT MEMBER"));
+			
+			member.setPoints(memberEntity.getPoints());
+			session.setAttribute("member", member);
+			
 			return new ResponseEntity<>(rentEntity, HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(e.getMessage(), HttpStatus.BAD_REQUEST);
@@ -164,25 +175,43 @@ public class RestAPIController {
 	
 	// 리뷰 등록
 	@PostMapping("/regReview")
-	public ResponseEntity<?> regReview(@RequestBody ReviewDTO reviewDTO, HttpSession session) {
+	public ResponseEntity<Map<String, Object>> regReview(@RequestBody ReviewDTO reviewDTO, HttpSession session) {
 		
 		MemberDTO member = (MemberDTO) session.getAttribute("member");
 		
 		if (member == null) {
-			return new ResponseEntity<>("로그인 후 이용해주세요.", HttpStatus.UNAUTHORIZED);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "로그인이 필요합니다.");
+	        return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
 		}
 		
 		try {
 			reviewDTO.setMemberId(member.getMemberId());
-			ReviewEntity reviewEntity = reviewService.regReview(reviewDTO);
-			return new ResponseEntity<>(reviewEntity, HttpStatus.OK);
+			
+			Map<String, Object> result = reviewService.regReview(reviewDTO);
+			result.put("success", true);
+	        result.put("message", (Boolean.TRUE.equals(result.get("pointGiven")))
+	            ? "리뷰 등록 완료! 50포인트가 적립되었습니다."
+	            : "리뷰 등록 완료! ");
+
+	        return new ResponseEntity<>(result, HttpStatus.OK);
 			
 		} catch (IllegalStateException e) {
-			return new ResponseEntity<>("리뷰가 있습니다.", HttpStatus.CONFLICT);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "이미 리뷰를 등록하셨습니다.");
+	        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
 		} catch (IllegalAccessException e) {
-			return new ResponseEntity<>("NOT RENT", HttpStatus.BAD_REQUEST);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "대여 내역이 없습니다.");
+	        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
 		} catch (Exception e) {
-			return new ResponseEntity<>("SERVER ERROR", HttpStatus.INTERNAL_SERVER_ERROR);
+			Map<String, Object> response = new HashMap<>();
+	        response.put("success", false);
+	        response.put("message", "서버 오류가 발생했습니다.");
+	        return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
 		}
 	}
 	

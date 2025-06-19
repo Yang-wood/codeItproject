@@ -53,7 +53,7 @@ public class MyBookpageController {
 		Pageable pageable = PageRequest.of(page, size, sort);
 	    Page<BookDTO> dtoPage = Page.empty(pageable);
 	    Long finalMemberId = null;
-
+	    
 	    try {
 	        if (member != null) {
 	            finalMemberId = member.getMemberId();
@@ -69,6 +69,21 @@ public class MyBookpageController {
 	        }
 
 	        Page<BookEntity> wishListPage = wishService.findWishListByMemberId(finalMemberId, pageable);
+	        
+	        int totalPages = wishListPage.getTotalPages();
+            int currentPage = wishListPage.getNumber();
+            int PageNum = 10;
+            int startPage = (currentPage / PageNum) * PageNum;
+            int endPage = Math.min(startPage + PageNum - 1, totalPages - 1);
+            
+            if (totalPages == 0) { 
+                startPage = 0;
+                endPage = 0;
+            } else if (endPage - startPage + 1 < PageNum && totalPages >= PageNum) {
+                
+            	startPage = Math.max(0, endPage - PageNum + 1);
+            }
+	        
 	        final Long finalMemberIdRamda = finalMemberId;
 	        dtoPage = wishListPage.map(bookEntity -> {
 	            BookDTO bookDTO = bookService.entityToDto(bookEntity);
@@ -83,11 +98,29 @@ public class MyBookpageController {
 	                bookDTO.setWishedByCurrentUser(false);
 	            }
 	            
+	            double avg = bookDTO.getAvgRating(); // avgRating은 0.0 ~ 5.0 범위의 실수
+	            int rating10 = (int) Math.round(avg * 10); // 예: 4.3 → 43 → 반올림 43
+	            int full = rating10 / 10; // 정수부
+	            boolean half = (rating10 % 10) >= 5;
+	            int empty = 5 - full - (half ? 1 : 0);
+
+	            bookDTO.setFullStar(full);
+	            bookDTO.setHalfStar(half);
+	            bookDTO.setEmptyStar(empty);
+	            
+	            log.info("Book Title: " + bookDTO.getTitle() + 
+	                    ", AvgRating: " + bookDTO.getAvgRating() + 
+	                    ", FullStar: " + bookDTO.getFullStar() + 
+	                    ", HalfStar: " + bookDTO.isHalfStar() + 
+	                    ", EmptyStar: " + bookDTO.getEmptyStar());
+	            
 	            return bookDTO;
 	        });
 
 	        model.addAttribute("wishList", dtoPage.getContent());
 	        model.addAttribute("page", dtoPage);
+	        model.addAttribute("startPage", startPage);
+			model.addAttribute("endPage", endPage);
 
 	    } catch (Exception e) {
 	        log.error("도서 위시리스트 페이지 로드 중 오류 발생: {}", e.getMessage(), e);
@@ -134,6 +167,21 @@ public class MyBookpageController {
 	        }
 
 	        Page<RentEntity> rentListPage = rentService.findRentListByMemberId(finalMemberId, pageable);
+	       
+	        int totalPages = rentListPage.getTotalPages();
+            int currentPage = rentListPage.getNumber();
+            int PageNum = 10;
+            int startPage = (currentPage / PageNum) * PageNum;
+            int endPage = Math.min(startPage + PageNum - 1, totalPages - 1);
+            
+            if (totalPages == 0) { 
+                startPage = 0;
+                endPage = 0;
+            } else if (endPage - startPage + 1 < PageNum && totalPages >= PageNum) {
+                
+            	startPage = Math.max(0, endPage - PageNum + 1);
+            }
+	        
 	        final Long finalMemberIdRamda = finalMemberId;
 	        dtoPage = rentListPage.map(rentEntity -> {
 	            BookDTO bookDTO = bookService.entityToDto(rentEntity.getBookEntity());
@@ -161,12 +209,30 @@ public class MyBookpageController {
 					bookDTO.setReviewByCurrentUser(false);
 				}
 	            
+	            double avg = bookDTO.getAvgRating(); // avgRating은 0.0 ~ 5.0 범위의 실수
+	            int rating10 = (int) Math.round(avg * 10); // 예: 4.3 → 43 → 반올림 43
+	            int full = rating10 / 10; // 정수부
+	            boolean half = (rating10 % 10) >= 5;
+	            int empty = 5 - full - (half ? 1 : 0);
+
+	            bookDTO.setFullStar(full);
+	            bookDTO.setHalfStar(half);
+	            bookDTO.setEmptyStar(empty);
+	            
+	            log.info("Book Title: " + bookDTO.getTitle() + 
+	                    ", AvgRating: " + bookDTO.getAvgRating() + 
+	                    ", FullStar: " + bookDTO.getFullStar() + 
+	                    ", HalfStar: " + bookDTO.isHalfStar() + 
+	                    ", EmptyStar: " + bookDTO.getEmptyStar());
+	            
 	            log.info("BookDTO for rentId {}: reviewByCurrentUser = {}", currentRentId, bookDTO.isReviewByCurrentUser());
 	            return bookDTO;
 	        });
 
 	        model.addAttribute("rentList", dtoPage.getContent());
 	        model.addAttribute("page", dtoPage);
+	        model.addAttribute("startPage", startPage);
+			model.addAttribute("endPage", endPage);
 
 	    } catch (Exception e) {
 	        log.error("도서 대여리스트 페이지 로드 중 오류 발생: {}", e.getMessage(), e);

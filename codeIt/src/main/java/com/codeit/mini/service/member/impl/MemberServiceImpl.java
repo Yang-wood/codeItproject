@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.codeit.mini.dto.member.MemberDTO;
+import com.codeit.mini.entity.member.EmailAuthEntity;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.repository.book.IRentRepository;
 import com.codeit.mini.repository.book.IWishRepository;
+import com.codeit.mini.repository.member.EmailAuthRepository;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.member.IMemberService;
 
@@ -28,11 +30,21 @@ public class MemberServiceImpl implements IMemberService{
 	private final IWishRepository wishRepository;
 	
 	private final PasswordEncoder passwordEncoder;
+	
+	private final EmailAuthRepository emailAuthRepository;
+	
 	@Override
 	public Long register(MemberDTO dto) {
 		
 		String rawPw = dto.getMemberPw();
 		String encPw = passwordEncoder.encode(rawPw);
+		
+		// 이메일 인증여부 확인
+		boolean isVerified = emailAuthRepository.findById(dto.getMemberEmail())
+								.map(EmailAuthEntity::isVerified)
+								.orElse(false);
+		
+		char emailVerifed = isVerified ? 'Y' : 'N';
 		
 		MemberEntity memberEntity = MemberEntity.builder()
 										.loginId(dto.getLoginId())
@@ -40,7 +52,7 @@ public class MemberServiceImpl implements IMemberService{
 										.memberName(dto.getMemberName())
 										.memberEmail(dto.getMemberEmail())
 										.termsAgreed(dto.getTermsAgreed())
-										.emailVerified('N')
+										.emailVerified(emailVerifed)
 										.build();
 		memberRepository.save(memberEntity);
 		
@@ -80,8 +92,8 @@ public class MemberServiceImpl implements IMemberService{
 	    if (result.isPresent()) {
 	        MemberEntity member = result.get();
 
-	        // status가 2(탈퇴)인 경우 로그인 차단
-	        if (member.getStatus() == 2) {
+	        // status가 1(정지), 2(탈퇴)인 경우 로그인 차단
+	        if (member.getStatus() == 1 || member.getStatus() == 2) {
 	            return Optional.empty(); // 탈퇴한 계정은 로그인 불가
 	        }
 	        

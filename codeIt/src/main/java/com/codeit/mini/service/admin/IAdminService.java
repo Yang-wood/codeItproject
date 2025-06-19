@@ -26,6 +26,8 @@ public interface IAdminService {
 	    // 목록 조회 + 검색 + 페이징
 	 	PageResultDTO<MemberDTO, MemberEntity> getMemberList(PageRequestDTO requestDTO);
 	 	
+	 	Long getAdminId(String loginId);
+	 	
 	 	default MemberDTO entityToDto(MemberEntity entity) {
 	 		MemberDTO dto =  MemberDTO.builder()
 	 					.memberId(entity.getMemberId())

@@ -43,6 +43,10 @@ private final IAdminService adminService;
                         HttpSession session,
                         Model model) {
 
+    	// 회원 세션 제거
+    	
+    	session.removeAttribute("member");
+    	
         Optional<AdminDTO> result = adminService.login(adminLoginId, adminPw);
         if (result.isPresent()) {
             session.setAttribute("admin", result.get());

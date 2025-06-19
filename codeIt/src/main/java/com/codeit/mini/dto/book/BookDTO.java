@@ -40,5 +40,9 @@ public class BookDTO {
 	private boolean reviewByCurrentUser;
 	
 	private Long rentId;
+	
+	private int fullStar;     // 꽉 찬 별
+	private boolean halfStar; // 반 별 여부
+	private int emptyStar;    // 빈 별
 }
  

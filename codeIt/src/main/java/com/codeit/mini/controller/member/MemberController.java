@@ -1,11 +1,14 @@
 package com.codeit.mini.controller.member;
 
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
@@ -19,12 +22,14 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.codeit.mini.dto.member.MemberDTO;
+import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.entity.member.EmailAuthEntity;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.repository.member.EmailAuthRepository;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.service.member.EmailService;
 import com.codeit.mini.service.member.IMemberService;
+import com.codeit.mini.service.vending.ITestCouponService;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
@@ -42,6 +47,7 @@ public class MemberController {
 	private final PasswordEncoder passwordEncoder;
 	private final EmailService emailService;
 	private final EmailAuthRepository emailAuthRepository;
+	private final ITestCouponService testCouponService;
 	
 	// 회원 가입 페이지 이동
     @GetMapping("/register")
@@ -80,20 +86,49 @@ public class MemberController {
                         HttpSession session,
                         RedirectAttributes rttr) {
 
+    	session.removeAttribute("admin");
+    	
         log.info("로그인 시도 : " + loginId);
         Optional<MemberDTO> result = memberService.login(loginId, memberPw);
 
         if (result.isPresent()) {
+        	MemberDTO member = result.get();
+        	
             session.setAttribute("member", result.get());
+            
+            
+            List<TestCouponDTO> couponList = testCouponService.getCouponByMemberId(member.getMemberId());
+            log.info("쿠폰 리스트 : {}", couponList);
+            
+            
+            List<TestCouponDTO> usableCoupon = couponList.stream()
+            									.filter(c -> c.getRemainCnt() != null && c.getRemainCnt() > 0)
+            									.sorted(Comparator.comparingInt(c -> 
+            										"USED".equalsIgnoreCase(c.getStatus().name()) ? 0 : 1
+            									))
+            									.collect(Collectors.toList());
+            
+            log.info("사용가능 쿠폰 리스트 : {}", usableCoupon);
+            
+            session.setAttribute("testCoupons", usableCoupon);
+            
+            
             log.info("로그인 성공 : " + loginId);
             return "redirect:/codeit";
         } else {
             Optional<MemberEntity> entity = memberRepository.findByLoginId(loginId);
-            if (entity.isPresent() && entity.get().getStatus() == 2) {
-                rttr.addFlashAttribute("msg", "탈퇴한 회원입니다.");
+            if (entity.isPresent()) {
+            	int status = entity.get().getStatus();
+            	if (status == 1) {
+					rttr.addFlashAttribute("msg", "정지된 계정입니다.");
+				} else if (status == 2) {
+					rttr.addFlashAttribute("msg", "탈퇴한 회원입니다.");
+				} else {
+					rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+				}
             } else {
-                rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
-            }
+				rttr.addFlashAttribute("msg", "아이디 또는 비밀번호가 올바르지 않습니다.");
+			}
             return "redirect:/member/login";
         }
     }

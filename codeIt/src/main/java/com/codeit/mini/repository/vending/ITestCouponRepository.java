@@ -44,4 +44,34 @@ public interface ITestCouponRepository extends JpaRepository<TestCouponEntity, L
    																	 @Param("itemId") Long itemId,
    																	 @Param("status") CouponStatusEnum status);
 
+    
+    
+    
+	@Query("SELECT c FROM TestCouponEntity c WHERE c.memberId.memberId = :memberId")
+	List<TestCouponEntity> findByMemberId(@Param("memberId") Long memberId);
+    
+    
+	
+	
+	
+	
+	@Query("SELECT c "
+		 + "FROM TestCouponEntity c "
+		 + "WHERE c.memberId.memberId = :memberId "
+		 + "AND c.status = 'USED' "
+		 + "AND c.remainCnt > 0")
+	List<TestCouponEntity> findUsableUsedCoupon(@Param("memberId") Long memberId);
+	
+	
+	@Query("SELECT c "
+		 + "FROM TestCouponEntity c "
+		 + "WHERE c.status = 'ISSUED' "
+		 + "AND c.remainCnt > 0 "
+		 + "ORDER BY c.expireDate ASC NULLS LAST")
+	List<TestCouponEntity> findUsableIssuedCoupon(@Param("memberId") Long memberId);
+	
+	
+	
+	
+	
 }

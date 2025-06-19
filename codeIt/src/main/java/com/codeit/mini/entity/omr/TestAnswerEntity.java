@@ -31,8 +31,8 @@ import lombok.ToString;
 @NoArgsConstructor
 @Getter
 @Setter
-@ToString
-@Check(constraints = "choice_answer IN ('A', 'B', 'C', 'D')")
+@ToString(exclude = {"sessionId", "questionId"})
+@Check(constraints = "choice_answer IN ('1', '2', '3', '4')")
 @Table(name = "test_answer")
 public class TestAnswerEntity {
 	
@@ -53,10 +53,6 @@ public class TestAnswerEntity {
 	@Column(name = "choice_answer", columnDefinition = "CHAR(1)")
 	private char choiceAnswer;
 	
-/*	
-	public TestAnswerEntity toDto(TestAnswerDTO testAnswerDto) {
-    	
-    }
-*/	
+
 	
 }

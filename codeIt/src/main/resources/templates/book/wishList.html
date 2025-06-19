@@ -5,9 +5,12 @@
 			<th:block th:fragment="myActualPageContent">
 				<div class="container py-4">
 				    <div class="container">
-				        
+	                	<div style="height: 100px;"></div>
 				        <hr>
 				        <div id="bookListContainer">
+				        	<div th:if="${#lists.isEmpty(wishList)}" class="text-center text-muted mt-5">
+			                	<p>위시리스트에 등록된 도서가 없습니다.</p>
+			            	</div>
 				            <div th:each="book : ${wishList}" class="book-item d-flex align-items-start">
 				                <img th:src="${book.coverImage}" alt="표지" class="book-cover">
 				                <div class="book-info">
@@ -19,6 +22,21 @@
 				                    <div class="book-description" th:text="${book.description}">
 				                        도서 설명
 				                    </div>
+				                    <div style="height: 10px;">
+				                   	</div>
+				                    <div class="star-rating text-warning">
+									    <!-- 꽉 찬 별 -->
+									    <th:block th:if="${book.fullStar > 0}">
+									        <i class="fa fa-star" th:each="i : ${#numbers.sequence(1, book.fullStar)}"></i>
+									    </th:block>
+									    <!-- 반 별 -->
+									    <i class="fa fa-star-half-o" th:if="${book.halfStar}"></i>
+									    <!-- 빈 별 (0개일 경우 생략) -->
+									    <th:block th:if="${book.emptyStar > 0}">
+									        <i class="fa fa-star-o" th:each="i : ${#numbers.sequence(1, book.emptyStar)}"></i>
+									    </th:block>
+									    <small class="text-muted" th:text="'(' + ${book.avgRating} + ')'"></small>
+									</div>
 				                </div>
 				                <div class="book-buttons">
 				                	<button th:if="${book.wishedByCurrentUser}" 
@@ -53,7 +71,7 @@
 				                       th:href="@{/book/wishList(page=${page.number - 1}, size=${page.size})}"
 				                       tabindex="-1">&lt;</a>
 				                </li>
-				                <li th:each="i : ${#numbers.sequence(0, page.totalPages - 1)}"
+				                <li th:each="i : ${#numbers.sequence(startPage, endPage)}"
 				                    th:classappend="${i} == ${page.number} ? 'active'" class="page-item">
 				                    <a class="page-link"
 				                       th:href="@{/book/wishList(page=${i}, size=${page.size})}"
