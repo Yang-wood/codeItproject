@@ -64,7 +64,7 @@ public class TestSessionEntity {
     private Integer score;
 
     @Column(name = "duration", nullable = false, columnDefinition = "NUMBER DEFAULT 0")
-    private Integer duration;
+    private Integer duration = 0;
 
     @Column(name = "is_submited", nullable = false, columnDefinition = "CHAR(1) DEFAULT 'N'")
     private char isSubmited = 'N';

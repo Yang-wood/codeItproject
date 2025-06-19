@@ -97,6 +97,7 @@ public class TestSessionServiceImpl implements ITestSessionService{
 												.score(score)
 												.duration(durationSec)
 												.isSubmited('Y')
+												.duration(0)
 												.startTime(new Timestamp(System.currentTimeMillis()))
 												.submitTime(new Timestamp(System.currentTimeMillis()))
 												.build();
@@ -144,6 +145,7 @@ public class TestSessionServiceImpl implements ITestSessionService{
 											.testId(test)
 											.startTime(startTime)
 											.isSubmited('N')
+											.duration(0)
 											.build();
 		TestSessionEntity saved = sessionRepository.save(session);
 		

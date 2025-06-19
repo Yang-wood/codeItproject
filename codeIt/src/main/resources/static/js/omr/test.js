@@ -27,7 +27,7 @@
 		
 		
 		
-		function loadTests(category = 'all', page = 1) {
+		window.loadTests = function(category = 'all', page = 1) {
 		   $.ajax({
 				url: "/api/test/",
 				method: "GET",
@@ -40,6 +40,9 @@
 					
 					if (data.content.length === 0) {
 						testList.append('<p>해당 카테고리의 시험이 없습니다.</p>');
+						
+						// 페이징 제거
+						$('#pagination').empty();
 						return;
 					}
 		
@@ -71,17 +74,33 @@
 						`);
 					});
 					
+					// 스크롤 상단으로 이동
+					window.scrollTo({ top: 0, behavior: 'smooth' });
+					
 					if (isAdmin) {
 						$('.admin-actions').show();
 					}
 			
+					// 페이징 처리
 					const pagination = $('#pagination');
+					const maxPageBtn = 10;
+					const currentGroup = Math.floor((page - 1) / maxPageBtn);
+					const start = currentGroup * maxPageBtn + 1;
+					const end = Math.min(start + maxPageBtn - 1, data.totalPages);
 					
 					pagination.empty();
 					
-					for (let i = 1; i <= data.totalPages; i++) {
-					  const active = i === page ? 'style="font-weight:bold;"' : '';
+					if (start > 1) {
+						pagination.append(`<button onclick="loadTests('${category}', ${start - 1})">«</button>`);
+					}
+					
+					for (let i = start; i <= end; i++) {
+					  const active = i === page ? 'style="background:#365cff; color:white; border:none;"' : '';
 					  pagination.append(`<button ${active} onclick="loadTests('${category}', ${i})">${i}</button>`);
+					}
+					
+					if (end < data.totalPages) {
+						pagination.append(`<button onclick="loadTests('${category}', ${end + 1})">»</button>`);
 					}
 		     	},
 				error: function (err) {
@@ -164,8 +183,15 @@
 		let currentQuestionIndex = 0;
 		let examQuestions = []; // 서버에서 받아올 문제 목록, 선택 답안
 	
+		
 		function renderQuestion(index) {
+			console.log("호출 전 index : ", index);
+			console.log("examQuestions 전체 : ", examQuestions);
+			
 			const question = examQuestions[index];
+			
+			console.log("문제 객체 : ", question);
+			console.log("문제 지문 : ", question?.questionText);
 			
 			let html = `<h3>문제 ${index + 1} / ${examQuestions.length}</h3>`;
 			html += `<p>${question.questionText}</p>`;
@@ -220,6 +246,9 @@
 				method: "GET",
 				success: function (data) {
 					console.log("랜덤 문제 데이터 : ", data);
+					console.log("examQuestions 길이 : ", examQuestions.length);
+					console.log("첫 문제 데이터 : ", examQuestions[0]);
+					console.log("전체 examQuestions : ", examQuestions);
 				  
 					examQuestions = data.slice(0, 10); // 최대 20문제만
 					currentQuestionIndex = 0;

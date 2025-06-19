@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import com.codeit.mini.dto.comm.PageResultDTO;
 import com.codeit.mini.dto.comm.UnifiedCouponHistoryDTO;
 import com.codeit.mini.dto.member.MemberDTO;
 import com.codeit.mini.dto.vending.MachineItemDTO;
+import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.dto.vending.VendingHistoryDTO;
 import com.codeit.mini.dto.vending.VendingItemDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
@@ -35,6 +37,7 @@ import com.codeit.mini.repository.vending.ITestCouponRepository;
 import com.codeit.mini.service.vending.ICouponHistoryService;
 import com.codeit.mini.service.vending.IMachineItemService;
 import com.codeit.mini.service.vending.IPointHistoryService;
+import com.codeit.mini.service.vending.ITestCouponService;
 import com.codeit.mini.service.vending.IVendingHistoryService;
 import com.codeit.mini.service.vending.IVendingMachineService;
 
@@ -56,6 +59,7 @@ public class VendingController {
 	private final IPointHistoryService pointHistoryService;
 	private final ICouponHistoryRepository couponRepository;
 	private final ITestCouponRepository testCouponRepository;
+	private final ITestCouponService testCouponService;
 	
 	/*
 	 *  [회원 자판기 기능 구현]
@@ -134,6 +138,13 @@ public class VendingController {
 
 	    try {
 	        VendingResultDTO result = vendingMachineService.useVendingMachine(machineId, member.getMemberId(), itemId);
+	        
+	        List<TestCouponDTO> updatedCoupon = testCouponService.getCouponByMemberId(member.getMemberId())
+	        										.stream()
+	        										.filter(c -> c.getRemainCnt() != null && c.getRemainCnt() > 0)
+	        										.collect(Collectors.toList());
+	        session.setAttribute("testCoupons", updatedCoupon);
+	        
 	        return ResponseEntity.ok(result);
 	    } catch (IllegalArgumentException e) {
 	        // 비즈니스 로직 예외 (예: 포인트 부족, 아이템 없음 등)
@@ -211,6 +222,13 @@ public class VendingController {
 	    
 	    try {
 	        VendingResultDTO result = vendingMachineService.purchaseMultipleItems(machineId, member.getMemberId(), itemIds);
+	        
+	        List<TestCouponDTO> updatedCoupon = testCouponService.getCouponByMemberId(machineId)
+	        										.stream()
+	        										.filter(c -> c.getRemainCnt() != null && c.getRemainCnt() > 0)
+	        										.collect(Collectors.toList());
+	        session.setAttribute("testCoupons", updatedCoupon);
+	        
 	        return ResponseEntity.ok(result);
 	    } catch (IllegalStateException e) {
 	        log.warn("❗비즈니스 로직 오류: {}", e.getMessage());
