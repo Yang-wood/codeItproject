@@ -505,6 +505,11 @@
   color: #333;
 }
 
-
+#pagination button.active {
+  background-color: #365cff;
+  color: white;
+  font-weight: bold;
+  border: none;
+}
 
 

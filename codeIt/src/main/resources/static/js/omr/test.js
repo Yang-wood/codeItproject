@@ -95,13 +95,20 @@
 					}
 					
 					for (let i = start; i <= end; i++) {
-					  const active = i === page ? 'style="background:#365cff; color:white; border:none;"' : '';
-					  pagination.append(`<button ${active} onclick="loadTests('${category}', ${i})">${i}</button>`);
+						const active = i === page ? 'active' : '';
+						pagination.append(`<button class="page-btn ${active}" data-page="${i}" data-category="${category}">${i}</button>`);
 					}
 					
 					if (end < data.totalPages) {
 						pagination.append(`<button onclick="loadTests('${category}', ${end + 1})">»</button>`);
 					}
+					
+					
+					$(document).on('click', '.page-btn', function () {
+						const page = $(this).data('page');
+						const category = $(this).data('category');
+						loadTests(category, page);
+					});
 		     	},
 				error: function (err) {
 				  alert("시험 목록을 불러오는 데 실패했습니다.");
