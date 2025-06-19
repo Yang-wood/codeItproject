@@ -7,7 +7,7 @@
     
     <div class="sub-header">
     	<!-- 결제 선택 모달 -->
-	    <div id="bookPaySelModal" class="modal fade" tabindex="-1" role="dialog"
+	    <!-- <div id="bookPaySelModal" class="modal fade" tabindex="-1" role="dialog"
 	    data-backdrop="static" data-keyboard="false" aria-labelledby="modallabel">
 	    	<div class="modal-dialog">
 	    		<div class="modal-content">
@@ -24,7 +24,7 @@
 					</div>
 	    		</div>
 	    	</div>
-	    </div>
+	    </div> -->
 	    
 	    <!-- 결제 승인 모달 -->
 	    <div id="bookPayConfirmModal" class="modal fade" tabindex="-1" role="dialog"
@@ -76,28 +76,24 @@ $(document).ready(function() {
             type: "get",
             success: function (rs) {
                 memberPoint = rs.points;
-                $("#bookPaySelModal").modal("show");
+                
+                if (parseInt(memberPoint) < parseInt(bookPoint)) {
+                    alert("포인트가 부족합니다.");
+                    return;
+                }
+
+                const html = `
+                    <p><strong>보유 포인트:</strong> ${memberPoint}P</p>
+                    <p><strong>도서 대여 포인트:</strong> ${bookPoint}P</p>
+                `;
+                $("#bookPayment").html(html);
+                $("#bookPayConfirmModal").modal("show");
             },
             error: function (xhr) {
                 alert(xhr.responseText || "포인트 조회 실패");
             }
         });
 	});
-	
-	$("#bookUserPoint").click(function () {
-        if (parseInt(memberPoint) < parseInt(bookPoint)) {
-            alert("포인트가 부족합니다.");
-            return;
-        }
-
-        const html = `
-            <p><strong>보유 포인트:</strong> ${memberPoint}P</p>
-            <p><strong>도서 대여 포인트:</strong> ${bookPoint}P</p>
-        `;
-        $("#bookPayment").html(html);
-        $("#bookPaySelModal").modal("hide");
-        $("#bookPayConfirmModal").modal("show");
-    });
 	
 	$("#bookPaymentBtn").click(function () {
 		$.ajax({
@@ -107,7 +103,7 @@ $(document).ready(function() {
 				bookId: selectBookId
 			},
 			success: function(rs) {
-				alert("대여 신청 완료");
+				alert("대여 완료. 이제부터 열람하실 수 있습니다.");
 				rentBtn.hide();
 				rentBtn.after(openBtn);
 				$("#bookPayConfirmModal").modal("hide");
