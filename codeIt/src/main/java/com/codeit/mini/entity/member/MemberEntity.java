@@ -67,8 +67,8 @@ public class MemberEntity extends BaseEntity{
 	@Column(name = "status", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
 	private int status = 0;
 	
-	@Column(name = "points", nullable = false, columnDefinition = "NUMBER(8) DEFAULT 0")
-	private int points = 0;
+	@Column(name = "points", nullable = false, columnDefinition = "NUMBER(8) DEFAULT 1000")
+	private int points = 1000;
 	
 	@Column(name = "role", nullable = false, columnDefinition = "NUMBER(4) DEFAULT 0")
 	private int role = 0;

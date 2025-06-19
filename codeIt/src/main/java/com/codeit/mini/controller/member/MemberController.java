@@ -86,6 +86,8 @@ public class MemberController {
                         HttpSession session,
                         RedirectAttributes rttr) {
 
+    	session.removeAttribute("admin");
+    	
         log.info("로그인 시도 : " + loginId);
         Optional<MemberDTO> result = memberService.login(loginId, memberPw);
 
