@@ -57,15 +57,16 @@ public class AdminTestController {
 		
 		AdminDTO loginAdmin = (AdminDTO)session.getAttribute("admin");
 		
+		log.info("어드민 정보 : {}", loginAdmin);
 		try {
 			testDto.setAdminId(loginAdmin.getAdminId());
 			
 			Long testId = testService.register(testDto);
 			log.info("시험 등록 완료, testId : {}", testId);
 			
-			if (!questionCsv.isEmpty()) {
-				importQuestionFromCsv(questionCsv, testId);
-			}
+//			if (!questionCsv.isEmpty()) {
+//				importQuestionFromCsv(questionCsv, testId);
+//			}
 			
 			return "redirect:/omr/test";
 		} catch (Exception e) {

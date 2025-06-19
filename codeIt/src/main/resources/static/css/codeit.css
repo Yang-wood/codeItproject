@@ -9,7 +9,6 @@
         background: linear-gradient(to right, #d3eafd, #e8f1ff);
         padding: 120px 20px 80px;
         text-align: center;
-        position: relative;
       }
 
       .hero h1 {
@@ -52,6 +51,36 @@
       @keyframes gradientText {
         0% { background-position: 0% 50%; }
         100% { background-position: 100% 50%; }
+      }
+
+      .carousel-showcase {
+        background: #f4f6fa;
+        padding: 60px 0;
+        display: flex;
+        justify-content: center;
+      }
+
+      .swiper {
+        width: 100%;
+        max-width: 700px;
+        padding: 0 20px;
+        box-sizing: border-box;
+      }
+
+      .swiper-wrapper {
+        display: flex;
+      }
+
+      .swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        background: transparent;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 160px;
+        padding: 0 20px;
+        box-sizing: border-box;
       }
 
       .main-content {
@@ -100,53 +129,57 @@
         box-shadow: 0 12px 24px rgba(0,0,0,0.15);
       }
 
-      .features-vertical {
-        background: #ffffff;
-        padding: 80px 20px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 60px;
-      }
-
-      .feature-card {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        max-width: 400px;
-        text-align: center;
-      }
-
-      .feature-image {
-        width: 100%;
-        max-width: 300px;
-        border-radius: 16px;
-        box-shadow: 0 6px 16px rgba(0,0,0,0.1);
-        margin-bottom: 20px;
-      }
-
-      .feature-text {
-        font-size: 22px;
-        font-weight: 700;
-      }
-
-      .carousel-showcase {
-        background: #f4f6fa;
-        padding: 60px 0;
-      }
-
-      .review-section .swiper-slide {
-        text-align: center;
-        font-size: 18px;
-        background: #fff;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 180px;
-        border-radius: 12px;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        padding: 0 20px;
-      }
+		.features-grid {
+		  background: #ffffff;
+		  padding: 80px 40px;
+		  display: flex;
+		  flex-direction: column;
+		  gap: 80px;
+		  max-width: 1200px;
+		  margin: 0 auto; /* 가운데 정렬 */
+		}
+		
+		.feature-row {
+		  display: flex;
+		  align-items: center;
+		  justify-content: space-between;
+		  gap: 80px; /* 이미지와 설명 사이 간격 */
+		  flex-wrap: nowrap;
+		}
+		
+		.feature-row .reverse {
+		  flex-direction: row-reverse;
+		  justify-content: flex-start;
+		}
+		
+		.feature-row.reverse .feature-description {
+		  text-align: right;           /* ⭐ 설명도 오른쪽 정렬 */
+		  margin-right: auto;          /* ⭐ 오른쪽으로 밀착 */
+		}
+		
+		.feature-img {
+		  width: 400px;
+		  flex-shrink: 0;
+		  border-radius: 16px;
+		  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+		}
+		
+		.feature-description {
+		  flex: 1;
+		  text-align: left;
+		}
+		
+		.feature-description h3 {
+		  font-size: 26px;
+		  margin-bottom: 12px;
+		  color: #1f2d3d;
+		}
+		
+		.feature-description p {
+		  font-size: 16px;
+		  color: #34495e;
+		  line-height: 1.7;
+		}
 
       footer {
         background: #1f2d3d;
@@ -155,3 +188,8 @@
         text-align: center;
         font-size: 14px;
       }
+      
+      
+      html {
+		  scroll-behavior: smooth;
+		}

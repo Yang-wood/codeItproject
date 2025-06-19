@@ -34,38 +34,62 @@
         <span class="button-text">테스트</span>
         <img src="/img/test.jpg" alt="OMR 이미지">
       </a>
-      <a href="/vending" class="main-button" data-aos="zoom-in" data-aos-delay="200">
+      <a href="/vending/machines" class="main-button" data-aos="zoom-in" data-aos-delay="200">
         <span class="button-text">자판기</span>
-        <img src="/img/test.jpg" alt="자판기 이미지">
+        <img src="/img/vending.png" alt="자판기 이미지">
       </a>
     </section>
 
-    <section class="features-vertical">
-      <div class="feature-card" data-aos="fade-up">
-        <img src="/img/feature1.jpg" alt="방대한 문제은행 이미지" class="feature-image">
-        <div class="feature-text">📘 방대한 문제은행</div>
-      </div>
-      <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
-        <img src="/img/check.jpg" alt="실시간 채점 이미지" class="feature-image">
-        <div class="feature-text">⚡ 실시간 채점 기능</div>
-      </div>
-      <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
-        <img src="/img/feature3.jpg" alt="자판기 시스템 이미지" class="feature-image">
-        <div class="feature-text">🎁 보상형 자판기 시스템</div>
-      </div>
-    </section>
+	<section class="features-grid">
+	  <div class="feature-row" data-aos="fade-up">
+	    <img src="/img/read.jpg" alt="e-Book 기능 이미지" class="feature-img">
+	    <div class="feature-description">
+	      <h3>📘 간편한 e-Book 기능</h3>
+	      <p>언제 어디서나 간편하게 학습 가능한<br> 전자책 기능을 제공합니다.</p>
+	    </div>
+	  </div>
+	
+	  <div class="feature-row reverse" data-aos="fade-up" data-aos-delay="100">
+	    <div class="feature-description1">
+	      <h3>⚡ 채점 및 오답풀이</h3>
+	      <p>시험 직후 실시간 채점과 해설 제공으로<br> 확실한 복습이 가능합니다.</p>
+	    </div>
+	    <img src="/img/check.jpg" alt="채점 기능 이미지" class="feature-img">
+	  </div>
+	
+	  <div class="feature-row" data-aos="fade-up" data-aos-delay="200">
+	    <img src="/img/reward.png" alt="자판기 이미지" class="feature-img">
+	    <div class="feature-description">
+	      <h3>🎁 보상형 자판기 시스템</h3>
+	      <p>포인트로 랜덤 보상을 획득하며 학습에<br> 재미와 동기를 더합니다.</p>
+	    </div>
+	  </div>
+	</section>
 
     <footer>
       <p>© 2025 CODEIT. All rights reserved.</p>
     </footer>
 
+    <!-- JS 라이브러리 -->
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
       const swiper = new Swiper('.swiper', {
-        autoplay: { delay: 2500 },
         loop: true,
+        autoplay: {
+          delay: 2500,
+          disableOnInteraction: false
+        },
+        slidesPerView: 1,
+        centeredSlides: true,
+        spaceBetween: 0,
+        on: {
+          init: function () {
+            this.slideToLoop(0, 0);
+          },
+        },
       });
+
       AOS.init();
     </script>
         

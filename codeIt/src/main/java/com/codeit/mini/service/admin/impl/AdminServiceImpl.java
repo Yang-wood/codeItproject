@@ -182,4 +182,11 @@ public class AdminServiceImpl implements IAdminService{
 	            .map(this::entityToDto);
 	}
 
+	@Override
+	public Long getAdminId(String loginId) {
+		
+		
+		return null;
+	}
+
 }
