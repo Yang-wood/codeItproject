@@ -33,17 +33,17 @@ public class CouponStatusRepositoryImpl implements ICouponStatusRepository {
 		
 		QCouponHistoryEntity c = QCouponHistoryEntity.couponHistoryEntity;
 		
-		NumberExpression<Integer> issuedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.ISSUED.name()))
+		NumberExpression<Integer> issuedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.ISSUED))
 															   .then(1)
 															   .otherwise(0)
 															   .sum();
 
-		NumberExpression<Integer> usedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.USED.name()))
+		NumberExpression<Integer> usedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.USED))
 															 .then(1)
 															 .otherwise(0)
 															 .sum();
 		
-		NumberExpression<Integer> expiredCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.EXPIRED.name()))
+		NumberExpression<Integer> expiredCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.EXPIRED))
 																.then(1)
 																.otherwise(0)
 																.sum();
@@ -81,7 +81,7 @@ public class CouponStatusRepositoryImpl implements ICouponStatusRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 
 		if (request.getStatus() != null) {
-		    builder.and(c.status.eq(request.getStatus().name()));
+		    builder.and(c.status.eq(request.getStatus()));
 		}
 		
 		if (StringUtils.hasText(request.getKeyword())) {
@@ -95,13 +95,13 @@ public class CouponStatusRepositoryImpl implements ICouponStatusRepository {
 		    								 request.getToDate().atTime(23, 59, 59)));
 		}
 
-		NumberExpression<Integer> issuedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.ISSUED.name()))
+		NumberExpression<Integer> issuedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.ISSUED))
 															   .then(1).otherwise(0).sum();
 
-		NumberExpression<Integer> usedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.USED.name()))
+		NumberExpression<Integer> usedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.USED))
 															 .then(1).otherwise(0).sum();
 
-		NumberExpression<Integer> expiredCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.EXPIRED.name()))
+		NumberExpression<Integer> expiredCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.EXPIRED))
 																.then(1).otherwise(0).sum();
 
 		return jpaQueryFactory.select(Projections.constructor(CouponStatusDTO.class, c.itemId.itemId,
@@ -121,7 +121,7 @@ public class CouponStatusRepositoryImpl implements ICouponStatusRepository {
 		BooleanBuilder builder = new BooleanBuilder();
 		
 		if (request.getStatus() != null) {
-		    builder.and(c.status.eq(request.getStatus().name()));
+		    builder.and(c.status.eq(request.getStatus()));
 		}
 		
 	    if (StringUtils.hasText(request.getKeyword())) {
@@ -134,13 +134,13 @@ public class CouponStatusRepositoryImpl implements ICouponStatusRepository {
 	    	builder.and(c.issuedDate.between(request.getFromDate().atStartOfDay(), request.getToDate().atTime(23, 59, 59)));
 	    }
 
-		NumberExpression<Integer> issuedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.ISSUED.name()))
+		NumberExpression<Integer> issuedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.ISSUED))
 															   .then(1).otherwise(0).sum();
 
-		NumberExpression<Integer> usedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.USED.name()))
+		NumberExpression<Integer> usedCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.USED))
 				 											 .then(1).otherwise(0).sum();
 
-		NumberExpression<Integer> expiredCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.EXPIRED.name()))
+		NumberExpression<Integer> expiredCnt = new CaseBuilder().when(c.status.eq(CouponStatusEnum.EXPIRED))
 																.then(1).otherwise(0).sum();
 		
 		int offset = request.getPage() * request.getSize();
