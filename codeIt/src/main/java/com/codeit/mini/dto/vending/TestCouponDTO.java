@@ -1,6 +1,8 @@
 package com.codeit.mini.dto.vending;
 
 
+import java.time.LocalDateTime;
+
 import com.codeit.mini.entity.comm.CouponStatusEnum;
 
 import lombok.AllArgsConstructor;
@@ -19,5 +21,8 @@ public class TestCouponDTO {
 	private Integer totalCnt;
 	private Integer remainCnt;
 	private CouponStatusEnum status;
+	private LocalDateTime issuedDate;
+	private LocalDateTime expireDate;
+	private LocalDateTime usedDate;
 	
 }

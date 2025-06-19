@@ -34,7 +34,9 @@ import com.codeit.mini.repository.vending.ITestCouponRepository;
 import com.codeit.mini.repository.vending.IVendingItemRepository;
 import com.codeit.mini.repository.vending.querydsl.ICouponStatusRepository;
 import com.codeit.mini.service.vending.ICouponHistoryService;
+import com.codeit.mini.service.vending.ITestCouponService;
 import com.codeit.mini.util.CouponCodeGenerator;
+import com.codeit.mini.util.CouponUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -51,6 +53,7 @@ public class CouponHistoryServiceImpl implements ICouponHistoryService{
 	private final IMachineItemRepository machineItemRepository;
 	private final IVendingItemRepository itemRepository;
 	private final ITestCouponRepository testCouponRepository;
+	private final ITestCouponService testCouponService;
 
 	@Transactional
 	@Override
@@ -68,13 +71,27 @@ public class CouponHistoryServiceImpl implements ICouponHistoryService{
 		VendingMachinesEntity vendingMachine = machineItem.getVendingMachine();
 	    String vendingType = vendingMachine.getType().name().toLowerCase();
 	    String itemType = item.getItemType().toLowerCase();
+	    
+	    if (itemType.equals("lose")) {
+	        throw new IllegalStateException("꽝 아이템은 쿠폰을 발급할 수 없습니다.");
+	    }
+	    
+	    if (itemType.equals("test") || itemType.equals("free")) {
+	        testCouponService.issueTestCoupon(memberId, itemId, machineId);
+	        return null;
+	    }
 
 	    boolean isRandom = vendingType.equals("random");
-	    boolean isRentalOrDiscount = itemType.equals("rental") || itemType.equals("discount");
+	    boolean isDuplicationAllowed = itemType.equals("rental") || itemType.equals("discount");
 	    
-	    if (!isRandom || !isRentalOrDiscount) {
+	    int discountRate = 0;
+	    if (itemType.equals("discount")) {
+	        discountRate = CouponUtils.extractDiscountRate(item.getName());
+	    }
+	    
+	    if (!(isRandom && isDuplicationAllowed)) {
 	        boolean alreadyIssued = couponRepository.existsByMemberId_MemberIdAndItemId_ItemIdAndStatus(
-	        										 memberId, itemId, CouponStatusEnum.ISSUED);
+	            memberId, itemId, CouponStatusEnum.ISSUED);
 	        if (alreadyIssued) {
 	            throw new IllegalStateException("이미 유효한 쿠폰이 존재합니다.");
 	        }
@@ -94,8 +111,9 @@ public class CouponHistoryServiceImpl implements ICouponHistoryService{
 											            .couponType(item.getItemType())
 											            .status(CouponStatusEnum.ISSUED)
 											            .build();
-		
+	    entity.setDiscountRate(discountRate);
 		entity.setExpireDate(expireDate);
+		
 		return couponRepository.save(entity);
 	}
 

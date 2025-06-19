@@ -12,7 +12,7 @@ import lombok.extern.log4j.Log4j2;
 
 public interface ITestCouponService {
 
-	TestCouponDTO issueTestCoupon(Long memberId, Long itemId, int totalCnt, Long machineId);
+	TestCouponDTO issueTestCoupon(Long memberId, Long itemId, Long machineId);
 	
     public TestCouponDTO useSelectedCoupon(Long memberId, String couponCode);
     
@@ -40,6 +40,8 @@ public interface ITestCouponService {
     									 .couponCode(entity.getCouponCode())
     									 .totalCnt(entity.getTotalCnt())
     									 .remainCnt(entity.getRemainCnt())
+    									 .usedDate(entity.getUsedDate())
+										 .expireDate(entity.getExpireDate())
     									 .status(entity.getStatus())
     									 .build();
     	return dto;
@@ -54,6 +56,8 @@ public interface ITestCouponService {
 												  .totalCnt(dto.getTotalCnt())
 												  .remainCnt(dto.getRemainCnt() != null ? dto.getRemainCnt() : dto.getTotalCnt())
 												  .status(dto.getStatus())
+												  .usedDate(dto.getUsedDate())
+												  .expireDate(dto.getExpireDate())
 												  .build();
     	
     	return entity;

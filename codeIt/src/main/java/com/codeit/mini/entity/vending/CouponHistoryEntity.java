@@ -24,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @SequenceGenerator(
@@ -32,7 +33,7 @@ import lombok.ToString;
 		initialValue = 1,
 		allocationSize = 1
 )
-@Builder
+@SuperBuilder
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
@@ -67,6 +68,9 @@ public class CouponHistoryEntity extends CouponBaseDateEntity{
 	@Builder.Default
 	@Column(name = "status", length = 30, nullable = false)
 	private CouponStatusEnum status = CouponStatusEnum.ISSUED;
+	
+	@Column(name = "discount_rate")
+	private Integer discountRate;
 	
 //	쿠폰 코드 생성 메소드 호출
 	public void setCouponCode(String couponCode) {

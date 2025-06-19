@@ -24,12 +24,15 @@ import com.codeit.mini.repository.vending.IVendingMachinesRepository;
 import com.codeit.mini.service.vending.ITestCouponHistoryService;
 import com.codeit.mini.service.vending.ITestCouponService;
 import com.codeit.mini.util.CouponCodeGenerator;
+import com.codeit.mini.util.CouponUtils;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class TestCouponServiceImpl implements ITestCouponService{
 
 	private final ITestCouponRepository testCouponRepository;
@@ -40,15 +43,17 @@ public class TestCouponServiceImpl implements ITestCouponService{
 	
 	@Transactional
 	@Override
-	public TestCouponDTO issueTestCoupon(Long memberId, Long itemId, int totalCnt, Long machineId) {
-		 
+	public TestCouponDTO issueTestCoupon(Long memberId, Long itemId, Long machineId) {
+		log.info("issueTestCoupon 호출");
 		MemberEntity member = memberRepository.findById(memberId)
 	            							  .orElseThrow(() -> new RuntimeException("존재하지 않는 회원입니다."));
 		
 		VendingItemEntity item = itemRepository.findById(itemId)
 		        							   .orElseThrow(() -> new RuntimeException("존재하지 않는 아이템입니다."));
 		
-		String itemType = item.getItemType().toLowerCase(); // exam, free 등
+		int totalCnt = CouponUtils.extractCountFromName(item.getName());
+		
+		String itemType = item.getItemType().toLowerCase();
 		boolean isTest = itemType.equals("test");
 		boolean isFree = itemType.equals("free");
 		
@@ -59,17 +64,24 @@ public class TestCouponServiceImpl implements ITestCouponService{
 	    boolean isRandom = machineType.equals("random");
 	    
 	    if (!isRandom && isTest) {
+	    	log.info("if (!isRandom && isTest) 조건문 진입 확인");
 	        return testCouponRepository.findByMemberIdAndItemId(member, item)
 	            .map(coupon -> {
-	                coupon.setTotalCnt(coupon.getTotalCnt() + totalCnt);
+	            	log.info("🟡 기존 테스트 쿠폰 존재함 → 수량만 증가");
+	            	coupon.setTotalCnt(coupon.getTotalCnt() + totalCnt);
 	                coupon.setRemainCnt(coupon.getRemainCnt() + totalCnt);
 	                TestCouponEntity updated = testCouponRepository.save(coupon);
-	                return toDTO(testCouponRepository.save(coupon));
+	                couponHistoryService.saveHistory(member.getMemberId(), updated.getTestCouponId(), updated.getCouponCode(), "REISSUED");
+	                return toDTO(updated);
 	            })
-	            .orElseGet(() -> createCoupon(member, item, totalCnt, isTest || isFree));
+	            .orElseGet(() -> {
+	            	log.info("🔵 기존 쿠폰 없음 → 새로 발급");
+	            	return createCoupon(member, item, totalCnt, isTest || isFree);
+	            });
 	    }
 		
 		if (isRandom) {
+			log.info("isRandom 조건문 진입 확인");
 			return createCoupon(member, item, totalCnt, isTest || isFree);
 		}
 	    
@@ -82,7 +94,8 @@ public class TestCouponServiceImpl implements ITestCouponService{
 	}
 	
 	private TestCouponDTO createCoupon(MemberEntity member, VendingItemEntity item, int totalCnt, boolean hasExpireDate) {
-	    String couponCode;
+		log.info("✅ [createCoupon] called for memberId={}, itemId={}", member.getMemberId(), item.getItemId());
+		String couponCode;
 	    do {
 	        couponCode = CouponCodeGenerator.generateCode();
 	    } while (testCouponRepository.existsByCouponCode(couponCode));

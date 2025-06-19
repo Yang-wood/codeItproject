@@ -279,12 +279,18 @@ public class VendingMachineImpl implements IVendingMachineService{
 	            pointHistory = pointService.usePoint(memberId, costPoint, "자판기 이용 - " + item.getName());
 	        }
 	    }
+	    log.info("📦 itemId: {}, 이름: {}, 타입: '{}'", item.getItemId(), item.getName(), item.getItemType());
 
 	    if ("point".equalsIgnoreCase(item.getItemType())) {
 	        pointService.chargePoint(memberId, item.getValue(), "자판기 보상 - " + item.getName());
 	    
 	    } else if (!"free".equalsIgnoreCase(item.getItemType())) {
 	        coupon = couponService.issueCoupon(memberId, item.getItemId(), vmId);
+	    }
+	    
+	    String itemType = Optional.ofNullable(item.getItemType()).orElse("").trim().toLowerCase();
+	    if ("test".equals(itemType) || "free".equals(itemType)) {
+	        testCouponService.issueTestCoupon(memberId, item.getItemId(), vmId);
 	    }
 	    
 	    vendingHistoryRepository.save(VendingHistoryEntity.builder()
@@ -366,6 +372,12 @@ public class VendingMachineImpl implements IVendingMachineService{
 	            .build());
 
 	        for (VendingItemEntity item : items) {
+	        	String type = Optional.ofNullable(item.getItemType()).orElse("").toLowerCase();
+	        	if ("test".equals(type) || "free".equals(type)) {
+	                testCouponService.issueTestCoupon(memberId, item.getItemId(), vmId);
+	            } else if (!"point".equals(type)) {
+	                couponService.issueCoupon(memberId, item.getItemId(), vmId);
+	            }
 	            vendingHistoryRepository.save(VendingHistoryEntity.builder()
 	                .memberId(member)
 	                .itemId(item)

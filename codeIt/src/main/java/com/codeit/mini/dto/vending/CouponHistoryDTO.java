@@ -21,6 +21,7 @@ public class CouponHistoryDTO {
 	private String couponCode;
 	private String couponType;
 	private String status;
+	private int discountRate;
 	private LocalDateTime issuedDate;
 	private LocalDateTime usedDate;
 	private LocalDateTime expireDate;

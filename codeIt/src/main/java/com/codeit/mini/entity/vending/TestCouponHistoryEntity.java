@@ -41,7 +41,7 @@ import lombok.ToString;
 public class TestCouponHistoryEntity extends BaseEntity{
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "TEST_COUPON_ID_SEQ")
     private Long historyId;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -57,7 +57,7 @@ public class TestCouponHistoryEntity extends BaseEntity{
     
     @Builder.Default
     @Column(name = "status", nullable = false)
-	private String status = "issused";
+	private String status = "issued";
 
     @Column(name = "usedDate", nullable = false)
     private LocalDateTime usedDate;
@@ -67,6 +67,8 @@ public class TestCouponHistoryEntity extends BaseEntity{
 
     @PrePersist
     public void prePersist() {
-        this.usedDate = LocalDateTime.now();
+        if (this.usedDate == null) {
+            this.usedDate = LocalDateTime.now();
+        }
     }
 }

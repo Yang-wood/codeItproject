@@ -18,9 +18,11 @@ import com.codeit.mini.service.vending.ITestCouponHistoryService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
 
 @Service
 @RequiredArgsConstructor
+@Log4j2
 public class TestCouponHistoryServiceImpl implements ITestCouponHistoryService {
 	
 	private final ITestCouponHistoryRepository historyRepository;
@@ -30,6 +32,8 @@ public class TestCouponHistoryServiceImpl implements ITestCouponHistoryService {
     @Transactional
 	@Override
 	public TestCouponHistoryDTO saveHistory(Long memberId, Long couponId, String couponCode, String status) {
+    	log.info("🟡 [saveHistory] 호출됨 - memberId: {}, couponId: {}, status: {}", memberId, couponId, status);
+    	
     	MemberEntity member = memberRepository.findById(memberId)
                 							  .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
 
@@ -42,7 +46,7 @@ public class TestCouponHistoryServiceImpl implements ITestCouponHistoryService {
 												                .couponCode(coupon.getCouponCode())
 												                .status(status)
 												                .build();
-        
+        log.info("🧾 저장 전 히스토리 - member: {}, couponId: {}, status: {}", memberId, couponId, status);
         return toDTO(historyRepository.save(entity));
 	}
 	

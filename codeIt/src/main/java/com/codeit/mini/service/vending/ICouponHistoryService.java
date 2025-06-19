@@ -49,6 +49,7 @@ public interface ICouponHistoryService {
 											   .couponCode(entity.getCouponCode())
 											   .couponType(entity.getCouponType())
 											   .status(entity.getStatus().name())
+											   .discountRate(entity.getDiscountRate())
 											   .issuedDate(entity.getIssuedDate())
 											   .usedDate(entity.getUsedDate())
 											   .expireDate(entity.getExpireDate())
@@ -64,6 +65,7 @@ public interface ICouponHistoryService {
 														.itemId(itemEntity)
 														.couponCode(dto.getCouponCode())
 														.couponType(dto.getCouponType())
+														.discountRate(dto.getDiscountRate())
 														.status(CouponStatusEnum.valueOf(dto.getStatus()))
 														.build();
 		
