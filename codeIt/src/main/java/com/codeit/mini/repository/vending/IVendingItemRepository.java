@@ -24,6 +24,6 @@ public interface IVendingItemRepository extends JpaRepository<VendingItemEntity,
 	@Query("UPDATE VendingItemEntity item "
 			+ "SET item.isActive = 0 "
 			+ "WHERE item.itemId IN :itemIds ")
-	int deactivateByIds(@Param("itemId") List<Long> itemIds);
+	int deactivateByIds(@Param("itemIds") List<Long> itemIds);
 	
 }

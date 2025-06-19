@@ -1,13 +1,22 @@
 package com.codeit.mini.service.vending.impl;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.codeit.mini.dto.comm.PageRequestDTO;
+import com.codeit.mini.dto.comm.PageResultDTO;
+import com.codeit.mini.dto.comm.UnifiedCouponHistoryDTO;
 import com.codeit.mini.dto.vending.CouponHistoryDTO;
 import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
 import com.codeit.mini.dto.vending.CouponStatusDTO;
@@ -15,11 +24,13 @@ import com.codeit.mini.entity.comm.CouponStatusEnum;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.MachineItemEntity;
+import com.codeit.mini.entity.vending.TestCouponEntity;
 import com.codeit.mini.entity.vending.VendingItemEntity;
 import com.codeit.mini.entity.vending.VendingMachinesEntity;
 import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.repository.vending.ICouponHistoryRepository;
 import com.codeit.mini.repository.vending.IMachineItemRepository;
+import com.codeit.mini.repository.vending.ITestCouponRepository;
 import com.codeit.mini.repository.vending.IVendingItemRepository;
 import com.codeit.mini.repository.vending.querydsl.ICouponStatusRepository;
 import com.codeit.mini.service.vending.ICouponHistoryService;
@@ -39,6 +50,7 @@ public class CouponHistoryServiceImpl implements ICouponHistoryService{
 	private final IMemberRepository memberRepository;
 	private final IMachineItemRepository machineItemRepository;
 	private final IVendingItemRepository itemRepository;
+	private final ITestCouponRepository testCouponRepository;
 
 	@Transactional
 	@Override
@@ -188,6 +200,54 @@ public class CouponHistoryServiceImpl implements ICouponHistoryService{
 	@Override
 	public CouponStatusDTO getCouponStatsByItem(Long itemId) {
 		return couponStatusRepository.getCouponStatsByItem(itemId);
+	}
+
+	@Override
+	public Page<CouponHistoryEntity> getCouponHistoryByItem(Long itemId, Pageable pageable) {
+		return couponRepository.findByItemId_ItemId(itemId, pageable);
+	}
+
+	@Override
+	public PageResultDTO<UnifiedCouponHistoryDTO, UnifiedCouponHistoryDTO> getAllUserCouponsPaged(Long memberId, PageRequestDTO requestDTO) {
+	    List<CouponHistoryEntity> oneTimeCoupons = couponRepository.findAllByMemberId_MemberIdOrderByIssuedDateDesc(memberId);
+
+	    List<TestCouponEntity> testCoupons = testCouponRepository.findAllByMemberId_MemberId(memberId);
+
+	    List<UnifiedCouponHistoryDTO> allHistories = new ArrayList<>();
+
+	    for (CouponHistoryEntity c : oneTimeCoupons) {
+	        allHistories.add(UnifiedCouponHistoryDTO.builder()
+	                .type("일회성")
+	                .couponCode(c.getCouponCode())
+	                .status(c.getStatus().name())
+	                .issuedDate(c.getIssuedDate())
+	                .expireDate(c.getExpireDate())
+	                .build());
+	    }
+
+	    for (TestCouponEntity t : testCoupons) {
+	        allHistories.add(UnifiedCouponHistoryDTO.builder()
+	                .type("응시")
+	                .couponCode(t.getCouponCode())
+	                .status(t.getStatus().name())
+	                .issuedDate(t.getIssuedDate())
+	                .expireDate(t.getExpireDate())
+	                .build());
+	    }
+
+	    allHistories.sort(Comparator.comparing(UnifiedCouponHistoryDTO::getIssuedDate).reversed());
+
+	    int page = requestDTO.getPage();
+	    int size = requestDTO.getSize();
+
+	    int start = (page - 1) * size;
+	    int end = Math.min(start + size, allHistories.size());
+
+	    List<UnifiedCouponHistoryDTO> pagedList = allHistories.subList(start, end);
+
+	    PageImpl<UnifiedCouponHistoryDTO> pageResult = new PageImpl<>(pagedList, requestDTO.getPageable(Sort.by("issuedDate").descending()), allHistories.size());
+
+	    return new PageResultDTO<>(pageResult, Function.identity());
 	}
 
 }

@@ -24,4 +24,6 @@ public class CouponHistoryDTO {
 	private LocalDateTime issuedDate;
 	private LocalDateTime usedDate;
 	private LocalDateTime expireDate;
+	
+	private String loginId;
 }  

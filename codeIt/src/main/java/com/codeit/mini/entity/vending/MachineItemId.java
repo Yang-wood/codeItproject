@@ -1,6 +1,7 @@
 package com.codeit.mini.entity.vending;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -22,5 +23,20 @@ public class MachineItemId implements Serializable{
 		this.machineId = machineId;
 		this.itemId = itemId;
 	}
+	
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof MachineItemId)) return false;
+        MachineItemId that = (MachineItemId) o;
+        return Objects.equals(machineId, that.machineId) &&
+               Objects.equals(itemId, that.itemId);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(machineId, itemId);
+    }
 	
 }

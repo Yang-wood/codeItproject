@@ -17,6 +17,8 @@ public interface ITestCouponRepository extends JpaRepository<TestCouponEntity, L
     Optional<TestCouponEntity> findByCouponCode(String couponCode);
 
     boolean existsByCouponCode(String couponCode);
+    
+    List<TestCouponEntity> findAllByMemberId_MemberId(Long memberId);
 
     Optional<TestCouponEntity> findByMemberIdAndItemId(MemberEntity member, VendingItemEntity item);
     

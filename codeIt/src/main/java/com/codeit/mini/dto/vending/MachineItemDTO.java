@@ -1,7 +1,5 @@
 package com.codeit.mini.dto.vending;
 
-import java.time.LocalDateTime;
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,8 +10,9 @@ import lombok.Data;
 public class MachineItemDTO {
 
 	private Long machineId;
-	
 	private Long itemId;
-	
 	private double probability;
+	private String name;
+	private String description;
+	private int value;
 }

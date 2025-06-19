@@ -59,7 +59,7 @@ public class TestCouponHistoryServiceImpl implements ITestCouponHistoryService {
     public PageResultDTO<TestCouponHistoryDTO, TestCouponHistoryEntity> getHistoriesByCouponCode(String couponCode, PageRequestDTO requestDTO) {
         Pageable pageable = requestDTO.getPageable(Sort.by("regDate").descending());
         
-        Page<TestCouponHistoryEntity> result = historyRepository.findByTestCouponId_CouponCode(couponCode, pageable);
+        Page<TestCouponHistoryEntity> result = historyRepository.findByCouponCodeCustom(couponCode, pageable);
         
         return new PageResultDTO<>(result, this::toDTO);
     }

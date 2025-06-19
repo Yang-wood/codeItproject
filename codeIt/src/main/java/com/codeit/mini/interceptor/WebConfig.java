@@ -6,7 +6,6 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 
-
 @Configuration
 public class WebConfig implements WebMvcConfigurer{
 	
@@ -29,5 +28,11 @@ public class WebConfig implements WebMvcConfigurer{
                         "/main",
                         "/error"
                 );
+		registry.addInterceptor(new LoginCheckInterceptor())
+		        .addPathPatterns("/vendingmachines/**"); // 회원용 자판기 API 전부 보호
+		
+		registry.addInterceptor(new AdminCheckInterceptor())
+		.addPathPatterns("/admin/**")
+        .excludePathPatterns("/admin/login", "/admin/logout"); 
     }
 }

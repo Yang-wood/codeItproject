@@ -16,6 +16,9 @@ import jakarta.persistence.LockModeType;
 
 public interface IMachineItemRepository extends JpaRepository<MachineItemEntity, MachineItemId>{
 
+	@Query("SELECT mi FROM MachineItemEntity mi JOIN FETCH mi.vendingItem vi WHERE mi.id.machineId = :machineId")
+    List<MachineItemEntity> findAllWithItemByMachineId(@Param("machineId") Long machineId);
+	
 	List<MachineItemEntity> findByVendingMachine_MachineId(Long machineId);
 	
 	List<MachineItemEntity> findByVendingItem_ItemId(Long itemId);

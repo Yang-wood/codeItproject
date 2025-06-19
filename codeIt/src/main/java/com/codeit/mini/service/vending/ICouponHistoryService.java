@@ -5,6 +5,9 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
+import com.codeit.mini.dto.comm.PageRequestDTO;
+import com.codeit.mini.dto.comm.PageResultDTO;
+import com.codeit.mini.dto.comm.UnifiedCouponHistoryDTO;
 import com.codeit.mini.dto.vending.CouponHistoryDTO;
 import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
 import com.codeit.mini.dto.vending.CouponStatusDTO;
@@ -33,6 +36,10 @@ public interface ICouponHistoryService {
 	Page<CouponStatusDTO> getCouponStatsPage(CouponHistoryRequestDTO request);
 	
 	CouponStatusDTO getCouponStatsByItem(Long itemId);
+	
+	Page<CouponHistoryEntity> getCouponHistoryByItem(Long itemId, Pageable pageable);
+	
+	public PageResultDTO<UnifiedCouponHistoryDTO, UnifiedCouponHistoryDTO> getAllUserCouponsPaged(Long memberId, PageRequestDTO requestDTO);
 	
 	default CouponHistoryDTO toDTO (CouponHistoryEntity entity) {
 		CouponHistoryDTO dto = CouponHistoryDTO.builder()

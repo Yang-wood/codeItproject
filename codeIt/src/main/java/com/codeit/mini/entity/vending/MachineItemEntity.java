@@ -8,6 +8,7 @@ import jakarta.persistence.ForeignKey;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.MapsId;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -50,5 +51,15 @@ public class MachineItemEntity {
 	
     public Double getProbability() {
         return probability;
+    }
+    
+    @PrePersist
+    public void prePersist() {
+        if (this.id == null && this.vendingMachine != null && this.vendingItem != null) {
+            this.id = new MachineItemId(
+                vendingMachine.getMachineId(),
+                vendingItem.getItemId()
+            );
+        }
     }
 }

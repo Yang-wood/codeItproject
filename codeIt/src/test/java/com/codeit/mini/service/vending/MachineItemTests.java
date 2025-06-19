@@ -20,6 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.codeit.mini.dto.vending.MachineItemDTO;
 import com.codeit.mini.entity.admin.Admin;
+import com.codeit.mini.entity.comm.VendingType;
 import com.codeit.mini.entity.vending.MachineItemEntity;
 import com.codeit.mini.entity.vending.MachineItemId;
 import com.codeit.mini.entity.vending.VendingItemEntity;
@@ -42,7 +43,7 @@ class MachineItemTests {
 
     @Autowired
     private IVendingMachinesRepository vmRepository;
-
+    
     @Autowired
     private IVendingItemRepository itemRepository;
 
@@ -56,21 +57,96 @@ class MachineItemTests {
 //	void testregisterMachineItem() {
 //		
 //		Admin admin = adminRepository.getById(1L);
+//		VendingMachinesEntity machine = vmRepository.getById(161L);
 //		
 //		VendingMachinesEntity vm = vmRepository.save(VendingMachinesEntity.builder()
-//															              .name("테스트 자판기")
-//															              .type("랜덤")
+//															              .name("시험 쿠폰 자판기")
+//															              .type(VendingType.CHOICE)
 //															              .adminId(admin)
 //															              .build()
 //		);
 //		
 //		VendingItemEntity item = itemRepository.save(VendingItemEntity.builder()
-//													                  .name("응시권")
-//													                  .itemType("쿠폰")
+//													                  .name("꽝")
+//													                  .itemType("lose")
 //													                  .adminId(admin)
 //													                  .isActive(1)
 //													                  .build()
 //		);
+//		VendingItemEntity item6 = itemRepository.save(VendingItemEntity.builder()
+//				.name("30회 시험 응시권")
+//				.itemType("test")
+//				.value(30)
+//				.adminId(admin)
+//				.isActive(1)
+//				.build()
+//				);
+//		VendingItemEntity item7 = itemRepository.save(VendingItemEntity.builder()
+//				.name("20회 시험 응시권")
+//				.itemType("test")
+//				.value(20)
+//				.adminId(admin)
+//				.isActive(1)
+//				.build()
+//				);
+//		VendingItemEntity item8 = itemRepository.save(VendingItemEntity.builder()
+//				.name("1회 시험 응시권")
+//				.itemType("test")
+//				.value(1)
+//				.adminId(admin)
+//				.isActive(1)
+//				.build()
+//				);
+//		
+//		VendingItemEntity item2 = itemRepository.save(VendingItemEntity.builder()
+//													                 .name("10% 할인권")
+//													                 .itemType("dicount")
+//													                 .value(10)
+//													                 .adminId(admin)
+//													                 .isActive(1)
+//													                 .build()
+//		);
+//		
+//		VendingItemEntity item3 = itemRepository.save(VendingItemEntity.builder()
+//																		.name("5% 할인권")
+//																		.itemType("dicount")
+//																		.value(5)
+//																		.adminId(admin)
+//																		.isActive(1)
+//																		.build()
+//																		);
+//		
+//		VendingItemEntity item4 = itemRepository.save(VendingItemEntity.builder()
+//																		.name("3% 할인권")
+//																		.itemType("dicount")
+//																		.value(3)
+//																		.adminId(admin)
+//																		.isActive(1)
+//																		.build()
+//																		);
+//		VendingItemEntity item10 = itemRepository.save(VendingItemEntity.builder()
+//				.name("1회 무료 뽑기권")
+//				.itemType("free")
+//				.value(1)
+//				.adminId(admin)
+//				.isActive(1)
+//				.build()
+//				);
+//		VendingItemEntity item11 = itemRepository.save(VendingItemEntity.builder()
+//				.name("3회 무료 뽑기권")
+//				.itemType("free")
+//				.value(3)
+//				.adminId(admin)
+//				.isActive(1)
+//				.build()
+//				);
+//		VendingItemEntity item12 = itemRepository.save(VendingItemEntity.builder()
+//				.name("대여권")
+//				.itemType("retal")
+//				.adminId(admin)
+//				.isActive(1)
+//				.build()
+//				);
 //		
 //		MachineItemDTO dto = new MachineItemDTO(vm.getMachineId(), item.getItemId(), 0.3f);
 //		
@@ -78,8 +154,18 @@ class MachineItemTests {
 //		
 //		assertEquals(vm.getMachineId(), result);
 //		
-//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vmRepository.getById(161L), item.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item12.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item11.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item10.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item4.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item3.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item2.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item8.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item7.getItemId())));
+//		assertTrue(machineItemRepository.existsById(new MachineItemId(vm.getMachineId(), item6.getItemId())));
 //	}
+		
 	
 //	@Test
 //	void testMachineItem() {

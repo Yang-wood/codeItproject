@@ -1,9 +1,7 @@
 package com.codeit.mini.dto.vending;
 
 import java.time.LocalDateTime;
-
-import com.codeit.mini.entity.comm.VendingType;
-
+import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,5 +18,7 @@ public class VendingMachineDTO {
 	private String description;
 	private Integer active;
 	private LocalDateTime regDate;
+	
+	private List<VendingItemDTO> items;
 	
 }

@@ -1,7 +1,7 @@
 package com.codeit.mini.entity.comm;
 
 public enum VendingType {
-    RANDOM, CHOICE;
+    RANDOM,CHOICE;
 	
 	public static VendingType from(String type) {
         try {
@@ -9,5 +9,11 @@ public enum VendingType {
         } catch (IllegalArgumentException e) {
             throw new IllegalArgumentException("알 수 없는 자판기 타입입니다: " + type);
         }
+    }
+	
+    public static VendingType fromType(String dbValue) {
+        if ("랜덤".equalsIgnoreCase(dbValue)) return RANDOM;
+        if ("선택".equalsIgnoreCase(dbValue)) return CHOICE;
+        return VendingType.valueOf(dbValue.toUpperCase());
     }
 }

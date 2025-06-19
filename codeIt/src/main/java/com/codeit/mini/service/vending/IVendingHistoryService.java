@@ -1,5 +1,7 @@
 package com.codeit.mini.service.vending;
 
+import java.time.LocalDateTime;
+
 import com.codeit.mini.dto.comm.PageRequestDTO;
 import com.codeit.mini.dto.comm.PageResultDTO;
 import com.codeit.mini.dto.vending.VendingHistoryDTO;
@@ -27,7 +29,6 @@ public interface IVendingHistoryService {
 	int getTotalRewardedPoints(Long memberId);
 		
 	public PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> searchHistories(Long memberId, Long machineId, String payment, String status, PageRequestDTO requestDTO);
-
 	
 	default VendingHistoryDTO toDTO (VendingHistoryEntity entity) {
 	    CouponHistoryEntity coupon = entity.getCouponId();

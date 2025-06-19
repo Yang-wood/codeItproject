@@ -8,6 +8,7 @@
 	    
 	    <!-- 공통 헤더 전용 -->
 	    <link th:href="@{/css/basic.css}" rel="stylesheet" />
+	    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 	    
 	    <!-- codeit 메인 전용 -->
 	    <link th:if="${currentUri == '/codeit'}" 
@@ -19,34 +20,98 @@
 	    <!-- JQuery 적용 -->
 	    <script th:src="@{/jquery/jquery-3.7.1.js}"></script>
 	</head>
+	<style>
+		body {
+		    margin: 0;
+		    font-family: 'Noto Sans KR', sans-serif;
+		}
+		
+		.main-header {
+		    display: flex;
+		    align-items: center;
+		    justify-content: space-between;
+		    padding: 14px 32px;
+		    border-bottom: 1px solid #ddd;
+		    background-color: #fff;
+		    box-sizing: border-box;
+		}
+		
+		.header-left .logo {
+		    font-size: 1.6rem;
+		    font-weight: bold;
+		    color: #1f2d3d;
+		    text-decoration: none;
+		}
+		
+		.header-nav {
+		    display: flex;
+		    gap: 120px;
+		    justify-content: center;
+		    flex: 1;
+		}
+		
+		.header-nav a {
+		    font-size: 1.1rem;
+		    font-weight: 500;
+		    color: #333;
+		    text-decoration: none;
+		}
+		
+		.header-nav a:hover {
+		    color: #007bff;
+		}
+		
+		.header-right {
+		    display: flex;
+		    align-items: center;
+		    gap: 16px;
+		    white-space: nowrap;
+		}
+		
+		.header-right a {
+		    font-size: 1.4rem;
+		    color: #333;
+		    opacity: 0.85;
+		    transition: opacity 0.3s;
+		}
+		
+		.header-right a:hover {
+		    opacity: 0.5;
+		}
+    </style>
 	<body>
 	
-	<header>
-	    <a th:href="@{/codeit}" class="logo">CODEIT</a>
-	    
-	    <!-- 로그인하지 않은 경우 -->
-	    <div th:if="${session.member == null and session.admin == null}">
-	    <nav class="top-menu">
-	        <a th:href="@{/member/login}">로그인</a>
-	        <a th:href="@{/member/register}">회원가입</a>
-	    </nav>
-	    </div>
-	    
-	    <!-- 일반 회원이 로그인한 경우 -->
-	    <div th:if="${session.member != null}">
-	    	<span th:text="${session.member.memberName}">회원이름</span>님 환영합니다!
-	    	<a th:href="@{/member/mypage}">마이페이지</a>
-	    	<a th:href="@{/member/logout}">로그아웃</a>
-	    </div>
-	    
-	    <!-- 관리자가 로그인한 경우 -->
-	    <div th:if="${session.admin != null}">
-	    	<span th:text="${session.admin.adminName}">관리자</span>님 환영합니다!
-	    	<a th:href="@{/admin/dashboard}">관리자페이지</a>
-	    	<a th:href="@{/admin/logout}">로그아웃</a>
-	    </div>
-	    
-	</header>
+<header class="main-header">
+    <!-- 로고 -->
+    <div class="header-left">
+        <a th:href="@{/codeit}" class="logo">CODEIT</a>
+    </div>
+    
+    <nav class="header-nav">
+        <a th:href="@{/books}">서적</a>
+        <a th:href="@{/exams}">시험</a>
+        <a th:href="@{/vending}">자판기</a>
+    </nav>
+		
+<div class="header-right">
+        <th:block th:if="${session.member == null and session.admin == null}">
+            <a th:href="@{/member/login}" title="로그인"><i class="fas fa-sign-in-alt"></i></a>
+            <a th:href="@{/member/register}" title="회원가입"><i class="fas fa-user-plus"></i></a>
+        </th:block>
+
+        <th:block th:if="${session.member != null}">
+            <span th:text="${session.member.memberName}">회원</span>님
+            <a th:href="@{/member/mypage}" title="마이페이지"><i class="fas fa-user-circle"></i></a>
+            <a th:href="@{/member/logout}" title="로그아웃"><i class="fas fa-sign-out-alt"></i></a>
+        </th:block>
+
+        <th:block th:if="${session.admin != null}">
+            <span th:text="${session.admin.adminName}">관리자</span>님
+            <a th:href="@{/admin/dashboard}" title="관리자페이지"><i class="fas fa-tools"></i></a>
+            <a th:href="@{/admin/logout}" title="로그아웃"><i class="fas fa-sign-out-alt"></i></a>
+        </th:block>
+    </div>
+</header>
 	
 	<div class="container">
 	    <th:block th:replace="${content}"></th:block>

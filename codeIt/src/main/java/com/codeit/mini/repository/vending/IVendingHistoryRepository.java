@@ -18,10 +18,12 @@ public interface IVendingHistoryRepository extends JpaRepository<VendingHistoryE
 	
 	@Query("SELECT vh "
 		 + "FROM VendingHistoryEntity vh "
-		 + "WHERE vh.itemId.itemId = :itemId AND vh.itemId "
-		 + "IN (SELECT mi.vendingItem "
-		 	 + "FROM MachineItemEntity mi "
-		 	 + "WHERE mi.vendingMachine.machineId = :machineId)")
+		 + "WHERE vh.itemId.itemId = :itemId "
+		 + "AND vh.itemId IN ("
+		 + "    SELECT mi.vendingItem "
+		 + "    FROM MachineItemEntity mi "
+		 + "    WHERE mi.vendingMachine.machineId = :machineId"
+		 + ")")
 	Page<VendingHistoryEntity> findByMachineIdAndItemId(@Param("machineId") Long machineId,
 														@Param("itemId") Long itemId,
 														Pageable pageable);

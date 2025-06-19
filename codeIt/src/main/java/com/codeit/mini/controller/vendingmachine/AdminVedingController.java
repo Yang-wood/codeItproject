@@ -1,87 +1,233 @@
 package com.codeit.mini.controller.vendingmachine;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codeit.mini.dto.comm.PageRequestDTO;
+import com.codeit.mini.dto.comm.PageResultDTO;
+import com.codeit.mini.dto.vending.CouponHistoryDTO;
+import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
+import com.codeit.mini.dto.vending.CouponStatusDTO;
+import com.codeit.mini.dto.vending.MachineItemDTO;
+import com.codeit.mini.dto.vending.VendingHistoryDTO;
+import com.codeit.mini.dto.vending.VendingItemDTO;
+import com.codeit.mini.dto.vending.VendingMachineDTO;
+import com.codeit.mini.dto.vending.VendingMachineWithItemsDTO;
+import com.codeit.mini.entity.vending.CouponHistoryEntity;
+import com.codeit.mini.entity.vending.VendingHistoryEntity;
+import com.codeit.mini.entity.vending.VendingMachinesEntity;
+import com.codeit.mini.service.vending.ICouponHistoryService;
+import com.codeit.mini.service.vending.IMachineItemService;
+import com.codeit.mini.service.vending.IVendingHistoryService;
+import com.codeit.mini.service.vending.IVendingItemService;
+import com.codeit.mini.service.vending.IVendingMachineService;
+
+import jakarta.servlet.http.HttpSession;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j2;
+
 @RestController
-@RequestMapping("/admin/vendingmachines")
+@RequestMapping("/admin/vending")
+@RequiredArgsConstructor
+@Log4j2
 public class AdminVedingController {
+	
+	private final IVendingMachineService vendingMachineService;
+	private final IVendingHistoryService vendingHistoryService;
+	private final IVendingItemService itemService;
+	private final IMachineItemService machineItemService;
+	private final ICouponHistoryService couponHistoryService;
 	
 	/*
 	 *  [관리자 자판기 기능 구현]
-	 * 1. 자판기 목록					GET
-	 * 2. 자판기 + 상품 등록				POST
-	 * 3. 상품 등록					POST
-	 * 4. 자판기 상세					GET
-	 * 5. 등록된 상품 목록				GET
-	 * 6. 자판기 + 상품 수정				PUT
-	 * 7. 자판기 삭제					DELETE
-	 * 8. 상품 삭제					DELETE
-	 * 9. 자판기 이력 조회				GET
+	 * 1. 자판기 목록						GET
+	 * 2. 자판기 + 상품 등록					POST
+	 * 3. 상품 등록						POST
+	 * 4. 자판기 상세						GET
+	 * 5. 등록된 상품 목록					GET
+	 * 6. 자판기 + 상품 수정					PUT
+	 * 7. 전체 상품 목록 (관리자 전체 상품 조회) 	GET
+	 * 8. 자판기 삭제						DELETE
+	 * 9. 상품 삭제						DELETE
+	 * 10. 자판기 이력 조회					GET
+	 * 11. 쿠폰 발급 이력 / 사용 조회			GET
 	 */
 	
 //	1. 자판기 목록
 	@GetMapping
-	public void vendingMachinesList() {
-		
+	public ResponseEntity<?> vendingMachinesList(@ModelAttribute PageRequestDTO requestDTO, HttpSession session) {
+	    PageResultDTO<VendingMachineDTO, VendingMachinesEntity> result = vendingMachineService.getVendingMachinesWithFilter(requestDTO);
+	    return ResponseEntity.ok(result);
 	}
 	
 //	2. 자판기 + 상품 등록
 	@PostMapping
-	public void VendingMachinesInsert() {
-		
-	}
+	public ResponseEntity<?> insertVendingMachineWithItems(@RequestBody VendingMachineWithItemsDTO request) {
+        try {
+            VendingMachineDTO vmDto = request.getVendingMachine();
+            List<MachineItemDTO> machineItems = request.getItemIds();
+
+            Long vmId = vendingMachineService.registerVendingMachine(vmDto);
+
+            if (machineItems != null && !machineItems.isEmpty()) {
+                for (MachineItemDTO miDto : machineItems) {
+                    miDto.setMachineId(vmId);
+                    machineItemService.registerMachineItem(miDto);
+                }
+            }
+
+            return ResponseEntity.ok("자판기 및 상품 등록 완료! 자판기 ID: " + vmId);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+            
+        } catch (Exception e) {
+            log.error("[자판기 등록 오류]", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
+    }
 	
 //	3. 상품 등록
 	@PostMapping ("/items")
-	public void vendingItemInsert() {
-		
+    public ResponseEntity<?> registerVendingItem(@RequestBody VendingItemDTO dto) {
+        try {
+            Long itemId = itemService.registerVendingItem(dto);
+            return ResponseEntity.ok("상품 등록 완료! 상품 ID: " + itemId);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+            
+        } catch (Exception e) {
+            log.error("[상품 등록 오류]", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
 	}
 	
 //	4. 자판기 상세
 	@GetMapping("/{machineId}")
-	public void getVendingMachineDetail() {
-		
+    public ResponseEntity<?> getVendingMachineDetail(@PathVariable Long machineId) {
+		Optional<VendingMachineDTO> result = vendingMachineService.findVendingMachineById(machineId);
+
+		if (result.isPresent()) {
+			return ResponseEntity.ok(result.get());
+		} else {
+			return ResponseEntity.status(HttpStatus.NOT_FOUND).body("자판기 정보를 찾을 수 없습니다.");
+		}
 	}
 	
 //	5. 자판기 상품 목록
 	@GetMapping ("/{machineId}/items")
-	public void machinesItemRead() {
-		
-	}
+    public ResponseEntity<?> machinesItemRead(@PathVariable Long machineId) {
+		return ResponseEntity.ok(machineItemService.findAllItemsByMachineId(machineId));
+    }
 	
 //	6. 전체 상품 목록 (관리자 전체 상품 조회)
 	@GetMapping("/items")
-	public void vendingItemsList() {
-		
-	}
+    public ResponseEntity<?> vendingItemsList() {
+        return ResponseEntity.ok(itemService.findAllVendingItemById());
+    }
 	
 //	7. 자판기 + 상품 수정
 	@PutMapping("/{machineId}")
-	public void machinesUpdate() {
-		
-	}
+    public ResponseEntity<?> machinesUpdate(@PathVariable Long machineId, @RequestBody VendingMachineWithItemsDTO request) {
+        try {
+            VendingMachineDTO vmDto = request.getVendingMachine();
+            vmDto.setMachineId(machineId);
+            vendingMachineService.updateVendingMachine(vmDto);
+
+            machineItemService.removeAllByMachineId(machineId);
+
+            List<MachineItemDTO> items = request.getItemIds();
+            
+            for (MachineItemDTO item : items) {
+                item.setMachineId(machineId);
+                machineItemService.registerMachineItem(item);
+            }
+
+            return ResponseEntity.ok("자판기 및 상품 수정 완료");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+            
+        } catch (Exception e) {
+            log.error("[자판기 수정 오류]", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
+    }
 	
 //	8. 자판기 삭제
 	@DeleteMapping("/{machineId}")
-	public void machinesRemove() {
-		
+	public ResponseEntity<?> machinesRemove(@PathVariable Long machineId) {
+		boolean result = vendingMachineService.removeVendingMachine(machineId);
+		return result ? ResponseEntity.ok("삭제 성공") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("자판기를 찾을 수 없음");
 	}
 	
 //	9. 상품 삭제
 	@DeleteMapping("/items/{itemId}")
-	public void itemRemove() {
-		
-	}
+	public ResponseEntity<?> itemRemove(@PathVariable Long itemId) {
+		boolean result = itemService.removeVendingItem(itemId);
+		return result ? ResponseEntity.ok("상품 삭제 완료") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 상품 없음");
+    }
 	
 //	10. 자판기 이력 조회
-	@GetMapping("/history/{machineId}")
-	public void vendingHistoryList() {
-		
-	}
-	
+    @GetMapping("/history/{machineId}")
+    public ResponseEntity<?> vendingHistoryList(@PathVariable Long machineId,@RequestParam(required = false) Long itemId,
+            									@ModelAttribute PageRequestDTO requestDTO) {
+    	try {
+            PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> result;
+            
+            if (itemId != null) {
+                result = vendingHistoryService.getHistoriesByMachine(machineId, itemId, requestDTO);
+            } else {
+                result = vendingHistoryService.searchHistories(null, machineId, null, null, requestDTO);
+            }
+            
+            return ResponseEntity.ok(result);
+            
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+            
+        } catch (Exception e) {
+            log.error("[자판기 이력 조회 오류]", e);
+            
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
+    }
+    
+//	11. 자판기 쿠폰 발급 상세 이력
+    @GetMapping("/dashboard/history/{itemId}")
+    public ResponseEntity<?> getCouponHistoryByItem(@PathVariable Long itemId,
+    												@ModelAttribute PageRequestDTO requestDTO) {
+    	
+    	Pageable pageable = PageRequest.of(requestDTO.getPage() - 1, requestDTO.getSize(), Sort.by("issuedDate").descending());
+    	
+    	Page<CouponHistoryEntity> historyPage = couponHistoryService.getCouponHistoryByItem(itemId, pageable);
+
+    	Function<CouponHistoryEntity, CouponHistoryDTO> fn = coupon -> CouponHistoryDTO.builder()
+																			           .couponCode(coupon.getCouponCode())
+																			           .loginId(coupon.getMemberId().getLoginId())
+																			           .issuedDate(coupon.getIssuedDate())
+																			           .status(coupon.getStatus().name())
+																			           .expireDate(coupon.getExpireDate())
+																			           .build();
+
+        return ResponseEntity.ok(new PageResultDTO<>(historyPage, fn));
+    }
 }

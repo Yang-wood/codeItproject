@@ -36,8 +36,14 @@ public interface IMachineItemService {
 		MachineItemDTO vmToItemDTO = MachineItemDTO.builder()
 												   .machineId(entity.getId().getMachineId())
 												   .itemId(entity.getId().getItemId())
-												   .probability(entity.getProbability())
+												   .probability(entity.getProbability() != null ? entity.getProbability() : 0.0)
 												   .build();
+		
+		VendingItemEntity item = entity.getVendingItem();
+		
+		vmToItemDTO.setName(item.getName());
+		vmToItemDTO.setDescription(item.getDescription());
+		vmToItemDTO.setValue(item.getValue());
 		
 		return vmToItemDTO;
 	}
@@ -45,12 +51,10 @@ public interface IMachineItemService {
 	default MachineItemEntity toEntity (MachineItemDTO dto, VendingItemEntity itemEntity, VendingMachinesEntity vmEntity) {
 		
 		MachineItemEntity vmToItemEntity = MachineItemEntity.builder()
-															.id(new MachineItemId(dto.getMachineId(), dto.getItemId()))
 															.vendingMachine(vmEntity)
 															.vendingItem(itemEntity)
 															.probability(dto.getProbability())
 															.build();
-		
 		return vmToItemEntity;
 	}
 

@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>관리자 대시보드 - 자판기 관리</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            background-color: #f5f8fa;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+            border-bottom: 1px solid #ddd;
+            z-index: 1000;
+        }
+
+        .header .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #1f2d3d;
+            text-decoration: none;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .layout {
+            display: flex;
+            margin-top: 60px;
+        }
+
+        .sidebar {
+            width: 220px;
+            background-color: #17a2b8;
+            color: white;
+            height: calc(100vh - 60px);
+            padding: 20px;
+            position: fixed;
+            top: 60px;
+            left: 0;
+        }
+
+        .sidebar h3 {
+            margin-bottom: 10px;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+		.sidebar ul li {
+		    margin-bottom: 10px;
+		    cursor: pointer;
+		    font-size: 16px;
+		    font-weight: bold;
+		}
+
+		.sidebar ul li ul {
+		    display: none;
+		    margin-top: 5px;
+		    margin-left: 15px;
+		}
+
+		.sidebar ul li:hover > ul {
+		    display: block;
+		}
+        
+		.sidebar ul li ul li {
+		    font-weight: normal;
+		    font-size: 14px;
+		    margin-bottom: 6px;
+		}
+
+		.sidebar ul li:hover > ul {
+		    display: block;
+		}
+		
+		.sidebar ul li.active,
+		.sidebar ul li ul li.active {
+		    background-color: rgba(255, 255, 255, 0.2);
+		    padding: 4px 8px;
+		    border-radius: 4px;
+		}
+
+    .vending-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+
+    .vending-header h5 {
+        margin: 0;
+    }
+
+    .btn-register {
+        background-color: #17a2b8;
+        color: white;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-size: 14px;
+    }
+
+    .btn-register:hover {
+        background-color: #138496;
+    }
+
+        .content {
+            margin-left: 240px;
+            padding: 30px;
+            width: 100%;
+        }
+
+		.dashboard-cards {
+		    display: grid;
+		    grid-template-columns: repeat(2, 1fr);
+		    gap: 20px;
+		    margin-bottom: 30px;
+		}
+
+		.card {
+		    background: white;
+		    border-radius: 8px;
+		    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+		    padding: 20px;
+		    max-height: 450px;
+		}
+		
+		.card.text-only {
+		    max-height: 50px;
+		    display: flex;
+		    flex-direction: column;
+		    justify-content: center;
+		    align-items: center;
+		}
+
+        table {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <a href="/main" class="logo">CODE IT</a>
+        <form th:action="@{/admin/logout}" method="get">
+            <button type="submit" class="logout-btn" title="로그아웃">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </button>
+        </form>
+    </div>
+
+    <div class="layout">
+        <div class="sidebar">
+            <h3>MENU</h3>
+            <ul>
+                <li class="menu-item" data-menu="vending">자판기 관리
+                    <ul>
+                        <li class="menu-item" data-menu="vending-list">자판기 목록</li>
+                        <li class="menu-item" data-menu="item-list">상품 목록</li>
+                    </ul>
+                </li>
+                <li class="menu-item" data-menu="member">회원 관리</li>
+                <li class="menu-item" data-menu="book">도서 관리</li>
+                <li class="menu-item" data-menu="exam">시험 관리</li>
+            </ul>
+        </div>
+
+        <div class="content">
+			<h5>자판기 관리 - 대시보드</h5>
+            <div class="dashboard-cards">
+                <div class="card">
+                    <h6>자판기 사용 이력</h6>
+                    <canvas id="usageChart"></canvas>
+                </div>
+                <div class="card">
+                    <h6>포인트 사용량</h6>
+                    <canvas id="pointsChart"></canvas>
+                </div>
+			    <div class="card">
+			        <h6>발급된 쿠폰 수</h6>
+			        <p id="issuedCount" style="font-size: 24px; font-weight: bold;">0</p>
+			    </div>
+			    <div class="card">
+			        <h6>사용된 쿠폰 수</h6>
+			        <p id="usedCount" style="font-size: 24px; font-weight: bold;">0</p>
+			    </div>
+            </div>
+
+            <div class="vending-header">
+			    <h5>MACHINE LIST</h5>
+			    <a href="/admin/vending/register" class="btn-register">+ 등록</a>
+			</div>
+            <table class="table table-bordered table-striped">
+                <thead>
+                    <tr>
+                        <th>자판기 ID</th>
+                        <th>자판기 이름</th>
+                        <th>타입</th>
+                        <th>상태</th>
+                        <th>등록일</th>
+                    </tr>
+                </thead>
+                <tbody id="vm-table-body">
+                    <!-- AJAX로 채워질 부분 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+    fetch('/api/admin/stats')
+    .then(res => res.json())
+    .then(data => {
+        const labels = data.labels;
+        new Chart(document.getElementById('usageChart'), {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    label: '자판기 사용 건수',
+                    data: data.usage,
+                    backgroundColor: ['#007bff', '#6610f2', '#6f42c1', '#e83e8c', '#fd7e14']
+                }]
+            }
+        });
+        new Chart(document.getElementById('pointsChart'), {
+            type: 'doughnut',
+            data: {
+                labels,
+                datasets: [{
+                    label: '포인트 사용량',
+                    data: data.points,
+                    backgroundColor: ['#28a745', '#17a2b8', '#20c997', '#ffc107', '#dc3545']
+                }]
+            }
+        });
+        document.getElementById('issuedCount').textContent = data.issued.reduce((a, b) => a + b, 0) + '건';
+        document.getElementById('usedCount').textContent = data.used.reduce((a, b) => a + b, 0) + '건';
+    });
+        
+
+        // 사이드바 메뉴 활성화
+        const currentPath = window.location.pathname;
+        document.querySelectorAll('.menu-item').forEach(item => {
+            const key = item.getAttribute('data-menu');
+            if (currentPath.includes(key)) {
+                item.classList.add('active');
+                const parent = item.closest('li');
+                if (parent) parent.classList.add('active');
+            }
+        });
+
+        // 자판기 목록 불러오기
+        fetch('/admin/vending')
+            .then(res => res.json())
+            .then(result => {
+                const tbody = document.getElementById("vm-table-body");
+                tbody.innerHTML = result.dtoList.map(vm => `
+                    <tr>
+                        <td>${vm.machineId}</td>
+                        <td>${vm.name}</td>
+                        <td>${vm.type}</td>
+                        <td>${vm.isActive == 1 ? '활성' : '비활성'}</td>
+                        <td>${vm.regDate ? vm.regDate.substring(0,10) : ''}</td>
+                    </tr>
+                `).join('');
+            });
+    </script>
+</body>
+</html>

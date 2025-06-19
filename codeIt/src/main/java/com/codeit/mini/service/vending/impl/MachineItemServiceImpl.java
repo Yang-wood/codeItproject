@@ -64,8 +64,12 @@ public class MachineItemServiceImpl implements IMachineItemService{
 		List<Long> vmIdList = new ArrayList<>();
 		
 		for (MachineItemDTO dto : dtoList) {
-			registerMachineItem(dto);
-			vmIdList.add(dto.getMachineId());
+		    try {
+		        registerMachineItem(dto);
+		        vmIdList.add(dto.getMachineId());
+		    } catch (IllegalStateException e) {
+		        log.warn("중복 등록된 아이템 무시: {}", e.getMessage());
+		    }
 		}
 			
 		return vmIdList;
@@ -89,14 +93,14 @@ public class MachineItemServiceImpl implements IMachineItemService{
 //		return dtoOpt;
 	}
 	
+	@Transactional
 	@Override
 	public List<MachineItemDTO> findAllItemsByMachineId(Long machineId) {
 		
-		List<MachineItemEntity> vmItems = repository.findByVendingMachine_MachineId(machineId);
+		List<MachineItemEntity> vmItems = repository.findAllWithItemByMachineId(machineId);
 		
 		List<MachineItemDTO> itemList = vmItems.stream().map(this::toDTO)
 														.collect(Collectors.toList());
-		
 		return itemList;
 	}
 
@@ -132,6 +136,7 @@ public class MachineItemServiceImpl implements IMachineItemService{
 	    VendingMachinesEntity machine = vmRepository.findById(machineId)
 	    											.orElseThrow(() -> new IllegalArgumentException("존재하지 않는 자판기입니다."));
 	    machine.setIsActive(1); // 다시 활성화
+	    vmRepository.save(machine);
 	}
 	
 	@Transactional
@@ -141,7 +146,7 @@ public class MachineItemServiceImpl implements IMachineItemService{
 		MachineItemId id = new MachineItemId(machineId, itemId);
 		
 		repository.deleteById(id);
-		
+		repository.flush();
 		return !repository.existsById(id);
 	}
 	

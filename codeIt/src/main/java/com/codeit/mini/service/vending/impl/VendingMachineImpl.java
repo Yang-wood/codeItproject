@@ -1,11 +1,18 @@
 package com.codeit.mini.service.vending.impl;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import com.codeit.mini.dto.comm.PageRequestDTO;
+import com.codeit.mini.dto.comm.PageResultDTO;
 import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
 import com.codeit.mini.dto.vending.VendingResultDTO;
@@ -23,7 +30,9 @@ import com.codeit.mini.repository.member.IMemberRepository;
 import com.codeit.mini.repository.vending.IMachineItemRepository;
 import com.codeit.mini.repository.vending.IPointHistoryRepository;
 import com.codeit.mini.repository.vending.IVendingHistoryRepository;
+import com.codeit.mini.repository.vending.IVendingItemRepository;
 import com.codeit.mini.repository.vending.IVendingMachinesRepository;
+import com.codeit.mini.repository.vending.search.IVendingMachinesSearch;
 import com.codeit.mini.service.vending.ICouponHistoryService;
 import com.codeit.mini.service.vending.IPointHistoryService;
 import com.codeit.mini.service.vending.ITestCouponService;
@@ -42,11 +51,14 @@ public class VendingMachineImpl implements IVendingMachineService{
 	private final IVendingMachinesRepository machinesRepository;
 	private final IAdminRepository adminRepository;
 	private final IMachineItemRepository machineItemRepository;
+	private final IVendingItemRepository itemRepository;
 	private final IMemberRepository memberRepository;
 	private final IPointHistoryService pointService;
 	private final IVendingHistoryRepository vendingHistoryRepository;
 	private final ICouponHistoryService couponService;
 	private final ITestCouponService testCouponService;
+	private final IVendingMachinesSearch machinesSearch;
+	private final IPointHistoryRepository pointHistoryRepository;
 	
 	@Override
 	@Transactional
@@ -81,9 +93,19 @@ public class VendingMachineImpl implements IVendingMachineService{
 
 	@Override
 	public Optional<VendingMachineDTO> findVendingMachineById(Long vmId) {
-		
-		return machinesRepository.findById(vmId).map(this::toDTO);
-		
+		Optional<VendingMachinesEntity> optionalVm = machinesRepository.findByMachineIdAndIsActive(vmId, 1);
+
+	    if (optionalVm.isEmpty()) {
+	        return Optional.empty();
+	    }
+
+	    VendingMachinesEntity vm = optionalVm.get();
+
+	    List<MachineItemEntity> machineItems = machineItemRepository.findByVendingMachine_MachineId(vmId);
+
+	    VendingMachineDTO dto = toDetail(vm, machineItems);
+
+	    return Optional.of(dto);
 	}
 
 	@Override
@@ -129,6 +151,23 @@ public class VendingMachineImpl implements IVendingMachineService{
 		machinesRepository.save(vm);
 		
 		return toDTO(vm);
+	}
+	
+	@Override
+	public PageResultDTO<VendingMachineDTO, VendingMachinesEntity> getVendingMachines(PageRequestDTO requestDTO) {
+		Pageable pageable = requestDTO.getPageable(Sort.by("regDate").descending());
+
+	    Page<VendingMachinesEntity> result = machinesRepository.findByIsActive(1, pageable);
+
+	    return new PageResultDTO<>(result, this::toDTO);
+	}
+	
+	@Override
+	public PageResultDTO<VendingMachineDTO, VendingMachinesEntity> getVendingMachinesWithFilter(PageRequestDTO requestDTO) {
+		Pageable pageable = requestDTO.getPageable(Sort.by("regDate").descending());
+		
+		Page<VendingMachinesEntity> result = machinesSearch.searchMachines(requestDTO, pageable);
+	    return new PageResultDTO<>(result, this::toDTO);
 	}
 	
 	@Transactional
@@ -297,6 +336,48 @@ public class VendingMachineImpl implements IVendingMachineService{
 	    
 	    log.warn("[자판기] 확률 로직 이상 감지 - fallback item 사용. rand={}, totalWeight={}, listSize={}", rand, totalWeight, itemList.size());
 		return itemList.get(itemList.size() - 1);
+	}
+
+	@Override
+	public VendingResultDTO purchaseMultipleItems(Long vmId, Long memberId, List<Long> itemIds) {
+		 log.info("📦 [SERVICE] 결제 시작 - machineId: {}, memberId: {}, itemIds: {}", vmId, memberId, itemIds);
+		MemberEntity member = memberRepository.findById(memberId)
+	            .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다."));
+
+	        VendingMachinesEntity machine = machinesRepository.findById(vmId)
+	            .orElseThrow(() -> new RuntimeException("자판기가 존재하지 않습니다."));
+
+	        List<VendingItemEntity> items = itemRepository.findAllById(itemIds);
+
+	        int totalCost = items.stream().mapToInt(VendingItemEntity::getValue).sum();
+
+	        if (member.getPoints() < totalCost) {
+	            throw new IllegalStateException("포인트가 부족합니다.");
+	        }
+
+	        member.setPoints(member.getPoints() - totalCost);
+	        memberRepository.save(member);
+
+	        pointHistoryRepository.save(PointHistoryEntity.builder()
+	            .memberId(member)
+	            .amount(-totalCost)
+	            .type("USE")
+	            .reason("선택형 자판기 구매")
+	            .build());
+
+	        for (VendingItemEntity item : items) {
+	            vendingHistoryRepository.save(VendingHistoryEntity.builder()
+	                .memberId(member)
+	                .itemId(item)
+	                .status("SUCCESS")
+	                .build());
+	        }
+	        log.info("✅ [SERVICE] 결제 완료 - 리턴 준비");
+	        return VendingResultDTO.builder()
+	            .message("결제가 완료되었습니다.")
+	            .costPoint(totalCost)
+	            .itemList(items.stream().map(VendingItemEntity::getName).collect(Collectors.toList()))
+	            .build();
 	}
 	
 }

@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:replace="~{/layout/basic :: setContent(~{this::content})}">
+  <th:block th:fragment="content">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+      .container {
+        margin: 20px;
+        max-width: 100%;
+        padding: 10px;
+      }
+      .kiosk-frame {
+        width: 800px;
+        height: 950px;
+        background: #f4f4f4;
+        border: 20px solid #8cc1e2;
+        border-radius: 40px;
+        box-shadow: inset 0 0 30px rgba(0,0,0,0.2), 0 0 30px rgba(0,0,0,0.2);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+      }
+      .kiosk-header {
+        text-align: center;
+        margin: 5px 0;
+        animation: fadeIn 1s ease;
+      }
+	  .kiosk-tab {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+      }
+      .kiosk-tab-menu {
+        font-size: 1.2rem;
+        height: 60px;
+        display: flex;
+        align-items: center;
+      }
+      .nav-link {
+        color: #3c83e0;
+        padding: 12px 16px;
+      }
+	 .kiosk-items {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-content: flex-start;
+        gap: 20px;
+      }
+      .kiosk-footer {
+        height: 30%;
+        padding: 15px;
+        border-top: 1px solid #ccc;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+      }
+      .kiosk-home-msg {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+      .banner-carousel {
+        width: 100%;
+      }
+      .carousel-inner {
+        position: relative;
+        border-radius: 30px;
+        overflow: hidden;
+        height: auto;
+      }
+      .carousel-item img {
+        width: 100%;
+        height: auto;
+        object-fit: contain;
+        display: block;
+        background-color: #fff;
+      }
+      .carousel-controls-custom {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        z-index: 10;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        pointer-events: none;
+      }
+      .carousel-control-btn {
+        background: transparent;
+        border: none;
+        font-size: 1.5rem;
+        color: white;
+        opacity: 0.5;
+        transition: opacity 0.3s;
+        pointer-events: all;
+      }
+
+      .carousel-control-btn:hover {
+        opacity: 1;
+      }
+
+      .item-card {
+        width: 160px;
+        height: 160px;
+        padding: 20px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        font-size: 1rem;
+        font-weight: 600;
+        transition: transform 0.3s ease;
+      }
+  .item-card:hover {
+    transform: scale(1.05);
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .kiosk-screen { background: #ffffff; border-radius: 16px; padding: 30px; width: 100%; height: 100%; overflow-y: auto; }
+  .vending-box {
+    cursor: pointer; border: 2px solid #bbb; border-radius: 15px; padding: 20px;
+    text-align: center; transition: transform 0.2s; background-color: #fff;
+    box-shadow: 2px 2px 10px rgba(0,0,0,0.05);
+  }
+  .vending-box:hover { transform: scale(1.05); }
+  .no-container-padding { padding-left: 0 !important; padding-right: 0 !important; }
+  .balloon {
+    position: absolute; top: -20px; left: 50%; transform: translateX(-50%);
+    background: #ffd700; padding: 4px 10px; border-radius: 12px;
+    font-size: 0.8rem; color: #333; z-index: 10;
+  }
+  #recentHistory {
+    max-height: 100px;
+    overflow-y: auto;
+    font-size: 0.85rem;
+    background-color: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+  }
+
+  #recentHistory #vendingListRandom .card,
+  #itemListRandom .card,
+  #vendingListChoice .card,
+  #itemListChoice .card {
+    width: 200px;
+    height: 100px;
+    margin: 10px;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 1.0rem;
+    font-weight: 600;
+    border: 1px solid #ddd;
+    cursor: pointer;
+    transition: 0.3s;
+    word-break: keep-all;
+    white-space: normal;
+    line-height: 1.4;
+    padding: 10px;
+  }
+
+  #itemListRandom .card.selected,
+  #itemListChoice .card.selected {
+    border: 2px solid #28a745;
+    box-shadow: 0 0 10px rgba(40, 167, 69, 0.5);
+  }
+  .modal {
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    width: 400px;
+    text-align: center;
+    position: relative;
+  }
+
+  .close-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    cursor: pointer;
+    font-size: 1.2rem;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  
+</style>
+
+    <!-- 배너 영역 -->
+<div>
+
+</div>
+
+    <!-- 키오스크 영역 -->
+<div class="container kiosk-style mt-5 d-flex justify-content-center align-items-center">
+  <div class="kiosk-frame">
+    <div class="kiosk-header">
+      <h2>🎰 자판기를 선택하세요!</h2>
+    </div>
+
+   <ul class="nav nav-tabs justify-content-center kiosk-tab-menu px-4" id="mainKioskTab" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link active" id="home-tab" data-bs-toggle="tab" data-bs-target="#home-pane" type="button" role="tab">홈</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" id="random-tab" data-machine-id="" data-bs-toggle="tab" data-bs-target="#random-pane" type="button" role="tab">랜덤 자판기</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link" id="choice-tab" data-machine-id="" data-bs-toggle="tab" data-bs-target="#choice-pane" type="button" role="tab">시험 쿠폰 자판기</button>
+      </li>
+    </ul>
+
+    <div class="tab-content flex-grow-1 overflow-hidden">
+      <!-- 홈 탭 -->
+      <div class="tab-pane fade show active h-100" id="home-pane" role="tabpanel">
+        <div class="kiosk-home-msg">
+			<div id="bannerCarousel" class="carousel slide banner-carousel" data-bs-ride="carousel">
+      			<div class="carousel-inner text-center">
+	        		<div class="carousel-item active">
+	          			<img src="/img/codeit1.png" class="d-block mx-auto banner-img" alt="배너1">
+	        		</div>
+       			 	<div class="carousel-item">
+          				<img src="/img/book.png" class="d-block mx-auto banner-img" alt="배너2">
+        			</div>
+			        <div class="carousel-item">
+			          <img src="/img/test.png" class="d-block mx-auto banner-img" alt="배너3">
+			        </div>
+      			</div>
+		      <button class="carousel-control-prev" type="button" data-bs-target="#bannerCarousel" data-bs-slide="prev">
+					<span class="carousel-control-prev-icon" aria-hidden="true"></span>
+		      </button>
+		      <button class="carousel-control-next" type="button" data-bs-target="#bannerCarousel" data-bs-slide="next">
+		       		<span class="carousel-control-next-icon" aria-hidden="true"></span>
+		      </button>
+		      <div class="carousel-controls-custom">
+		        <button id="pauseBtn" class="carousel-control-btn"><i class="fas fa-pause"></i></button>
+		        <button id="playBtn" class="carousel-control-btn d-none"><i class="fas fa-play"></i></button>
+		      </div>
+    		</div>
+    	 </div>
+      </div>
+
+      <!-- 랜덤 자판기 탭 -->
+      <div class="tab-pane fade h-100" id="random-pane" role="tabpanel">
+        <div class="kiosk-tab">
+          <div class="kiosk-items" id="itemListRandom"></div>
+          <div class="kiosk-footer">
+            <button class="btn btn-primary btn-lg" onclick="drawRandom()">100P로 뽑기</button>
+            <p class="text-end mt-2">보유 포인트: <span id="pointAreaRandom">로딩 중...</span></p>
+          </div>
+        </div>
+      </div>
+
+      <!-- 시험 쿠폰 자판기 탭 -->
+      <div class="tab-pane fade h-100" id="choice-pane" role="tabpanel">
+        <div class="kiosk-tab">
+          <div class="kiosk-items" id="itemListChoice"></div>
+          <div class="kiosk-footer">
+            <div class="border rounded p-3">
+              <p>선택된 상품: <strong id="selectedCountChoice">0</strong>개</p>
+              <p>총 필요 포인트: <strong id="totalPointsChoice">0</strong> P</p>
+              <button class="btn btn-sm btn-secondary" onclick="clearSelection('CHOICE')">전체삭제</button>
+              <button class="btn btn-sm btn-success" onclick="processSelection('CHOICE')">결제하기</button>
+            </div>
+            <p class="text-end mt-2">보유 포인트: <span id="pointAreaChoice">로딩 중...</span></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+        <!-- 결과 모달 추가 -->
+    <div id="result-modal" class="modal" style="display:none;">
+      <div class="modal-content">
+        <span class="close-btn" onclick="closeModal()">&times;</span>
+        <div id="modal-body"></div>
+        <div id="modal-actions"></div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/jquery/drawModal.js"></script>
+    <script>
+      const carousel = new bootstrap.Carousel('#bannerCarousel', { interval: 3000, ride: 'carousel' });
+      document.getElementById("pauseBtn").onclick = () => {
+        carousel.pause();
+        pauseBtn.classList.add("d-none");
+        playBtn.classList.remove("d-none");
+      };
+      document.getElementById("playBtn").onclick = () => {
+        carousel.cycle();
+        playBtn.classList.add("d-none");
+        pauseBtn.classList.remove("d-none");
+      };
+      
+      let randomMachineId = null;
+      let choiceMachineId = null;
+
+      window.addEventListener("DOMContentLoaded", () => {
+        fetch('/api/member/vendingmachine/active')
+          .then(res => res.json())
+          .then(machines => {
+            machines.forEach(machine => {
+              if (machine.type === 'RANDOM') {
+                randomMachineId = machine.machineId;
+                document.getElementById("random-tab").dataset.machineId = machine.machineId;
+              } else if (machine.type === 'CHOICE') {
+                choiceMachineId = machine.machineId;
+                document.getElementById("choice-tab").dataset.machineId = machine.machineId;
+              }
+            });
+
+            document.getElementById("random-tab").addEventListener("click", () => {
+              if (randomMachineId) {
+                updatePoint('RANDOM');
+                fetchItemsDirect(randomMachineId, 'RANDOM');
+              }
+            });
+
+            document.getElementById("choice-tab").addEventListener("click", () => {
+              if (choiceMachineId) {
+                updatePoint('CHOICE');
+                fetchItemsDirect(choiceMachineId, 'CHOICE');
+              }
+            });
+          });
+      });
+
+      function updatePoint(type) {
+    	  fetch('/api/member/points')
+    	    .then(res => res.json())
+    	    .then(data => {
+    	      const point = data.points + " P";
+    	      if (type === 'RANDOM') {
+    	        document.getElementById('pointAreaRandom').textContent = point;
+    	      } else if (type === 'CHOICE') {
+    	        document.getElementById('pointAreaChoice').textContent = point;
+    	      } else {
+    	        const general = document.getElementById('pointArea');
+    	        if (general) general.textContent = point;
+    	      }
+    	    });
+    	}
+
+    	function fetchItemsDirect(machineId, type) {
+    	  fetch(`/api/member/${machineId}/items`)
+    	    .then(res => res.json())
+    	    .then(items => {
+    	      const listId = type === 'RANDOM' ? 'itemListRandom' : 'itemListChoice';
+    	      const itemList = document.getElementById(listId);
+    	      itemList.innerHTML = '';
+
+    	      const selectedItems = new Map();
+    	      let totalPoints = 0;
+
+    	      items.forEach(item => {
+    	        const card = document.createElement("div");
+    	        card.className = "card item-card m-2";
+    	        card.innerHTML = `<div class='card-body'><h5 class='card-title'>${item.name}</h5>${type === 'CHOICE' ? `<p class='text-muted'>${item.value}P</p>` : ''}</div>`;
+
+    	        if (type === 'CHOICE') {
+    	          card.onclick = () => {
+    	            if (card.classList.contains("selected")) {
+    	              card.classList.remove("selected");
+    	              selectedItems.delete(item.itemId);
+    	            } else {
+    	              card.classList.add("selected");
+    	              selectedItems.set(item.itemId, item);
+    	            }
+    	            updateSummary();
+    	          };
+    	        }
+
+    	        itemList.appendChild(card);
+    	      });
+
+    	      function updateSummary() {
+    	        totalPoints = Array.from(selectedItems.values()).reduce((sum, it) => sum + (it.value || 0), 0);
+    	        document.getElementById('selectedCountChoice').textContent = selectedItems.size;
+    	        document.getElementById('totalPointsChoice').textContent = totalPoints;
+    	      }
+
+    	      window.clearSelection = function (t) {
+    	        if (t !== type) return;
+    	        selectedItems.clear();
+    	        document.querySelectorAll(`#${listId} .card`).forEach(card => card.classList.remove("selected"));
+    	        updateSummary();
+    	      };
+
+    	      window.processSelection = function (t) {
+    	    	  if (t !== type || selectedItems.size === 0) return;
+    	    	  if (!confirm("선택한 상품들을 결제하시겠습니까?")) return;
+    	    	  
+    	    	  const selectedIds = Array.from(selectedItems.values()).map(it => it.itemId);
+
+    	    	  fetch(`/api/member/vendingmachines/${machineId}/purchase`, {
+    	    	    method: "POST",
+    	    	    headers: { 'Content-Type': 'application/json' },
+    	    	    body: JSON.stringify({ itemIds: selectedIds })
+    	    	  })
+    	    	  .then(res => {
+    	    	    if (!res.ok) {
+    	    	      return res.json().then(err => {
+    	    	        throw new Error(err.error || '결제 실패');
+    	    	      });
+    	    	    }
+    	    	    return res.json();
+    	    	  })
+    	    	  .then(() => {
+    	    	    alert("결제가 완료되었습니다!");
+    	    	    clearSelection(type);
+    	    	    updatePoint(type);
+    	    	  })
+    	    	  .catch(err => {
+    	    	    alert("❌ 결제 실패: " + err.message);
+    	    	  });
+    	    	};
+    	    });
+    	}
+
+    	function drawRandom() {
+    	  if (!randomMachineId) return;
+    	  if (!confirm("100포인트로 뽑기 진행할까요?")) return;
+    	  fetch(`/api/member/${randomMachineId}/draw`, {
+    	    method: 'POST'
+    	  })
+    	  .then(res => {
+    		  if (!res.ok) {
+    		    return res.json().then(err => {
+    		      throw new Error(err.error || "결제 실패");
+    		    });
+    		  }
+    		  return res.json();
+    		})
+    		.then(result => {
+    		  alert(`🎉 뽑은 상품: ${result.itemName}`);
+    		  updatePoint('RANDOM');
+    		})
+    		.catch(err => {
+    			  alert("⚠️ 결제 실패: " + err.message);
+			});
+    	}
+    </script>
+  </th:block>
+</th:block>
+</html>

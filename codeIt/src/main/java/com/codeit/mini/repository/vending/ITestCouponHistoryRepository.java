@@ -17,9 +17,11 @@ public interface ITestCouponHistoryRepository extends JpaRepository<TestCouponHi
 
 	Page<TestCouponHistoryEntity> findByTestCouponId_TestCouponId(Long couponId, Pageable pageable);
 
+	
     Page<TestCouponHistoryEntity> findByTestCouponId_MemberId_MemberId(Long memberId, Pageable pageable);
 
-    Page<TestCouponHistoryEntity> findByTestCouponId_CouponCode(String couponCode, Pageable pageable);
+    @Query("SELECT h FROM TestCouponHistoryEntity h WHERE h.testCouponId.couponCode = :couponCode")
+    Page<TestCouponHistoryEntity> findByCouponCodeCustom(String couponCode, Pageable pageable);
     
     @Query("SELECT h FROM TestCouponHistoryEntity h WHERE "
     	 + "(:memberId IS NULL OR h.memberId.memberId = :memberId) AND "

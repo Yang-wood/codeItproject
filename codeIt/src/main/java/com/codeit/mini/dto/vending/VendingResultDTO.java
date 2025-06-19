@@ -1,5 +1,7 @@
 package com.codeit.mini.dto.vending;
 
+import java.util.List;
+
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,5 +14,6 @@ public class VendingResultDTO {
 	private int costPoint;
 	private int rewardPoint;
 	private String message;
+	private List<String> itemList;
 	
 }
