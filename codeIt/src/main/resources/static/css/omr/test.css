@@ -192,6 +192,16 @@
   transform: translateY(-2px);
 }
 
+.btn-toggle.btn-public {
+  background-color: #4caf50;  /* 초록색 */
+  color: white;
+}
+
+.btn-toggle.btn-public:hover {
+  background-color: #388e3c;
+  transform: translateY(-2px);
+}
+
 /* 페이지네이션 중앙 정렬 및 스타일 */
 #pagination {
   text-align: center;

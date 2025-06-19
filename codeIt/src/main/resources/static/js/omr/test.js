@@ -48,7 +48,9 @@
 		
 					data.content.forEach(function (test) {
 						
-						const visibility = test.isOpen === 'Y' ? '비공개' : '공개';
+						const visibilityClass = test.isOpen === 'Y' ? 'btn-toggle' : 'btn-toggle btn-public';
+						const visibilityLabel = test.isOpen === 'Y' ? '비공개' : '공개';
+						
 						
 						testList.append(`
 							<div class="test-item" data-testid="${test.testId}" data-isopen="${test.isOpen}">
@@ -67,7 +69,7 @@
 										<button class="btn-modify" style="background:#ffa500; color:white;">수정</button>
 									</div>
 									<div class="admin-actions" style="margin-top:8px; display:none;">
-										<button class="btn-toggle" style="background:#ff3b3b; color:white;">${visibility}</button>
+										<button class="${visibilityClass}">${visibilityLabel}</button>
 									</div>
 								</div>
 							</div>

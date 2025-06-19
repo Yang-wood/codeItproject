@@ -144,6 +144,8 @@ public class VendingController {
 	        										.filter(c -> c.getRemainCnt() != null && c.getRemainCnt() > 0)
 	        										.collect(Collectors.toList());
 	        session.setAttribute("testCoupons", updatedCoupon);
+	        log.info("업데이트 쿠폰 정보 : {}", updatedCoupon);
+	        
 	        
 	        return ResponseEntity.ok(result);
 	    } catch (IllegalArgumentException e) {
@@ -223,11 +225,12 @@ public class VendingController {
 	    try {
 	        VendingResultDTO result = vendingMachineService.purchaseMultipleItems(machineId, member.getMemberId(), itemIds);
 	        
-	        List<TestCouponDTO> updatedCoupon = testCouponService.getCouponByMemberId(machineId)
+	        List<TestCouponDTO> updatedCoupon = testCouponService.getCouponByMemberId(member.getMemberId())
 	        										.stream()
 	        										.filter(c -> c.getRemainCnt() != null && c.getRemainCnt() > 0)
 	        										.collect(Collectors.toList());
 	        session.setAttribute("testCoupons", updatedCoupon);
+	        log.info("업데이트 쿠폰 정보 : {}", updatedCoupon);
 	        
 	        return ResponseEntity.ok(result);
 	    } catch (IllegalStateException e) {
