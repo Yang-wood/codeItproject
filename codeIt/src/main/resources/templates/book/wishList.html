@@ -25,19 +25,17 @@
 				                    <div style="height: 10px;">
 				                   	</div>
 				                    <div class="star-rating text-warning">
-									  <!-- 꽉 찬 별 -->
-									  <i class="fa fa-star"
-									     th:each="i : ${book.avgRating >= 1 ? #numbers.sequence(1, T(java.lang.Math).floor(book.avgRating)) : {}}"></i>
-									  <!-- 반 별 -->
-									  <i class="fa fa-star-half-o"
-									     th:if="${(book.avgRating % 1) >= 0.25 and (book.avgRating % 1) < 0.75}"></i>
-									  <!-- 0.75 이상이면 반 별 대신 꽉 찬 별 하나 추가 -->
-									  <i class="fa fa-star"
-									     th:if="${(book.avgRating % 1) >= 0.75}"></i>
-									  <!-- 빈 별 계산 -->
-									  <i class="fa fa-star-o"
-									     th:each="i : ${#numbers.sequence(1, 5 - T(java.lang.Math).floor(book.avgRating) - ((book.avgRating % 1 >= 0.75) ? 1 : (book.avgRating % 1 >= 0.25 ? 1 : 0)))}"></i>
-									  <small class="text-muted" th:text="'(' + ${book.avgRating} + ')'"></small>
+									    <!-- 꽉 찬 별 -->
+									    <th:block th:if="${book.fullStar > 0}">
+									        <i class="fa fa-star" th:each="i : ${#numbers.sequence(1, book.fullStar)}"></i>
+									    </th:block>
+									    <!-- 반 별 -->
+									    <i class="fa fa-star-half-o" th:if="${book.halfStar}"></i>
+									    <!-- 빈 별 (0개일 경우 생략) -->
+									    <th:block th:if="${book.emptyStar > 0}">
+									        <i class="fa fa-star-o" th:each="i : ${#numbers.sequence(1, book.emptyStar)}"></i>
+									    </th:block>
+									    <small class="text-muted" th:text="'(' + ${book.avgRating} + ')'"></small>
 									</div>
 				                </div>
 				                <div class="book-buttons">

@@ -199,12 +199,6 @@ body {
   padding: 0.5rem;
 }
 
-/* 부트스트랩을 사용하는 경우 아이콘 스타일 추가 */
-.modal-header .btn-close::before {
-  content: "×";
-  display: block;
-}
-
 .star-rating {
   font-family: FontAwesome;
   color: #FFD700;
