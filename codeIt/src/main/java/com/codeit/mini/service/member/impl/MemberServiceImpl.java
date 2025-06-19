@@ -51,6 +51,7 @@ public class MemberServiceImpl implements IMemberService{
 										.memberPw(encPw) // 암호화된 비밀번호 저장
 										.memberName(dto.getMemberName())
 										.memberEmail(dto.getMemberEmail())
+										.points(1000)
 										.termsAgreed(dto.getTermsAgreed())
 										.emailVerified(emailVerifed)
 										.build();
