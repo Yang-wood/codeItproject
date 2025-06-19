@@ -257,10 +257,10 @@
 					
 					if(xhr.status === 403) {
 						alert(xhr.responseText);
-						location.href = `/vending/main`;
+						location.href = `/vending/machines`;
 					} else if (xhr.status === 400 && xhr.responseText.includes("쿠폰")) {
 						alert("사용 가능한 쿠폰이 없습니다. 자판기에서 쿠폰을 뽑아주세요.");
-						location.href = `/vending/main`;
+						location.href = `/vending/machines`;
 					} else {
 						alert("시험 시작 실패: " + xhr.responseText);
 					}
