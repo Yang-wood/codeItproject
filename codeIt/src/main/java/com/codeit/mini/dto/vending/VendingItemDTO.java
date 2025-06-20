@@ -27,4 +27,22 @@ public class VendingItemDTO {
 	private LocalDateTime regDate;
 	private LocalDateTime upDate;
 	
+    @Builder
+    public VendingItemDTO(Long itemId, String name, String itemType, Double probability) {
+        this.itemId = itemId;
+        this.name = name;
+        this.itemType = itemType;
+        this.probability = probability;
+    }
+
+	
+    public static VendingItemDTO from(MachineItemDTO mi) {
+        return VendingItemDTO.builder()
+                .itemId(mi.getItemId())
+                .name(mi.getName())
+                .itemType(mi.getItemType())
+                .probability(mi.getProbability())
+                .build();
+    }
+	
 }

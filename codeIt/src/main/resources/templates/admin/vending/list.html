@@ -164,11 +164,22 @@
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
+        
+        a.vending-link {
+		    text-decoration: none;
+		    color: inherit;
+		    transition: opacity 0.2s ease;
+		}
+		
+		a.vending-link:hover {
+		    opacity: 0.6;
+		    text-decoration: none;
+		}
     </style>
 </head>
 <body>
     <div class="header">
-        <a href="/main" class="logo">CODE IT</a>
+        <a href="/codeit" class="logo">CODE IT</a>
         <form th:action="@{/admin/logout}" method="get">
             <button type="submit" class="logout-btn" title="로그아웃">
                 <i class="fa-solid fa-right-from-bracket"></i>
@@ -215,22 +226,22 @@
 
             <div class="vending-header">
 			    <h5>MACHINE LIST</h5>
-			    <a href="/admin/vending/register" class="btn-register">+ 등록</a>
+			        <a href="/admin/vending/register" class="btn-register">+ 등록</a>
 			</div>
             <table class="table table-bordered table-striped">
-                <thead>
-                    <tr>
-                        <th>자판기 ID</th>
-                        <th>자판기 이름</th>
-                        <th>타입</th>
-                        <th>상태</th>
-                        <th>등록일</th>
-                    </tr>
-                </thead>
-                <tbody id="vm-table-body">
+		    <thead>
+		        <tr>
+		            <th>자판기 ID</th>
+		            <th>자판기 이름</th>
+		            <th>타입</th>
+		            <th>상태</th>
+		            <th>등록일</th>
+		        </tr>
+		    </thead>
+		    <tbody id="vm-table-body">
                     <!-- AJAX로 채워질 부분 -->
-                </tbody>
-            </table>
+		    </tbody>
+		</table>
         </div>
     </div>
 
@@ -278,20 +289,34 @@
         });
 
         // 자판기 목록 불러오기
-        fetch('/admin/vending')
-            .then(res => res.json())
-            .then(result => {
-                const tbody = document.getElementById("vm-table-body");
-                tbody.innerHTML = result.dtoList.map(vm => `
-                    <tr>
-                        <td>${vm.machineId}</td>
-                        <td>${vm.name}</td>
-                        <td>${vm.type}</td>
-                        <td>${vm.isActive == 1 ? '활성' : '비활성'}</td>
-                        <td>${vm.regDate ? vm.regDate.substring(0,10) : ''}</td>
-                    </tr>
-                `).join('');
-            });
+        function loadVendingList() {
+			    fetch('/api/admin')
+			        .then(res => res.json())
+			        .then(result => {
+			        	console.log("📦 자판기 목록 응답:", result.dtoList);
+			            const tbody = document.getElementById("vm-table-body");
+			            tbody.innerHTML = result.dtoList.map(vm => `
+			                <tr>
+			                    <td>${vm.machineId}</td>
+			                    <td>
+			                    	<a href="/admin/vending/${vm.machineId}" class="vending-link">
+			                      		${vm.name}
+			                    	</a>
+			                    </td>
+			                    <td>${vm.type}</td>
+			                    <td>${parseInt(vm.active) === 1 ? '활성' : '비활성'}</td>
+			                    <td>${vm.regDate ? vm.regDate.substring(0,10) : ''}</td>
+			                </tr>
+			            `).join('');
+			        });
+			}
+			loadVendingList();
+			
+			document.getElementById("selectAll").addEventListener("change", function () {
+			    document.querySelectorAll(".vm-checkbox").forEach(cb => cb.checked = this.checked);
+			});
+
+    loadVendingList();
     </script>
 </body>
 </html>

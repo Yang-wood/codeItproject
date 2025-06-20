@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+<th:block th:replace="~{layout/adminlayout :: setContent(~{this::content})}">
+<th:block th:fragment="content">
+<link th:href="@{/css/omr/register.css}" rel="stylesheet" />
+<style>
+.item-scroll-box {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+}
+.item-scroll-box div {
+    margin-bottom: 8px;
+}
+#nameErrorMsg {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 1px;
+    min-height: 1.5em; /* 메시지가 없을 때도 공간 확보 */
+}
+</style>
+<!-- 로그인하지 않은 경우 -->
+<div th:if="${session.member == null and session.admin == null}">
+    <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+    <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
+</div>
+		<div class="layout-wrapper">
+        <div class="testContainer">
+            <h2>자판기 등록</h2>
+
+            <form id="vendingForm">
+                <!-- 자판기 이름 -->
+				<div class="form-group row align-items-center mb-3">
+				  <label for="testTitle" class="col-sm-2 col-form-label">자판기 이름</label>
+				  <div class="col-sm-10">
+				    <input type="text" id="testTitle" name="testTitle" class="form-control" placeholder="제목을 입력해 주세요." />
+				    <div id="nameErrorMsg" style="color:red; font-size: 0.9em; margin-top:4px;"></div>
+				  </div>
+				</div>
+				<!-- 자판기 종류 -->
+				<div class="form-group row align-items-center mb-3">
+				  <label for="categoryId" class="col-sm-2 col-form-label">종류</label>
+				  <div class="col-sm-10">
+				    <select id="categoryId" name="categoryId" class="form-select">
+				      <option value="">선택하세요</option>
+				      <option value="RANDOM">RANDOM</option>
+				      <option value="CHOICE">CHOICE</option>
+				    </select>
+				  </div>
+				</div>
+
+                <!-- 자판기 설명 -->
+                <div class="form-group">
+                    <label for="testDesc">자판기 설명</label>
+                    <textarea id="testDesc" name="testDesc" rows="5" placeholder="설명을 입력하세요."></textarea>
+                </div>
+
+                <!-- 공개 여부 -->
+                <div class="form-group">
+                    <label for="isOpen">공개 여부</label>
+                    <select id="isOpen" name="isOpen">
+                        <option value="1">공개</option>
+                        <option value="0">비공개</option>
+                    </select>
+                </div>
+
+                <!-- ✅ 아이템 선택 영역 -->
+                <div class="form-group d-flex justify-content-between align-items-center">
+				  <label class="mb-0">자판기에 연결할 아이템 선택</label>
+				  	<div class="d-flex gap-2">
+				    <button type="button" id="selectAllBtn"
+				            class="btn btn-sm btn-outline-secondary"
+				            style="min-width: 90px; visibility: hidden;">전체 체크</button>
+			    	<button type="button" id="resetBtn"
+			           	 	class="btn btn-sm btn-outline-danger"
+			            	style="min-width: 90px; visibility: hidden;">우선도 초기화</button>
+			  		</div>
+				</div>
+                    <div id="itemList">
+                        <!-- JS로 동적 생성 -->
+                        <p>아이템 로딩 중...</p>
+                    </div>
+
+                <!-- 등록 버튼 -->
+				<div class="submit-btn d-flex gap-2 mt-4">
+				  <button type="submit" id="submitBtn" class="btn btn-primary">등록</button>
+				  <button type="button" class="btn btn-outline-secondary" onclick="location.href='/admin/vending/list'">취소</button>
+				</div>
+            </form>
+        </div>
+    </div>
+<script th:inline="javascript">
+document.addEventListener("DOMContentLoaded", function () {
+    const form = document.getElementById("vendingForm");
+    const itemList = document.getElementById("itemList");
+    const categorySelect = document.getElementById("categoryId");
+    const resetBtn = document.getElementById("resetBtn");
+    const toggleBtn = document.getElementById("selectAllBtn");
+
+    let allItems = [];
+    let allSelected = false;
+
+    fetch("/api/admin/items")
+        .then(res => res.json())
+        .then(items => {
+            allItems = items;
+            renderItemList(categorySelect.value);
+        })
+        .catch(err => {
+            console.error("아이템 로딩 실패", err);
+            itemList.innerHTML = "<p>아이템 로딩 실패</p>";
+        });
+
+    categorySelect.addEventListener("change", function () {
+        renderItemList(this.value);
+    });
+
+    function renderItemList(vendingType) {
+        let filtered = [];
+
+        if (vendingType === "") {
+            itemList.innerHTML = "<p>자판기 종류를 먼저 선택하세요.</p>";
+            return;
+        }
+
+        if (vendingType.toLowerCase() === "choice") {
+            filtered = allItems.filter(item => item.itemType && item.itemType.toLowerCase() === "test");
+        } else {
+            filtered = allItems;
+        }
+
+        if (filtered.length === 0) {
+            itemList.innerHTML = "<p>선택 가능한 아이템이 없습니다.</p>";
+            return;
+        }
+
+        const isRandom = vendingType.toLowerCase() === "random";
+
+        // 버튼 보이기/숨기기
+        [resetBtn, toggleBtn].forEach(btn => {
+            btn.style.visibility = isRandom ? "visible" : "hidden";
+            btn.disabled = !isRandom;
+        });
+
+        resetBtn.onclick = isRandom ? resetWeights : null;
+        toggleBtn.onclick = isRandom ? toggleSelectAll : null;
+
+        allSelected = false;
+        toggleBtn.textContent = "전체 선택";
+
+        itemList.innerHTML = `
+            <div class="item-scroll-box">
+                ${filtered.map(item => `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <label style="flex-grow: 1;">
+                            <input type="checkbox" name="itemIds" value="${item.itemId}">
+                            ${item.name} <small>(${item.itemType})</small>
+                        </label>
+                        ${isRandom ? `
+                            <input type="number" 
+                                   name="probability_${item.itemId}" 
+                                   min="0" max="100"
+                                   step="0.01"
+                                   placeholder="우선도"
+                                   class="weight-input"
+                                   style="width: 100px;" />
+                        ` : ""}
+                    </div>
+                `).join("")}
+            </div>
+            ${isRandom ? `
+            <div id="weightSumBox" style="margin-top: 10px; font-weight: bold;">
+                총 우선도 합계: <span id="weightTotal">0</span>
+            </div>
+            ` : ""}
+        `;
+
+        if (isRandom) {
+            document.querySelectorAll(".weight-input").forEach(input => {
+                input.addEventListener("input", updateWeightSum);
+                input.addEventListener("wheel", e => e.preventDefault());
+            });
+
+            document.querySelectorAll("input[name='itemIds']").forEach(cb => {
+                cb.addEventListener("change", updateWeightSum);
+            });
+
+            updateWeightSum();
+        }
+    }
+
+    function updateWeightSum() {
+        const checkboxes = document.querySelectorAll("input[name='itemIds']:checked");
+
+        let total = 0;
+        const emptyInputs = [];
+
+        checkboxes.forEach(cb => {
+            const input = document.querySelector(`input[name='probability_${cb.value}']`);
+            if (input) {
+                let val = parseFloat(input.value);
+                if (isNaN(val) || val < 0) val = 0;
+                if (val > 100) val = 100;
+                input.value = val.toFixed(2);
+
+                if (val === 0) {
+                    emptyInputs.push(input);
+                } else {
+                    total += val;
+                }
+            }
+        });
+
+        const remaining = 100 - total;
+        if (remaining > 0 && emptyInputs.length > 0) {
+            const perItem = parseFloat((remaining / emptyInputs.length).toFixed(2));
+            emptyInputs.forEach(input => {
+                input.value = perItem;
+                total += perItem;
+            });
+        }
+
+        const weightTotal = document.getElementById("weightTotal");
+        weightTotal.textContent = Math.min(total, 100).toFixed(2);
+
+        const submitBtn = document.getElementById("submitBtn");
+        const weightSumBox = document.getElementById("weightSumBox");
+
+        if (total > 100) {
+            weightTotal.style.color = "red";
+            submitBtn.disabled = true;
+            if (!document.getElementById("weightWarning")) {
+                const warn = document.createElement("div");
+                warn.id = "weightWarning";
+                warn.style.color = "red";
+                warn.style.fontSize = "0.9em";
+                warn.textContent = "⚠ 총 우선도 합은 100을 넘을 수 없습니다.";
+                weightSumBox.appendChild(warn);
+            }
+        } else {
+            weightTotal.style.color = "black";
+            submitBtn.disabled = false;
+            const warn = document.getElementById("weightWarning");
+            if (warn) warn.remove();
+        }
+    }
+
+    function resetWeights() {
+        document.querySelectorAll(".weight-input").forEach(input => {
+            input.value = 0;
+        });
+        updateWeightSum();
+    }
+
+    function toggleSelectAll() {
+        const checkboxes = document.querySelectorAll("input[name='itemIds']");
+        allSelected = !allSelected;
+        checkboxes.forEach(cb => {
+            cb.checked = allSelected;
+        });
+
+        toggleBtn.textContent = allSelected ? "전체 해제" : "전체 선택";
+        updateWeightSum();
+    }
+});
+</script>
+
+    
+    		        
+</th:block>
+

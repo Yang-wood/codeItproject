@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.codeit.mini.dto.AdminDTO;
 import com.codeit.mini.dto.comm.PageRequestDTO;
 import com.codeit.mini.dto.comm.PageResultDTO;
 import com.codeit.mini.dto.vending.CouponHistoryDTO;
@@ -45,7 +46,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 
 @RestController
-@RequestMapping("/admin/vending")
+@RequestMapping("/api/admin")
 @RequiredArgsConstructor
 @Log4j2
 public class AdminVedingController {
@@ -80,30 +81,46 @@ public class AdminVedingController {
 	
 //	2. 자판기 + 상품 등록
 	@PostMapping
-	public ResponseEntity<?> insertVendingMachineWithItems(@RequestBody VendingMachineWithItemsDTO request) {
-        try {
-            VendingMachineDTO vmDto = request.getVendingMachine();
-            List<MachineItemDTO> machineItems = request.getItemIds();
+	public ResponseEntity<?> insertVendingMachineWithItems(@RequestBody VendingMachineWithItemsDTO request, HttpSession session) {
+		 try {
+		        VendingMachineDTO vmDto = request.getVendingMachine();
+		        List<MachineItemDTO> machineItems = request.getItemIds();
 
-            Long vmId = vendingMachineService.registerVendingMachine(vmDto);
+		        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+		        if (admin == null) {
+		            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+		        }
+		        vmDto.setAdminId(admin.getAdminId());
+		        
+		        if ("RANDOM".equalsIgnoreCase(vmDto.getType())) {
+		            double totalProbability = machineItems.stream()
+		                    .mapToDouble(MachineItemDTO::getProbability)
+		                    .sum();
 
-            if (machineItems != null && !machineItems.isEmpty()) {
-                for (MachineItemDTO miDto : machineItems) {
-                    miDto.setMachineId(vmId);
-                    machineItemService.registerMachineItem(miDto);
-                }
-            }
+		            if (totalProbability > 100.0) {
+		                return ResponseEntity.badRequest().body("⚠ 확률 총합이 100%를 초과합니다.");
+		            }
+		        }
 
-            return ResponseEntity.ok("자판기 및 상품 등록 완료! 자판기 ID: " + vmId);
-            
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-            
-        } catch (Exception e) {
-            log.error("[자판기 등록 오류]", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
-        }
-    }
+		        Long vmId = vendingMachineService.registerVendingMachine(vmDto);
+
+		        if (machineItems != null && !machineItems.isEmpty()) {
+		            for (MachineItemDTO miDto : machineItems) {
+		                miDto.setMachineId(vmId);
+		                machineItemService.registerMachineItem(miDto);
+		            }
+		        }
+
+		        return ResponseEntity.ok("자판기 및 상품 등록 완료! 자판기 ID: " + vmId);
+
+		    } catch (IllegalArgumentException e) {
+		        return ResponseEntity.badRequest().body(e.getMessage());
+
+		    } catch (Exception e) {
+		        log.error("[자판기 등록 오류]", e);
+		        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+		    }
+		}
 	
 //	3. 상품 등록
 	@PostMapping ("/items")
@@ -123,7 +140,7 @@ public class AdminVedingController {
 	
 //	4. 자판기 상세
 	@GetMapping("/{machineId}")
-    public ResponseEntity<?> getVendingMachineDetail(@PathVariable Long machineId) {
+    public ResponseEntity<?> getVendingMachineDetail(@PathVariable("machineId") Long machineId) {
 		Optional<VendingMachineDTO> result = vendingMachineService.findVendingMachineById(machineId);
 
 		if (result.isPresent()) {
@@ -135,7 +152,7 @@ public class AdminVedingController {
 	
 //	5. 자판기 상품 목록
 	@GetMapping ("/{machineId}/items")
-    public ResponseEntity<?> machinesItemRead(@PathVariable Long machineId) {
+    public ResponseEntity<?> machinesItemRead(@PathVariable("machineId") Long machineId) {
 		return ResponseEntity.ok(machineItemService.findAllItemsByMachineId(machineId));
     }
 	
@@ -147,7 +164,8 @@ public class AdminVedingController {
 	
 //	7. 자판기 + 상품 수정
 	@PutMapping("/{machineId}")
-    public ResponseEntity<?> machinesUpdate(@PathVariable Long machineId, @RequestBody VendingMachineWithItemsDTO request) {
+    public ResponseEntity<?> machinesUpdate(@PathVariable("machineId") Long machineId, 
+    										@RequestBody VendingMachineWithItemsDTO request) {
         try {
             VendingMachineDTO vmDto = request.getVendingMachine();
             vmDto.setMachineId(machineId);
@@ -157,6 +175,8 @@ public class AdminVedingController {
 
             List<MachineItemDTO> items = request.getItemIds();
             
+            log.info("▶️ 수정 요청 받은 자판기 정보: {}", machineId);
+            log.info("▶️ 상품 목록: {}", items);
             for (MachineItemDTO item : items) {
                 item.setMachineId(machineId);
                 machineItemService.registerMachineItem(item);
@@ -174,21 +194,21 @@ public class AdminVedingController {
 	
 //	8. 자판기 삭제
 	@DeleteMapping("/{machineId}")
-	public ResponseEntity<?> machinesRemove(@PathVariable Long machineId) {
+	public ResponseEntity<?> machinesRemove(@PathVariable("machineId") Long machineId) {
 		boolean result = vendingMachineService.removeVendingMachine(machineId);
 		return result ? ResponseEntity.ok("삭제 성공") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("자판기를 찾을 수 없음");
 	}
 	
 //	9. 상품 삭제
 	@DeleteMapping("/items/{itemId}")
-	public ResponseEntity<?> itemRemove(@PathVariable Long itemId) {
+	public ResponseEntity<?> itemRemove(@PathVariable("itemId") Long itemId) {
 		boolean result = itemService.removeVendingItem(itemId);
 		return result ? ResponseEntity.ok("상품 삭제 완료") : ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 상품 없음");
     }
 	
 //	10. 자판기 이력 조회
     @GetMapping("/history/{machineId}")
-    public ResponseEntity<?> vendingHistoryList(@PathVariable Long machineId,@RequestParam(required = false) Long itemId,
+    public ResponseEntity<?> vendingHistoryList(@PathVariable("machineId") Long machineId,@RequestParam(required = false) Long itemId,
             									@ModelAttribute PageRequestDTO requestDTO) {
     	try {
             PageResultDTO<VendingHistoryDTO, VendingHistoryEntity> result;
@@ -213,7 +233,7 @@ public class AdminVedingController {
     
 //	11. 자판기 쿠폰 발급 상세 이력
     @GetMapping("/dashboard/history/{itemId}")
-    public ResponseEntity<?> getCouponHistoryByItem(@PathVariable Long itemId,
+    public ResponseEntity<?> getCouponHistoryByItem(@PathVariable("itemId") Long itemId,
     												@ModelAttribute PageRequestDTO requestDTO) {
     	
     	Pageable pageable = PageRequest.of(requestDTO.getPage() - 1, requestDTO.getSize(), Sort.by("issuedDate").descending());
@@ -230,4 +250,16 @@ public class AdminVedingController {
 
         return ResponseEntity.ok(new PageResultDTO<>(historyPage, fn));
     }
+    
+    @GetMapping("/exists")
+    public ResponseEntity<Boolean> checkNameExists(@RequestParam("name") String name) {
+        if (name == null || name.trim().isEmpty()) {
+            return ResponseEntity.ok(false);
+        }
+
+        boolean exists = vendingMachineService.existsByName(name);
+        return ResponseEntity.ok(exists);
+    }
+    
+    
 }

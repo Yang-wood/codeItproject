@@ -1,8 +1,11 @@
 package com.codeit.mini.entity.comm;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+
 public enum VendingType {
     RANDOM,CHOICE;
 	
+	@JsonCreator
 	public static VendingType from(String type) {
         try {
             return VendingType.valueOf(type.toUpperCase());

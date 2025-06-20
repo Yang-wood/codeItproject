@@ -1,16 +1,15 @@
 package com.codeit.mini.service.vending;
 
-import java.time.LocalDateTime;
-
 import com.codeit.mini.dto.comm.PageRequestDTO;
 import com.codeit.mini.dto.comm.PageResultDTO;
 import com.codeit.mini.dto.vending.VendingHistoryDTO;
 import com.codeit.mini.entity.member.MemberEntity;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.PointHistoryEntity;
+import com.codeit.mini.entity.vending.TestCouponEntity;
+import com.codeit.mini.entity.vending.TestCouponHistoryEntity;
 import com.codeit.mini.entity.vending.VendingHistoryEntity;
 import com.codeit.mini.entity.vending.VendingItemEntity;
-import com.codeit.mini.entity.vending.VendingMachinesEntity;
 
 public interface IVendingHistoryService {
 
@@ -43,6 +42,8 @@ public interface IVendingHistoryService {
 												 .pointId(entity.getPointId() != null ? entity.getPointId().getPointId() : null)
 												 .couponId(entity.getCouponId() != null ? entity.getCouponId().getCouponId() : null)
 											     .couponCode(entity.getCouponId() != null ? entity.getCouponId().getCouponCode() : null)
+											     .regDate(entity.getRegDate())
+											     .expireDate(coupon != null ? coupon.getExpireDate() : null)
 												 .build();
 		
 		return dto;

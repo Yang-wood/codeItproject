@@ -3,6 +3,7 @@ package com.codeit.mini.entity.vending;
 import java.time.LocalDateTime;
 
 import com.codeit.mini.entity.comm.BaseEntity;
+import com.codeit.mini.entity.comm.CouponBaseDateEntity;
 import com.codeit.mini.entity.member.MemberEntity;
 
 import jakarta.persistence.Column;
@@ -23,6 +24,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @SequenceGenerator(
@@ -59,16 +61,12 @@ public class TestCouponHistoryEntity extends BaseEntity{
     @Column(name = "status", nullable = false)
 	private String status = "issued";
 
-    @Column(name = "usedDate", nullable = false)
-    private LocalDateTime usedDate;
-
     @Column(name = "description", length = 300)
     private String description;
-
-    @PrePersist
-    public void prePersist() {
-        if (this.usedDate == null) {
-            this.usedDate = LocalDateTime.now();
-        }
-    }
+    
+	@Column(name = "used_date")
+	private LocalDateTime usedDate;
+	
+	@Column(name = "expire_date")
+	private LocalDateTime expireDate;
 }

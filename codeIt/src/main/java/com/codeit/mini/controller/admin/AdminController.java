@@ -94,7 +94,7 @@ private final IAdminService adminService;
     
     // 회원 삭제 처리
     @PostMapping("/members/delete")
-    public String deleteMember(@RequestParam Long memberId) {
+    public String deleteMember(@RequestParam("memberId") Long memberId) {
         adminService.removeMember(memberId);
         return "redirect:/admin/members";
     }

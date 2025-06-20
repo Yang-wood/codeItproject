@@ -39,6 +39,8 @@ public interface IVendingMachineService {
 	
 	VendingResultDTO purchaseMultipleItems(Long vmId, Long memberId, List<Long> itemIds);
 	
+	boolean existsByName(String name);
+	
 	default VendingMachineDTO toDTO(VendingMachinesEntity vm) {
 		
 		VendingMachineDTO dto = VendingMachineDTO.builder()

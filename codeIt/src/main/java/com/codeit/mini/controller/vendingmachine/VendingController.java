@@ -91,7 +91,7 @@ public class VendingController {
 	
 //	2. 자판기 상세
 	@GetMapping("/{machineId}")
-	public ResponseEntity<?> vendingMachineRead(@PathVariable Long machineId, HttpSession session) {
+	public ResponseEntity<?> vendingMachineRead(@PathVariable("machineId") Long machineId, HttpSession session) {
 		MemberDTO member = (MemberDTO) session.getAttribute("member");
 
 	    if (member == null) {
@@ -214,14 +214,16 @@ public class VendingController {
 	                                       HttpSession session) {
 	    MemberDTO member = (MemberDTO) session.getAttribute("member");
 	    if (member == null) {
-	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+	        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+	                             .body(Map.of("error", "UNAUTHORIZED", "message", "로그인이 필요합니다."));
 	    }
 
 	    List<Long> itemIds = body.get("itemIds");
 	    if (itemIds == null || itemIds.isEmpty()) {
-	        return ResponseEntity.badRequest().body("아이템이 선택되지 않았습니다.");
+	        return ResponseEntity.badRequest()
+	                             .body(Map.of("error", "NO_ITEMS_SELECTED", "message", "아이템이 선택되지 않았습니다."));
 	    }
-	    
+
 	    try {
 	        VendingResultDTO result = vendingMachineService.purchaseMultipleItems(machineId, member.getMemberId(), itemIds);
 	        
@@ -233,19 +235,16 @@ public class VendingController {
 	        log.info("업데이트 쿠폰 정보 : {}", updatedCoupon);
 	        
 	        return ResponseEntity.ok(result);
+
 	    } catch (IllegalStateException e) {
 	        log.warn("❗비즈니스 로직 오류: {}", e.getMessage());
-	        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-	                             .body(Map.of("error", e.getMessage()));
+	        return ResponseEntity.badRequest()
+	                             .body(Map.of("error", "BUSINESS_ERROR", "message", e.getMessage()));
 	    } catch (Exception e) {
 	        log.error("❌ 서버 오류 발생", e);
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-	                             .body(Map.of("error", "서버 내부 오류"));
+	                             .body(Map.of("error", "SERVER_ERROR", "message", "서버 내부 오류"));
 	    }
-
-//	    VendingResultDTO result = vendingMachineService.purchaseMultipleItems(machineId, member.getMemberId(), itemIds);
-
-//	    return ResponseEntity.ok(result);
 	}
 	
 }

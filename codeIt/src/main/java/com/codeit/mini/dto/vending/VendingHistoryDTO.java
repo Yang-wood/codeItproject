@@ -20,6 +20,7 @@ public class VendingHistoryDTO {
 	private Long pointId;
 	private Long couponId;
 	private LocalDateTime regDate;
+	private LocalDateTime expireDate;
 	
 	private String paymentFilter;
 	private String statusFilter;

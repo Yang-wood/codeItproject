@@ -19,6 +19,9 @@ public interface IVendingMachinesRepository extends JpaRepository<VendingMachine
 	Optional<VendingMachinesEntity> findByMachineIdAndIsActive(Long machineId, Integer isActive);
 	
 	Page<VendingMachinesEntity> findByIsActive(int isActive, Pageable pageable);
+	
+	@Query("SELECT COUNT(v) > 0 FROM VendingMachinesEntity v WHERE LOWER(v.name) = :name")
+	boolean existsByName(@Param("name") String name);
 
 	@Modifying
 	@Query("UPDATE VendingMachinesEntity vm "

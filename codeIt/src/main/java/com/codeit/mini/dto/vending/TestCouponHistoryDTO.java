@@ -25,4 +25,5 @@ public class TestCouponHistoryDTO {
 
 	private LocalDateTime regDate;
 	private LocalDateTime usedDate;
+	private LocalDateTime expireDate;
 }

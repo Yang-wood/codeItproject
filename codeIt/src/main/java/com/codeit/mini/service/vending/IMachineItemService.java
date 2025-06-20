@@ -44,6 +44,7 @@ public interface IMachineItemService {
 		vmToItemDTO.setName(item.getName());
 		vmToItemDTO.setDescription(item.getDescription());
 		vmToItemDTO.setValue(item.getValue());
+		vmToItemDTO.setItemType(item.getItemType());
 		
 		return vmToItemDTO;
 	}

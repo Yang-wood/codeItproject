@@ -24,6 +24,7 @@ public interface ITestCouponHistoryService {
 													   .status(entity.getStatus())
 													   .regDate(entity.getRegDate())
 													   .usedDate(entity.getUsedDate())
+													   .expireDate(entity.getExpireDate())
 													   .build();
         return dto;
     }
@@ -36,6 +37,7 @@ public interface ITestCouponHistoryService {
 																.couponCode(testEntity.getCouponCode())
 																.status(dto.getStatus())
 																.usedDate(dto.getUsedDate())
+																.expireDate(dto.getExpireDate())
 																.build();
     	return entity;
     }

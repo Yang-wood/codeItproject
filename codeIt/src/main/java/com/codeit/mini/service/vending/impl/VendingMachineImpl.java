@@ -13,8 +13,10 @@ import org.springframework.stereotype.Service;
 
 import com.codeit.mini.dto.comm.PageRequestDTO;
 import com.codeit.mini.dto.comm.PageResultDTO;
+import com.codeit.mini.dto.vending.MachineItemDTO;
 import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
+import com.codeit.mini.dto.vending.VendingMachineWithItemsDTO;
 import com.codeit.mini.dto.vending.VendingResultDTO;
 import com.codeit.mini.entity.admin.Admin;
 import com.codeit.mini.entity.comm.VendingType;
@@ -34,6 +36,7 @@ import com.codeit.mini.repository.vending.IVendingItemRepository;
 import com.codeit.mini.repository.vending.IVendingMachinesRepository;
 import com.codeit.mini.repository.vending.search.IVendingMachinesSearch;
 import com.codeit.mini.service.vending.ICouponHistoryService;
+import com.codeit.mini.service.vending.IMachineItemService;
 import com.codeit.mini.service.vending.IPointHistoryService;
 import com.codeit.mini.service.vending.ITestCouponService;
 import com.codeit.mini.service.vending.IVendingMachineService;
@@ -51,6 +54,7 @@ public class VendingMachineImpl implements IVendingMachineService{
 	private final IVendingMachinesRepository machinesRepository;
 	private final IAdminRepository adminRepository;
 	private final IMachineItemRepository machineItemRepository;
+	private final IMachineItemService machineItemService;
 	private final IVendingItemRepository itemRepository;
 	private final IMemberRepository memberRepository;
 	private final IPointHistoryService pointService;
@@ -63,8 +67,12 @@ public class VendingMachineImpl implements IVendingMachineService{
 	@Override
 	@Transactional
 	public Long registerVendingMachine(VendingMachineDTO vmDto) {
-		
+	    
 		Optional<VendingMachinesEntity> findVmName = machinesRepository.findByName(vmDto.getName());
+		
+	    if (vmDto.getAdminId() == null) {
+	        throw new IllegalArgumentException("관리자 ID가 필요합니다.");
+	    }
 		
 		if(vmDto.getName() == null || vmDto.getName().trim().isEmpty()) {
 			throw new IllegalArgumentException("자판기 이름은 필수입니다.");
@@ -78,17 +86,38 @@ public class VendingMachineImpl implements IVendingMachineService{
 			throw new IllegalArgumentException(vmDto.getName() + "라는 이름은 이미 존재하는 자판기 이름입니다.");
 		}
 		
-	    Admin admin = null;
-	    if (vmDto.getAdminId() != null) {
-	        admin = adminRepository.findById(vmDto.getAdminId())
-	                               .orElseThrow(() -> new IllegalArgumentException("관리자 정보가 없습니다. 관리자 번호 = " + vmDto.getAdminId()));
-	    }
+		Admin admin = adminRepository.findById(vmDto.getAdminId())
+		            .orElseThrow(() -> new IllegalArgumentException("관리자 정보가 없습니다."));
+		
 		
 		VendingMachinesEntity vmEntity = toEntity(vmDto, admin);
 		
 		machinesRepository.save(vmEntity);
 		
 		return vmEntity.getMachineId();
+	}
+	
+	@Transactional
+	public Long registerMachineWithItems(VendingMachineWithItemsDTO dto) {
+	    VendingMachineDTO vmDto = dto.getVendingMachine();
+	    List<MachineItemDTO> itemList = dto.getItemIds();
+	    // 자판기 등록 (기존 메서드 활용)
+	    Long vmId = this.registerVendingMachine(vmDto);
+	    // 자판기 ID를 itemDTO에 주입
+	    itemList.forEach(item -> item.setMachineId(vmId));
+	    // 확률 합계 검증 (랜덤 자판기인 경우만)
+	    if ("RANDOM".equalsIgnoreCase(vmDto.getType())) {
+	        double totalProb = itemList.stream()
+	                .mapToDouble(MachineItemDTO::getProbability)
+	                .sum();
+	        if (totalProb > 100.0) {
+	            throw new IllegalArgumentException("아이템 확률 총합이 100%를 초과합니다.");
+	        }
+	    }
+	    // 아이템 연결 (위임)
+	    machineItemService.registerMachineItems(itemList);
+
+	    return vmId;
 	}
 
 	@Override
@@ -391,5 +420,10 @@ public class VendingMachineImpl implements IVendingMachineService{
 	            .itemList(items.stream().map(VendingItemEntity::getName).collect(Collectors.toList()))
 	            .build();
 	}
-	
+
+	@Override
+	public boolean existsByName(String name) {
+	    if (name == null || name.trim().isEmpty()) return false;
+	    return machinesRepository.existsByName(name.trim());
+	}
 }

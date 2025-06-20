@@ -1,0 +1,83 @@
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+
+<th:block th:replace="~{layout/basic :: setContent(~{this::content})}">
+<th:block th:fragment="content">
+
+    <link th:href="@{/css/omr/history.css}" rel="stylesheet" />
+
+    <div class="layout-wrapper">
+        <aside class="side-nav">
+            <ul>
+            	<li><a href="/member/mypage">마이페이지</a></li>
+                <li><a href="/vending/machines">자판기 목록</a></li>
+            </ul>
+        </aside>
+
+        <div class="testContainer">
+            <h2 class="page-title">뽑기 이력</h2>
+            <hr class="divider" />
+
+            <div th:if="${result.dtoList == null or result.dtoList.isEmpty()}">
+                뽑기 이력이 없습니다.
+            </div>
+
+            <table th:if="${result.dtoList != null and !result.dtoList.isEmpty()}" class="vending-history-table">
+                <thead>
+                    <tr>
+                        <th>상품명</th>
+                        <th>상태</th>
+                        <th>결제 방식</th>
+                        <th>결제일</th>
+                        <th>만료일</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="history : ${result.dtoList}">
+                        <td th:text="${history.itemName}">-</td>
+                        <td th:text="${history.status}">-</td>
+                        <td th:text="${history.payment}">-</td>
+                        <td th:text="${history.regDate != null ? history.regDate.format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd')) : '-'}"></td>
+                        <td th:text="${history.expireDate != null ? history.expireDate.format(T(java.time.format.DateTimeFormatter).ofPattern('yyyy-MM-dd')) : '-'}">-</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <aside class="ad-banner">
+            <div class="ad-content">
+                <p style="font-weight: bold;">쿠폰 뽑기</p>
+                <a href="/vending/machines" target="_blank">
+                    <img src="/img/ad-banner.jpg" alt="광고">
+                </a>
+                <p style="font-size: 14px; color: #555;">도서 및 시험 응시 무료쿠폰에 도전해보세요!</p>
+            </div>
+        </aside>
+    </div>
+
+    <style>
+        .vending-history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95rem;
+        }
+
+        .vending-history-table th, .vending-history-table td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .vending-history-table th {
+            background-color: #f5f7fa;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .vending-history-table tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+    </style>
+
+</th:block>
+</th:block>

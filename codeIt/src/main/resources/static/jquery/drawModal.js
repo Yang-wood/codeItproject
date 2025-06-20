@@ -11,9 +11,15 @@ function confirmDraw(machineId, itemId) {
     headers: { 'Content-Type': 'application/json' }
   })
   .then(res => {
-    if (!res.ok) throw new Error("응답 실패");
-    return res.json();
-  })
+	if (!res.ok) throw new Error("응답 실패");
+
+	  const contentType = res.headers.get("content-type") || "";
+	  if (!contentType.includes("application/json")) {
+	    throw new Error("서버 내부 오류 (응답 형식 아님)");
+	  }
+
+	  return res.json();
+	})
   .then(result => {
     if (result.error === 'NOT_ENOUGH_POINT') {
       stopAutoRetry();
