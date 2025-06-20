@@ -98,9 +98,9 @@ public class PageMoveController {
                     bookDTO.setWishedByCurrentUser(false);
 				}
 	        	
-	        	double avg = bookDTO.getAvgRating(); // avgRating은 0.0 ~ 5.0 범위의 실수
-	            int rating10 = (int) Math.round(avg * 10); // 예: 4.3 → 43 → 반올림 43
-	            int full = rating10 / 10; // 정수부
+	        	double avg = bookDTO.getAvgRating();
+	            int rating10 = (int) Math.round(avg * 10);
+	            int full = rating10 / 10; 
 	            boolean half = (rating10 % 10) >= 5;
 	            int empty = 5 - full - (half ? 1 : 0);
 

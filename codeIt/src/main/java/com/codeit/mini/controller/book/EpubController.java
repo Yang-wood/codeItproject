@@ -80,11 +80,17 @@ public class EpubController {
             log.warn("업로드된 파일이 비어 있음.");
             return "book/epub/uploadEpub";
         }
-
+        
+        String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
+        
+        if (!originalFileName.toLowerCase().endsWith(".epub")) {
+            model.addAttribute("errorMessage", "EPUB 파일만 업로드할 수 있습니다.");
+            log.warn("잘못된 파일 형식 업로드 시도: {}", originalFileName);
+            return "book/epub/uploadEpub";
+        }
+        
         try {
-            String originalFileName = StringUtils.cleanPath(file.getOriginalFilename());
             String uniqueFileName = UUID.randomUUID() + "." + originalFileName;
-
             Path tempDir = Paths.get(System.getProperty("java.io.tmpdir"), "epub_temp");
             Files.createDirectories(tempDir);
 
