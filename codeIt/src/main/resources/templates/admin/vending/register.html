@@ -94,14 +94,57 @@
     </div>
 <script th:inline="javascript">
 document.addEventListener("DOMContentLoaded", function () {
-    const form = document.getElementById("vendingForm");
-    const itemList = document.getElementById("itemList");
-    const categorySelect = document.getElementById("categoryId");
-    const resetBtn = document.getElementById("resetBtn");
-    const toggleBtn = document.getElementById("selectAllBtn");
+	const form = document.getElementById("vendingForm");
+	const itemList = document.getElementById("itemList");
+	const categorySelect = document.getElementById("categoryId");
+	const resetBtn = document.getElementById("resetBtn");
+	const toggleBtn = document.getElementById("selectAllBtn");
+	const titleInput = document.getElementById("testTitle");
+	const nameError = document.getElementById("nameErrorMsg");
 
-    let allItems = [];
+	let allItems = [];
     let allSelected = false;
+    let debounceTimer = null;
+    
+    titleInput.addEventListener("input", function () {
+        const title = titleInput.value.trim();
+
+        if (title === "") {
+            nameError.textContent = "자판기 이름을 입력해주세요.";
+            nameError.style.color = "red";
+            return;
+        }
+
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(() => {
+            fetch(`/api/admin/exists?name=${encodeURIComponent(title)}`)
+                .then(res => res.json())
+                .then(exists => {
+                    if (exists) {
+                        nameError.textContent = "이미 사용 중인 이름입니다.";
+                        nameError.style.color = "red";
+                    } else {
+                        nameError.textContent = "사용 가능한 이름입니다.";
+                        nameError.style.color = "green";
+                    }
+                })
+                .catch(err => {
+                    console.error("중복 확인 실패", err);
+                    nameError.textContent = "확인 중 오류 발생";
+                    nameError.style.color = "red";
+                });
+        }, 300);
+    });
+    
+    form.addEventListener("submit", function (e) {
+        const title = titleInput.value.trim();
+        if (!title) {
+            e.preventDefault();
+            nameError.textContent = "자판기 이름을 입력해주세요.";
+            nameError.style.color = "red";
+            titleInput.focus();
+        }
+    });
 
     fetch("/api/admin/items")
         .then(res => res.json())
