@@ -123,11 +123,12 @@
 		    gap: 20px;
 		    margin-bottom: 30px;
 		}
-	    .card {
-	        border-radius: 10px;
-	        background: white;
-	        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
-	    }
+
+		.card {
+		    border-radius: 10px;
+		    background-color: #ffffff;
+		    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+		}
 		.card.text-only {
 		    max-height: 50px;
 		    display: flex;
@@ -141,10 +142,16 @@
             border-radius: 8px;
             box-shadow: 0 2px 6px rgba(0,0,0,0.1);
         }
-		.table th, .table td {
-	        vertical-align: middle;
-	        font-size: 14px;
-	    }
+		.table th {
+		    font-weight: 600;
+		    color: #6c757d;
+		    vertical-align: top;
+		    padding-top: 12px;
+		}
+		.table td {
+		    color: #212529;
+		    padding-top: 12px;
+		}
         a.vending-link {
 		    text-decoration: none;
 		    color: inherit;
@@ -153,6 +160,70 @@
 		a.vending-link:hover {
 		    opacity: 0.6;
 		    text-decoration: none;
+		}
+		.content {
+		    margin-left: 240px;
+		    padding: 40px;
+		    background-color: #f8fafc;
+		    min-height: 100vh;
+		}
+		.content label {
+	        font-size: 0.95rem;
+	    }
+		.content p {
+        margin-bottom: 0;
+        font-weight: 500;
+        color: #212529;
+    	}
+		.content .bg-light {
+        font-size: 0.95rem;
+        line-height: 1.5;
+        white-space: pre-wrap;
+    	}
+		.detail-header {
+		    display: flex;
+		    justify-content: space-between;
+		    align-items: center;
+		    margin-bottom: 30px;
+		}
+		
+		.detail-header h3 {
+		    font-size: 22px;
+		    color: #333;
+		    margin-bottom: 0;
+		}
+		
+		.detail-card {
+		    background: #fff;
+		    border-radius: 12px;
+		    padding: 30px;
+		    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+		}
+		
+		.detail-card .mb-3 {
+		    margin-bottom: 20px !important;
+		}
+		
+		.detail-card label {
+		    font-weight: 600;
+		    color: #555;
+		    font-size: 14px;
+		    margin-bottom: 5px;
+		}
+		
+		.detail-card p {
+		    font-size: 15px;
+		    color: #222;
+		    margin: 0;
+		    background-color: #f9f9f9;
+		    padding: 10px 15px;
+		    border-radius: 5px;
+		    border: 1px solid #e0e0e0;
+		}
+		
+		.detail-actions {
+		    text-align: right;
+		    margin-top: 30px;
 		}
     </style>
 </head>
@@ -182,80 +253,74 @@
             </ul>
         </div>
 
-        <div class="container-fluid p-4" style="margin-left: 240px; background-color: #f8fafc; min-height: 100vh;">
-		    <div class="d-flex justify-content-between align-items-center mb-3">
-		        <h4>자판기 상세</h4>
-		        <a th:href="@{/admin/vending/list}" class="btn btn-outline-secondary btn-sm">← 이전으로</a>
-		    </div>
-		
-		    <div class="card p-4 shadow-sm mb-4 w-100" style="max-width: 1000px;">
-		        <div class="row">
-		            <div class="col-md-6">
-		                <p><strong>ID</strong> <span th:text="${vending.machineId}"></span></p>
-		                <p><strong>이름</strong> <span th:text="${vending.name}"></span></p>
-		                <p><strong>타입</strong> <span th:text="${vending.type}"></span></p>
-		            </div>
-		            <div class="col-md-6">
-		                <p><strong>상태</strong> <span th:text="${vending.active == 1 ? '활성' : '비활성'}"></span></p>
-		                <p><strong>설명</strong> <span th:text="${vending.description}"></span></p>
-		            </div>
-		        </div>
-		    </div>
-		
-		    <div class="card p-4 shadow-sm w-100" style="max-width: 1000px;">
-		        <h5>연결된 상품 목록</h5>
-		        <table id="itemTable" class="table table-bordered mt-3">
-				    <thead class="table-light">
-				        <tr>
-				            <th>상품명</th>
-				            <th>유형</th>
-				            <th>확률</th>
-				        </tr>
-				    </thead>
-				    <tbody>
-				        <tr th:each="item : ${vending.items}" th:attr="data-item-id=${item.itemId}">
-				            <td th:text="${item.name}">상품명</td>
-				            <td th:text="${item.itemType}">유형</td>
-				            <td>
-				                <input type="number" class="form-control probability-input" th:value="${item.probability}" min="0" max="100" step="0.1">
-				            </td>
-				        </tr>
-				    </tbody>
-				</table>
-		    </div>
-		</div>
-			    
-	<div class="card p-3 shadow-sm mt-4" style="max-width: 1000px;">
-	    <h5>자판기 정보 수정</h5>
-	    <form id="vendingUpdateForm">
-	        <input type="hidden" id="machineId" th:value="${vending.machineId}" />
-	        <input type="hidden" id="adminId" th:value="${session.admin.adminId}" />
-	        <div class="mb-2">
-	            <label class="form-label">자판기 이름</label>
-	            <input type="text" name="name" id="name" class="form-control" th:value="${vending.name}" required />
-	        </div>
-	        <div class="mb-2">
-	            <label class="form-label">설명</label>
-	            <textarea name="description" id="description" class="form-control" rows="2" th:text="${vending.description}"></textarea>
-	        </div>
-	        <div class="mb-3">
-			    <label class="form-label">자판기 타입</label>
-			    <select name="type" id="type" class="form-select" required>
-			        <option value="RANDOM" th:selected="${vending.type == 'RANDOM'}">랜덤</option>
-			        <option value="CHOICE" th:selected="${vending.type == 'CHOICE'}">선택형</option>
-			    </select>
-			</div>
-	        <div class="mb-3">
-	            <label class="form-label">상태</label>
-				<select name="active" id="active" class="form-select">
-				    <option value="1" th:selected="${vending.active == 1}">활성</option>
-				    <option value="0" th:selected="${vending.active == 0}">비활성</option>
-				</select>
-	        </div>
-	        <button type="button" id="updateBtn" class="btn btn-primary">수정하기</button>
-	    </form>
-	</div>
+        <div class="content">
+    <div class="content px-4">
+    <div class="d-flex justify-content-between align-items-center mt-4 mb-3">
+        <h3 class="fw-bold">상품 상세</h3>
+        <a href="/admin/vending/itemlist" class="btn btn-outline-secondary">← 목록으로</a>
+    </div>
 
+			    <div class="card mx-auto shadow-sm p-4" style="max-width: 800px;">
+			        <div class="row g-3">
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">상품 ID</label>
+			                <p th:text="${item.itemId}">281</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">상품명</label>
+			                <p th:text="${item.name}">상품 이름</p>
+			            </div>
+			            <div class="col-12">
+			                <label class="fw-semibold text-secondary">설명</label>
+			                <div class="border rounded p-3 bg-light" style="min-height: 80px;">
+			                    <span th:text="${item.description}">상품 설명</span>
+			                </div>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">유형</label>
+			                <p th:text="${item.itemType}">test</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">값 (value)</label>
+			                <p th:text="${item.value}">500</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">확률 (%)</label>
+			                <p th:text="${item.probability}">0.0</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">재고</label>
+			                <p th:text="${item.stock != null ? item.stock : '무제한'}">무제한</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">총 사용 횟수</label>
+			                <p th:text="${item.totalUsed}">0</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">총 발급 횟수</label>
+			                <p th:text="${item.totalClaim}">0</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">활성 여부</label>
+			                <p th:text="${item.active == 1 ? '활성' : '비활성'}">활성</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">등록일</label>
+			                <p th:text="${#temporals.format(item.regDate, 'yyyy-MM-dd HH:mm')}">2025-06-19 09:56</p>
+			            </div>
+			            <div class="col-sm-6">
+			                <label class="fw-semibold text-secondary">수정일</label>
+			                <p th:text="${#temporals.format(item.upDate, 'yyyy-MM-dd HH:mm')}">2025-06-19 09:56</p>
+			            </div>
+			        </div>
+			
+			        <div class="text-end mt-4">
+			            <a th:href="@{/admin/vending/item/{itemId}/edit(itemId=${item.itemId})}" class="btn btn-primary">수정하기</a>
+			        </div>
+			    </div>
+			</div>
+		</div>
+	</div>
 </body>
 <script th:inline="javascript">
 document.getElementById("updateBtn").addEventListener("click", function () {

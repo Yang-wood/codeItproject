@@ -13,6 +13,7 @@ import com.codeit.mini.dto.vending.MachineItemDTO;
 import com.codeit.mini.dto.vending.VendingItemDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
 import com.codeit.mini.service.vending.IMachineItemService;
+import com.codeit.mini.service.vending.IVendingItemService;
 import com.codeit.mini.service.vending.IVendingMachineService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ public class AdminVendingPageController {
 	
 	private final IVendingMachineService vendingMachineService;
 	private final IMachineItemService machineItemService;
+	private final IVendingItemService itemService;
 	
 	
     @GetMapping("/list")
@@ -54,4 +56,33 @@ public class AdminVendingPageController {
         model.addAttribute("vending", vending);
         return "admin/vending/detail";
     }
+    
+    @GetMapping("/itemlist")
+    public String itemPage(Model model) {
+        return "admin/vending/itemlist";
+    }
+    
+    @GetMapping("/itemregister")
+    public String itemregisterPage(Model model) {
+        return "admin/vending/itemregister";
+    }
+    
+    @GetMapping("/item/{itemId}")
+    public String itemDetail(@PathVariable("itemId") Long itemId, Model model) {
+        VendingItemDTO item = itemService.findVendingItemById(itemId)
+            .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+        
+        model.addAttribute("item", item);
+        return "admin/vending/item/detail";
+    }
+    
+    @GetMapping("/item/{itemId}/edit")
+    public String itemEdit(@PathVariable("itemId") Long itemId, Model model) {
+        VendingItemDTO item = itemService.findVendingItemById(itemId)
+            .orElseThrow(() -> new RuntimeException("상품을 찾을 수 없습니다."));
+        
+        model.addAttribute("item", item);
+        return "admin/vending/item/edit";
+    }
+    
 }

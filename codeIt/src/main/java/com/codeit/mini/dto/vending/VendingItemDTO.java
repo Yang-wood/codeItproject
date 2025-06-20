@@ -27,7 +27,6 @@ public class VendingItemDTO {
 	private LocalDateTime regDate;
 	private LocalDateTime upDate;
 	
-    @Builder
     public VendingItemDTO(Long itemId, String name, String itemType, Double probability) {
         this.itemId = itemId;
         this.name = name;

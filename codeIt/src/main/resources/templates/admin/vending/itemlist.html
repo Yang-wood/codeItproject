@@ -229,14 +229,14 @@
             </div>
 
             <div class="vending-header">
-			    <h5>MACHINE LIST</h5>
-			        <a href="/admin/vending/register" class="btn-register">+ 등록</a>
+			    <h5>ITEM LIST</h5>
+			        <a href="/admin/vending/itemregister" class="btn-register">+ 등록</a>
 			</div>
             <table class="table table-bordered table-striped">
 		    <thead>
 		        <tr>
-		            <th>자판기 ID</th>
-		            <th>자판기 이름</th>
+		            <th>상품 ID</th>
+		            <th>상품 이름</th>
 		            <th>타입</th>
 		            <th>상태</th>
 		            <th>등록일</th>
@@ -280,7 +280,6 @@
         document.getElementById('usedCount').textContent = data.used.reduce((a, b) => a + b, 0) + '건';
     });
         
-
         // 사이드바 메뉴 활성화
         const currentPath = window.location.pathname;
         document.querySelectorAll('.menu-item').forEach(item => {
@@ -292,22 +291,22 @@
             }
         });
 
-        // 자판기 목록 불러오기
+        // 상품 목록 불러오기
         function loadVendingList() {
-			    fetch('/api/admin')
+			    fetch('/api/admin/items')
 			        .then(res => res.json())
 			        .then(result => {
-			        	console.log("📦 자판기 목록 응답:", result.dtoList);
+			        	console.log("📦 상품 목록 응답:", result.dtoList);
 			            const tbody = document.getElementById("vm-table-body");
 			            tbody.innerHTML = result.dtoList.map(vm => `
 			                <tr>
-			                    <td>${vm.machineId}</td>
+			                    <td>${vm.itemId}</td>
 			                    <td>
-			                    	<a href="/admin/vending/${vm.machineId}" class="vending-link">
-			                      		${vm.name}
-			                    	</a>
+				                    <a href="/admin/vending/item/${vm.itemId}" class="vending-link">
+					                    ${vm.name}
+					                </a>
 			                    </td>
-			                    <td>${vm.type}</td>
+			                    <td>${vm.itemType}</td>
 			                    <td>${parseInt(vm.active) === 1 ? '활성' : '비활성'}</td>
 			                    <td>${vm.regDate ? vm.regDate.substring(0,10) : ''}</td>
 			                </tr>
@@ -319,8 +318,6 @@
 			document.getElementById("selectAll").addEventListener("change", function () {
 			    document.querySelectorAll(".vm-checkbox").forEach(cb => cb.checked = this.checked);
 			});
-
-    loadVendingList();
     </script>
 </body>
 </html>

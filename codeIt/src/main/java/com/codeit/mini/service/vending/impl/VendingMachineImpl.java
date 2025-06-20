@@ -14,8 +14,10 @@ import org.springframework.stereotype.Service;
 import com.codeit.mini.dto.comm.PageRequestDTO;
 import com.codeit.mini.dto.comm.PageResultDTO;
 import com.codeit.mini.dto.vending.MachineItemDTO;
+import com.codeit.mini.dto.vending.RequestMachineItemDTO;
 import com.codeit.mini.dto.vending.TestCouponDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
+import com.codeit.mini.dto.vending.VendingMachineUpdateRequestDTO;
 import com.codeit.mini.dto.vending.VendingMachineWithItemsDTO;
 import com.codeit.mini.dto.vending.VendingResultDTO;
 import com.codeit.mini.entity.admin.Admin;
@@ -156,14 +158,15 @@ public class VendingMachineImpl implements IVendingMachineService{
 	@Transactional
 	@Override
 	public VendingMachineDTO updateVendingMachine(VendingMachineDTO vmDto) {
+		log.info("📌 update 요청: {}", vmDto);
 		
 		VendingMachinesEntity vm = machinesRepository.findById(vmDto.getMachineId())
 													 .orElseThrow(() -> new IllegalArgumentException("해당 자판기 정보가 없습니다. 자판기 번호 = " + vmDto.getMachineId()));
 		
-		Optional<VendingMachinesEntity> vmName = machinesRepository.findByName(vmDto.getName());
-		
-		if (vmName.isPresent() && !vmName.get().getMachineId().equals(vmDto.getMachineId())) {
-			throw new IllegalArgumentException("이미 사용중인 자판기 이름입니다.");
+		if (!vm.getName().trim().equals(vmDto.getName().trim())) {
+		    if (machinesRepository.existsByNameAndMachineIdNot(vmDto.getName().trim(), vmDto.getMachineId())) {
+		        throw new IllegalArgumentException("이미 존재하는 자판기 이름입니다.");
+		    }
 		}
 		
 		vm.changeName(vmDto.getName());
@@ -178,8 +181,30 @@ public class VendingMachineImpl implements IVendingMachineService{
 		}
 		
 		machinesRepository.save(vm);
-		
 		return toDTO(vm);
+	}
+	
+	@Transactional
+	@Override
+	public void updateVendingMachineWithItems(VendingMachineUpdateRequestDTO requestDTO) {
+	    VendingMachineDTO vmDto = requestDTO.getVendingMachine();
+	    List<RequestMachineItemDTO> itemDtos = requestDTO.getItemIds();
+
+	    // 1. 자판기 정보 수정
+	    updateVendingMachine(vmDto);
+
+	    // 2. 자판기-아이템 연결 정보 초기화
+	    machineItemService.removeAllByMachineId(vmDto.getMachineId());
+
+	    // 3. 새로 연결
+	    for (RequestMachineItemDTO reqItem : itemDtos) {
+	        MachineItemDTO newItem = new MachineItemDTO();
+	        newItem.setMachineId(vmDto.getMachineId());
+	        newItem.setItemId(reqItem.getItemId());
+	        newItem.setProbability(reqItem.getProbability());
+
+	        machineItemService.registerMachineItem(newItem);
+	    }
 	}
 	
 	@Override

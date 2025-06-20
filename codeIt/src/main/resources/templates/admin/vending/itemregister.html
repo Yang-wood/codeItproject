@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:inline="javascript">
+<th:block th:replace="~{layout/adminlayout :: setContent(~{this::content})}">
+<th:block th:fragment="content">
+<link th:href="@{/css/omr/register.css}" rel="stylesheet" />
+<style>
+.item-scroll-box {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    padding: 10px;
+    border-radius: 5px;
+    background-color: #fdfdfd;
+}
+.item-scroll-box div {
+    margin-bottom: 8px;
+}
+#nameErrorMsg {
+    color: red;
+    font-size: 0.9em;
+    margin-top: 1px;
+    min-height: 1.5em; /* 메시지가 없을 때도 공간 확보 */
+}
+</style>
+<!-- 로그인하지 않은 경우 -->
+<div th:if="${session.member == null and session.admin == null}">
+    <a th:href="@{/member/login}" style="text-decoration:none;color:#333;">로그인</a>
+    <a th:href="@{/member/register}" style="text-decoration:none;color:#333;">회원가입</a>
+</div>
+<form id="vendingForm" method="post" th:action="@{/admin/vending/itemregister}" th:object="${itemForm}">
+  <div class="form-group">
+    <label class="mb-2">아이템 등록</label>
+    <div id="itemInputList" class="item-scroll-box">
+      <div class="item-input-row d-flex gap-2 mb-2">
+        <input type="text" name="name" class="form-control" placeholder="아이템명" required style="flex: 2;">
+        <select name="itemType" class="form-select" required style="flex: 1;">
+          <option value="">타입 선택</option>
+          <option value="test">시험 응시권</option>
+          <option value="free">무료 뽑기권</option>
+          <option value="point">포인트</option>
+          <option value="discount">할인권</option>
+          <option value="rental">대여권</option>
+          <option value="fail">꽝</option>
+        </select>
+        <input type="number" name="value" class="form-control" placeholder="값" required style="flex: 0.8; min-width: 70px;">
+  		<input type="number" name="probability" class="form-control" placeholder="확률(%)" step="0.01" style="flex: 0.9; min-width: 80px;">
+  		<select name="active" class="form-select" required style="flex: 0.8; min-width: 70px;">
+          <option value="1" selected>ON</option>
+          <option value="0">OFF</option>
+        </select>
+        <button type="button" class="btn btn-danger btn-sm removeItemBtn">삭제</button>
+      </div>
+    </div>
+    <button type="button" id="addItemBtn" class="btn btn-outline-primary btn-sm mt-2">+ 아이템 추가</button>
+  </div>
+
+  <div class="mt-4">
+    <button type="button" id="submitBtn" class="btn btn-primary">등록</button>
+    <button type="reset" class="btn btn-secondary">초기화</button>
+  </div>
+</form>
+<script th:inline="javascript">
+document.addEventListener("DOMContentLoaded", function () {
+    const addItemBtn = document.getElementById("addItemBtn");
+    const itemInputList = document.getElementById("itemInputList");
+
+    addItemBtn.addEventListener("click", () => {
+        const container = document.createElement("div");
+        container.className = "item-input-row d-flex gap-2 mb-2";
+        container.innerHTML = `
+            <input type="text" name="name" class="form-control" placeholder="아이템명" required style="flex: 2;">
+            <select name="itemType" class="form-select" required style="flex: 1;">
+                <option value="">타입 선택</option>
+                <option value="test">시험 응시권</option>
+                <option value="free">무료 뽑기권</option>
+                <option value="point">포인트</option>
+                <option value="discount">할인권</option>
+                <option value="rental">대여권</option>
+                <option value="fail">꽝</option>
+            </select>
+            <input type="number" name="value" class="form-control" placeholder="값" required style="flex: 0.8; min-width: 70px;">
+      		<input type="number" name="probability" class="form-control" placeholder="확률(%)" step="0.01" style="flex: 0.9; min-width: 80px;">
+      		<select name="active" class="form-select" required style="flex: 0.8; min-width: 70px;">
+              <option value="1" selected>ON</option>
+              <option value="0">OFF</option>
+            </select>
+            <button type="button" class="btn btn-danger btn-sm removeItemBtn">삭제</button>
+        `;
+        itemInputList.appendChild(container);
+    });
+
+    itemInputList.addEventListener("click", function (e) {
+        if (e.target.classList.contains("removeItemBtn")) {
+            e.target.closest(".item-input-row").remove();
+        }
+    });
+});
+document.getElementById("submitBtn").addEventListener("click", () => {
+    const rows = document.querySelectorAll(".item-input-row");
+    const items = [];
+
+    rows.forEach(row => {
+        const name = row.querySelector("[name='name']").value.trim();
+        const itemType = row.querySelector("[name='itemType']").value;
+        const value = parseInt(row.querySelector("[name='value']").value || 0);
+        const probability = parseFloat(row.querySelector("[name='probability']").value || 0);
+        const active = parseInt(row.querySelector("[name='active']").value);
+        const description = document.querySelector("textarea[name='description']")?.value || "";
+
+        if (name && itemType) {
+            items.push({ name, itemType, value, probability, active, description });
+        }
+    });
+
+    if (items.length === 0) {
+        alert("등록할 아이템이 없습니다.");
+        return;
+    }
+
+    fetch("/api/admin/items", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(items[0]) // ✅ 단건 전송
+    })
+    .then(res => res.ok ? res.text() : Promise.reject(res))
+    .then(msg => {
+        alert("✅ 등록 성공!\n" + msg);
+        location.href = "/admin/vending/itemlist";
+    })
+    .catch(err => {
+        console.error("❌ 등록 실패", err);
+        alert("❌ 등록 중 오류 발생");
+    });
+});
+</script>        
+</th:block>
+

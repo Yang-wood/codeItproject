@@ -8,6 +8,7 @@ import com.codeit.mini.dto.comm.PageRequestDTO;
 import com.codeit.mini.dto.comm.PageResultDTO;
 import com.codeit.mini.dto.vending.VendingItemDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
+import com.codeit.mini.dto.vending.VendingMachineUpdateRequestDTO;
 import com.codeit.mini.dto.vending.VendingResultDTO;
 import com.codeit.mini.entity.admin.Admin;
 import com.codeit.mini.entity.comm.VendingType;
@@ -40,6 +41,8 @@ public interface IVendingMachineService {
 	VendingResultDTO purchaseMultipleItems(Long vmId, Long memberId, List<Long> itemIds);
 	
 	boolean existsByName(String name);
+	
+	void updateVendingMachineWithItems(VendingMachineUpdateRequestDTO requestDTO);
 	
 	default VendingMachineDTO toDTO(VendingMachinesEntity vm) {
 		
@@ -88,4 +91,5 @@ public interface IVendingMachineService {
 															 .build();
 		return vmEntity;
 	}
+
 }

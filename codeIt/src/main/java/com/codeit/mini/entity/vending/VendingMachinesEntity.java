@@ -69,10 +69,6 @@ public class VendingMachinesEntity extends BaseEntity{
     		throw new IllegalArgumentException("자판기 이름은 비어 있을 수 없습니다.");
     	}
     	
-    	if (newName.equals(name)) {
-    		throw new IllegalArgumentException("기존 이름과 동일합니다.");
-    	}
-    	
     	this.name = newName;
     }
     

@@ -1,5 +1,6 @@
 package com.codeit.mini.controller.vendingmachine;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 import com.codeit.mini.dto.AdminDTO;
 import com.codeit.mini.dto.comm.PageRequestDTO;
@@ -28,10 +30,13 @@ import com.codeit.mini.dto.vending.CouponHistoryDTO;
 import com.codeit.mini.dto.vending.CouponHistoryRequestDTO;
 import com.codeit.mini.dto.vending.CouponStatusDTO;
 import com.codeit.mini.dto.vending.MachineItemDTO;
+import com.codeit.mini.dto.vending.RequestMachineItemDTO;
 import com.codeit.mini.dto.vending.VendingHistoryDTO;
 import com.codeit.mini.dto.vending.VendingItemDTO;
 import com.codeit.mini.dto.vending.VendingMachineDTO;
+import com.codeit.mini.dto.vending.VendingMachineUpdateRequestDTO;
 import com.codeit.mini.dto.vending.VendingMachineWithItemsDTO;
+import com.codeit.mini.entity.admin.Admin;
 import com.codeit.mini.entity.vending.CouponHistoryEntity;
 import com.codeit.mini.entity.vending.VendingHistoryEntity;
 import com.codeit.mini.entity.vending.VendingMachinesEntity;
@@ -124,8 +129,15 @@ public class AdminVedingController {
 	
 //	3. 상품 등록
 	@PostMapping ("/items")
-    public ResponseEntity<?> registerVendingItem(@RequestBody VendingItemDTO dto) {
-        try {
+    public ResponseEntity<?> registerVendingItem(@RequestBody VendingItemDTO dto, HttpSession session){
+        AdminDTO admin = (AdminDTO) session.getAttribute("admin");
+        
+        if (admin == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+        dto.setAdminId(admin.getAdminId());
+        
+		try {
             Long itemId = itemService.registerVendingItem(dto);
             return ResponseEntity.ok("상품 등록 완료! 상품 ID: " + itemId);
             
@@ -159,38 +171,68 @@ public class AdminVedingController {
 //	6. 전체 상품 목록 (관리자 전체 상품 조회)
 	@GetMapping("/items")
     public ResponseEntity<?> vendingItemsList() {
-        return ResponseEntity.ok(itemService.findAllVendingItemById());
+		List<VendingItemDTO> dtoList = itemService.findAllVendingItemById();
+		return ResponseEntity.ok(Map.of("dtoList", dtoList));
     }
 	
 //	7. 자판기 + 상품 수정
 	@PutMapping("/{machineId}")
     public ResponseEntity<?> machinesUpdate(@PathVariable("machineId") Long machineId, 
-    										@RequestBody VendingMachineWithItemsDTO request) {
-        try {
-            VendingMachineDTO vmDto = request.getVendingMachine();
-            vmDto.setMachineId(machineId);
-            vendingMachineService.updateVendingMachine(vmDto);
+    										@RequestBody VendingMachineUpdateRequestDTO request) {
+		log.info("받은 전체 요청: {}", request);
+		log.info("자판기 정보: {}", request.getVendingMachine());
+		log.info("아이템 리스트: {}", request.getItemIds());
+		try {
+	        request.getVendingMachine().setMachineId(machineId);
+	        vendingMachineService.updateVendingMachineWithItems(request);
+	        return ResponseEntity.ok("자판기 및 연결 아이템 수정 완료");
+	        
+	    } catch (IllegalArgumentException e) {
+	        log.error("🚨 자판기 업데이트 중 오류 발생", e);
+	        e.printStackTrace();
+	        return ResponseEntity.badRequest().body(e.getMessage());
+	        
+	    } catch (Exception e) {
+	        log.error("자판기 수정 중 오류", e);
+	        e.printStackTrace();
+	        
+	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+	    }
+	}
+		
+		//	    try {
+//	        VendingMachineDTO vmDto = request.getVendingMachine();
+//	        vmDto.setMachineId(machineId);
+//	        vendingMachineService.updateVendingMachine(vmDto);
+//
+//	        machineItemService.removeAllByMachineId(machineId);
+//
+//	        List<RequestMachineItemDTO> items = request.getItemIds();
+//
+//	        log.info("▶️ 수정 요청 받은 자판기 정보: {}", machineId);
+//	        log.info("▶️ 상품 목록: {}", items);
+//
+//	        List<MachineItemDTO> machineItemList = items.stream().map(reqItem -> {
+//	            MachineItemDTO dto = new MachineItemDTO();
+//	            dto.setItemId(reqItem.getItemId());
+//	            dto.setProbability(reqItem.getProbability());
+//	            dto.setMachineId(machineId);
+//	            return dto;
+//	        }).collect(Collectors.toList());
+//
+//	        for (MachineItemDTO item : machineItemList) {
+//	            machineItemService.registerMachineItem(item);
+//	        }
+//
+//	        return ResponseEntity.ok("자판기 및 상품 수정 완료");
+//	    } catch (IllegalArgumentException e) {
+//	        return ResponseEntity.badRequest().body(e.getMessage());
+//	    } catch (Exception e) {
+//	        log.error("[자판기 수정 오류]", e);
+//	        e.printStackTrace(); // 추가
+//	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+//	    }
 
-            machineItemService.removeAllByMachineId(machineId);
-
-            List<MachineItemDTO> items = request.getItemIds();
-            
-            log.info("▶️ 수정 요청 받은 자판기 정보: {}", machineId);
-            log.info("▶️ 상품 목록: {}", items);
-            for (MachineItemDTO item : items) {
-                item.setMachineId(machineId);
-                machineItemService.registerMachineItem(item);
-            }
-
-            return ResponseEntity.ok("자판기 및 상품 수정 완료");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-            
-        } catch (Exception e) {
-            log.error("[자판기 수정 오류]", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
-        }
-    }
 	
 //	8. 자판기 삭제
 	@DeleteMapping("/{machineId}")
@@ -261,5 +303,27 @@ public class AdminVedingController {
         return ResponseEntity.ok(exists);
     }
     
-    
+    @PutMapping("/items/{itemId}")
+    public ResponseEntity<?> updateVendingItem(@PathVariable("itemId") Long itemId,
+                                               @RequestBody VendingItemDTO dto,
+                                               @SessionAttribute(name = "admin", required = false) AdminDTO admin) {
+        if (admin == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("로그인이 필요합니다.");
+        }
+
+        dto.setItemId(itemId);
+        dto.setAdminId(admin.getAdminId());
+
+        try {
+            itemService.updateVendingItem(dto); // itemId 기준으로 내부에서 수정 처리
+            return ResponseEntity.ok("상품 수정 완료");
+
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+        } catch (Exception e) {
+            log.error("[상품 수정 오류]", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("서버 오류 발생");
+        }
+    }
 }
