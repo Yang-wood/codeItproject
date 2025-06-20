@@ -15,7 +15,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
 
 	        HttpSession session = request.getSession(false);
 
-	        if (session == null || session.getAttribute("member") == null) {
+	        if (session == null || (session.getAttribute("member") == null && session.getAttribute("admin") == null)) {
 	            String ajaxHeader = request.getHeader("X-Requested-With");
 	            String accept = request.getHeader("Accept");
 
