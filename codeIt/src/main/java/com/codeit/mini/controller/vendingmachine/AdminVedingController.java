@@ -172,7 +172,7 @@ public class AdminVedingController {
 	@GetMapping("/items")
     public ResponseEntity<?> vendingItemsList() {
 		List<VendingItemDTO> dtoList = itemService.findAllVendingItemById();
-		return ResponseEntity.ok(Map.of("dtoList", dtoList));
+		return ResponseEntity.ok(dtoList);
     }
 	
 //	7. 자판기 + 상품 수정

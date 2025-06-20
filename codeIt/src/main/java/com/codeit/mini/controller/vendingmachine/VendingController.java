@@ -239,7 +239,7 @@ public class VendingController {
 	    } catch (IllegalStateException e) {
 	        log.warn("❗비즈니스 로직 오류: {}", e.getMessage());
 	        return ResponseEntity.badRequest()
-	                             .body(Map.of("error", "BUSINESS_ERROR", "message", e.getMessage()));
+	                             .body(Map.of("error", "포인트 부족!", "message", e.getMessage()));
 	    } catch (Exception e) {
 	        log.error("❌ 서버 오류 발생", e);
 	        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
