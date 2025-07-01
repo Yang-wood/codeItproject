@@ -12,6 +12,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.codeit.mini.dto.vending.VendingMachineDTO;
 import com.codeit.mini.entity.admin.Admin;
+import com.codeit.mini.entity.comm.VendingType;
 
 import lombok.extern.log4j.Log4j2;
 
@@ -28,8 +29,9 @@ class VendingMachinesTests {
 //		IntStream.range(1, 5).forEach(i -> {
 //			VendingMachineDTO machine = VendingMachineDTO.builder()
 //														 .adminId(1L)
+//														 .active(1)
 //														 .name("테스트 자판기" +i)
-//														 .type("테스트 자판기 타입" +i)
+//														 .type(VendingType.RANDOM.name())
 //														 .build();
 //			
 //			log.info("생성된 자판기 " + i + "번째 정보 : " + machine);
