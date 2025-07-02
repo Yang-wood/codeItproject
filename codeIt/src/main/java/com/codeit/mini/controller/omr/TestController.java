@@ -31,7 +31,7 @@ public class TestController {
 	@GetMapping("/test")
 	public String testPage() {
 		
-		return "/omr/test";
+		return "omr/test";
 	}
 	
 	
@@ -55,7 +55,7 @@ public class TestController {
 	    List<TestSessionSummaryDTO> sessionList = sessionService.getSessionSummaryByMemberId(memberId);
 	    model.addAttribute("sessionList", sessionList);
 		
-		return "/omr/history";
+		return "omr/history";
 	}
 	
 	
@@ -65,7 +65,7 @@ public class TestController {
 		
 		model.addAttribute("answerList", answer);
 		
-		return "/omr/result";
+		return "omr/result";
 		
 	}
 	
@@ -74,7 +74,7 @@ public class TestController {
 	@GetMapping("/exam")
 	public String examPage() {
 		
-		return "/omr/exam";
+		return "omr/exam";
 	}
 	
 	

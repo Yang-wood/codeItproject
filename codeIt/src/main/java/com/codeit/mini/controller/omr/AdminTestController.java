@@ -46,7 +46,7 @@ public class AdminTestController {
 	@GetMapping("/register")
 	public String getRegister() {
 		
-		return "/omr/admin/register";
+		return "omr/admin/register";
 	}
 	
 	
@@ -74,7 +74,7 @@ public class AdminTestController {
 			
 			model.addAttribute("errMsg", "등록 실패 했습니다");
 			
-			return "/omr/admin/register";
+			return "omr/admin/register";
 		}
 	}
 	
@@ -119,7 +119,7 @@ public class AdminTestController {
 		
 		model.addAttribute("testDto", testDto);
 		
-		return "/omr/admin/modify";
+		return "omr/admin/modify";
 		
 	}
 	
