@@ -1,7 +1,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
-<th:block th:replace="~{/layout/basic :: setContent(~{this::contentWrapper})}">
+<th:block th:replace="~{layout/basic :: setContent(~{this::contentWrapper})}">
 	<th:block th:fragment="contentWrapper">
-		<div th:replace="~{/book/subheader :: withSubHeader(~{this::myActualPageContent})}">
+		<div th:replace="~{book/subheader :: withSubHeader(~{this::myActualPageContent})}">
 			<th:block th:fragment="myActualPageContent">
 				<div class="container py-4">
 				    <div class="container">

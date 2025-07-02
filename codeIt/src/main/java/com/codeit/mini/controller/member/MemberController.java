@@ -52,7 +52,7 @@ public class MemberController {
 	// 회원 가입 페이지 이동
     @GetMapping("/register")
     public String registerForm() {
-        return "/member/register";
+        return "member/register";
     }
     
     // 회원 가입 처리
@@ -76,7 +76,7 @@ public class MemberController {
     // 로그인 폼 이동
     @GetMapping("/login")
     public String loginForm() {
-        return "/member/login";
+        return "member/login";
     }
     
     // 로그인 처리
@@ -157,7 +157,7 @@ public class MemberController {
             
             model.addAttribute("currentUri", request.getRequestURI());
             
-            return "/member/mypage";
+            return "member/mypage";
         } else {
             rttr.addFlashAttribute("msg", "회원 정보를 불러올 수 없습니다.");
             return "redirect:/codeit";
@@ -172,7 +172,7 @@ public class MemberController {
         Optional<MemberDTO> result = memberService.read(member.getMemberId());
         if (result.isPresent()) {
             model.addAttribute("dto", result.get());
-            return "/member/modify";
+            return "member/modify";
         } else {
             rttr.addFlashAttribute("msg", "회원 정보가 존재하지 않습니다.");
             return "redirect:/member/mypage";
